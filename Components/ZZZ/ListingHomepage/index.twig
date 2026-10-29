@@ -1,0 +1,39 @@
+{% if posts|length > 0 %}
+  <flynt-component load:on="visible" name="ListingHomepage" class="">
+    <div class="boxed">
+      {% if preContentHtml %}
+        <div class="preContent wysiwyg">
+          {{ preContentHtml|e('wp_kses_post') }}
+        </div>
+      {% endif %}
+      <div class="listing" id="listingHomepage">
+        {% for post in posts %}
+          <div class="post" data-theme="reset">
+            <a class="link" href="{{ post.link }}" aria-label="{{ post.title }}">
+              {% if post.thumbnail %}
+                <figure class="figure">
+                  <img class="lazyload"
+                    src="{{ post.thumbnail.src }}"
+                    data-srcset="{{function('wp_get_attachment_image_srcset', post.thumbnail.id)}}"
+                    data-sizes="auto"
+                    alt="{{ post.title }}">
+                </figure>
+              {% endif %}
+              {# <div class="content">
+                <h2 class="h5">{{ post.title }}</h2>
+                <p>{{ post.excerpt.read_more(false) }}</p>
+              </div> #}
+              {# <footer class="footer">
+                <span class="button button--text">{{ labels.readMore }}</span>
+              </footer> #}
+            </a>
+          </div>
+        {% endfor %}
+        {# <img src="/wp-content/themes/semester9next/assets/images/SEMESTER9_logotype.svg"> #}
+      </div>
+      {# <div class="postContent">
+        <a href="{{ postTypeArchiveLink }}" class="button button--text">{{ labels.allPosts }}</a>
+      </div> #}
+    </div>
+  </flynt-component>
+{% endif %}

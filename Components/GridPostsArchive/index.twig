@@ -1,0 +1,86 @@
+{% if posts|length > 0 %}
+  <flynt-component 
+    load:on="visible" 
+    name="GridPostsArchive" 
+    class=""
+    style="
+      color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};
+      background-color: {% if options.pageBackground %}{{ options.pageBackground }}{% else %}transparent{% endif %};">
+    
+    <div class="wrapper max-w-screen-max mx-auto boxed flex flex-col gap-sm" x-data="{ selectedCategories: [] }">
+      <div class="flex flex-col justify-between gap-lg">
+        
+        {% if post.title %}
+          <div class="max-w-screen-lg mx-auto font-heroSubtitle text-center" style="color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};">
+            {{ post.slug  }}
+          </div>
+        {% endif %}
+
+        <!-- Category Filters -->
+        <div class="flex flex-col md:flex-row flex-wrap justify-start gap-sm md:gap-xl">
+          <div class="uppercase">Filter</div>
+          <div class="flex flex-row flex-wrap justify-start gap-xs md:gap-sm">
+            <div 
+              class="cursor-pointer uppercase"
+              @click="selectedCategories = []">
+              Alle
+            </div>
+            {% for category in categories %}
+              <div 
+                class="cursor-pointer uppercase"
+                :class="selectedCategories.includes('{{ category.name|lower|replace({' ' : '-'}) }}') ? 'text-primary' : ''"
+                @click="selectedCategories.includes('{{ category.name|lower|replace({' ' : '-'}) }}') 
+                  ? selectedCategories = selectedCategories.filter(c => c !== '{{ category.name|lower|replace({' ' : '-'}) }}') 
+                  : selectedCategories.push('{{ category.name|lower|replace({' ' : '-'}) }}')">
+                {{ category.name }}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Posts Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-sm gap-y-lg">
+        {% for post in posts %}
+          <a 
+            class="w-full [&_img]:hover:brightness-110 transition duration-200 ease-in-out" 
+            href="{{ post.link }}" 
+            {% for term in post.terms('blog-category') %}
+              aria-label="{{ post.title }} {{ term|lower|replace({' ' : '-'}) }}"
+              x-show="selectedCategories.length === 0 || selectedCategories.includes('{{ term|lower|replace({' ' : '-'}) }}')">
+            {% endfor %}
+            
+            
+            <div class="post w-full flex flex-col gap-xs justify-between items-center">
+              {% set halftone_svg = post.meta('halftone_svg') %}
+              {% if halftone_svg %}
+                <div class="halftone-image relative w-full h-[250px] lg:h-[350px] overflow-hidden [&_svg]:absolute [&_svg]:inset-0 [&_svg]:w-full [&_svg]:h-full">
+                  {{ halftone_svg|raw }}
+                </div>
+              {% elseif post.thumbnail %}
+                <img
+                  class="lazyload transition duration-200 ease-in-out h-[250px] lg:h-[350px] object-cover"
+                  src="{{ post.thumbnail.src }}"
+                  data-srcset="{{ function('wp_get_attachment_image_srcset', post.thumbnail.id) }}"
+                  data-sizes="auto"
+                  alt="{{ post.title }}">
+              {% endif %}
+              
+              <div class="content w-full flex flex-col gap-xs md:gap-sm justify-start" style="color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};">
+                <div class="flex flex-row gap-md">
+                  <span>{{ {{ post.end_date|date("d.m.y")|escape('wp_kses_post') }} }}</span>
+                  {% for term in post.terms('blog-category') %}
+                    <span>{{ term|upper}}</span>
+                  {% endfor %}
+                </div>
+                <div class="w-full md:w-3/4 font-smallTitle !mb-0">{{ post.title }}</div>
+                <button class="button button--fullPost" href="{{ post.link }}" aria-label="{{ post.title }}">Lesen</button>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+
+  </flynt-component>
+{% endif %}

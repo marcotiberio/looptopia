@@ -1,0 +1,49 @@
+/* Backend Component Screenshots */
+.flyntComponentScreenshot {
+  background-color: #fff;
+  border: 1px solid #ccd0d4;
+  display: inline-block;
+  height: 40px;
+  inset-block-end: 5px;
+  margin-inline-start: 5px;
+  position: absolute;
+
+  &-imageWrapper {
+    inset-block-end: 0;
+    inset-inline-end: 100%;
+    position: absolute;
+  }
+
+  &-previewImageLarge {
+    background: #fff;
+    border: 3px solid #2f353e;
+    border-radius: 3px;
+    display: block;
+    height: auto;
+    inset-block-end: 0;
+    inset-inline-end: 10px;
+    max-width: 400px;
+    object-fit: cover;
+    position: absolute;
+    width: 33vw;
+  }
+
+  &-previewImageSmall {
+    display: block;
+    height: 40px;
+    width: auto;
+  }
+
+  &-label {
+    inset-block-end: 4px;
+    inset-inline-start: 100%;
+    padding-inline-start: 8px;
+    position: absolute;
+    white-space: nowrap;
+  }
+}
+
+/* ACF sets overflow: hidden on popup links, which clips the hover preview */
+.acf-fc-popup a[data-layout]:has(.flyntComponentScreenshot-imageWrapper) {
+  overflow: visible;
+}

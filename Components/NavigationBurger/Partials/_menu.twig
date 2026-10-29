@@ -1,0 +1,30 @@
+{# <ul
+  data-ref="menu" 
+  class="menu w-full h-full z-40 relative" 
+  style="background-color: {% if post.pageBackground %}{{ post.pageBackground }}{% else %}var(--white){% endif %}; ">
+  <div class="w-full max-w-screen-max mx-auto flex flex-col justify-center items-center p-sm">
+    {% for item in items %}
+      {% if not item.children %}
+        <li class="item {{- item.current ? ' current-menu-item' }}">
+          <a class="link font-menu" href="{{ item.link }}" {{ item.target == '_blank' ? 'target="_blank" rel="noopener noreferrer"' }}>
+            {{ item.title }}
+          </a>
+        </li>
+      {% endif %}
+      {% if item.children %}
+        <li class="item open-submenu {{- item.current ? ' current-menu-item' }}" >
+          <a class="link font-menu" href="{{ item.link }}" {{ item.target == '_blank' ? 'target="_blank" rel="noopener noreferrer"' }}>
+            {{ item.title }}
+          </a>
+          <ul class="submenu">
+            {% for subitem in item.children %}
+              <li class="item {{- subitem.current ? ' current-menu-item' }}">
+                <a class="link !p-0 font-menu" href="{{ subitem.link }}" {{ subitem.target == '_blank' ? 'target="_blank" rel="noopener noreferrer"' }}>{{ subitem.title }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </li>
+      {% endif %}
+    {% endfor %}
+  <div>
+</ul> #}

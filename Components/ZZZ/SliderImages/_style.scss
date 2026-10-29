@@ -1,0 +1,27 @@
+flynt-component[name='SliderImages'] {
+  .slider {
+    max-width: 100%;
+    position: relative;
+
+    .swiper-wrapper {
+      box-sizing: inherit;
+    }
+
+    .swiper-slide {
+      display: flex;
+    }
+    
+    &-button {
+      align-items: center;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      z-index: 10;
+
+      &.swiper-button-disabled {
+        opacity: 0.3;
+        pointer-events: none;
+      }
+    }
+  }
+}

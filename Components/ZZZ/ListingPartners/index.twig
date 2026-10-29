@@ -1,0 +1,17 @@
+<flynt-component load:on="visible" name="ListingPartners" class="bg-white">
+  <div class="w-full max-w-screen-max mx-auto boxed">
+    {% if preContentTitle %}
+      <h1 class="text-black">{{ preContentTitle }}</h1>
+    {% endif %}
+    <div class="w-full mx-auto mt-lg md:mt-xl grid grid-cols-2 sm:grid-cols-3 gap-sm sm:gap-md">
+      {% for box in boxes %}
+        <a href="{{ box.blockLink }}" class="flex items-center align-middle justify-center">
+          <img class="figure-image lazyload"
+            src="{{ box.image.src }}"
+            data-srcset="{{function('wp_get_attachment_image_srcset', box.image.id)}}"
+            data-sizes="auto">
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</flynt-component>

@@ -1,0 +1,149 @@
+/**
+* Helpers
+*/
+
+flynt-component {
+  display: block;
+  position: relative;
+  scroll-margin-block-start: 72px;
+  scroll-margin-top: 72px;
+
+  @screen desktop {
+    scroll-margin-block-start: 72px;
+    scroll-margin-top: 72px;
+  }
+
+  &:last-child:not(flynt-component[name='NavigationFooter']) {
+    @apply mb-0;
+  }
+}
+
+[x-cloak] { 
+  display: none !important; 
+}
+
+.pageWrapper {
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: auto 1fr auto;
+
+  .admin-bar & {
+    padding-block-start: var(--wp-admin--admin-bar--height);
+  }
+}
+
+.boxed {
+  @apply w-full;
+  @apply max-w-screen-box;
+  @apply mx-auto;
+  @apply px-sm;
+  @apply py-sm;
+
+  // &--small {
+  //   @apply py-xs;
+  //   @apply sm:py-sm;
+  // }
+  
+
+  // &--large {
+  //   @apply px-sm;
+  //   @apply py-sm;
+  // }
+}
+
+.preContent {
+  margin: 0 0 theme('spacing.small');
+  text-align: left;
+
+  @screen tablet {
+    margin: 0 0 theme('spacing.large');
+  }
+}
+
+.postContent {
+  margin: theme('spacing.small') 0 0;
+  text-align: left;
+
+  @screen tablet {
+    margin: theme('spacing.large') 0 0;
+  }
+}
+
+.scrollableTableWrapper {
+  -webkit-overflow-scrolling: touch;
+  overflow-x: auto;
+}
+
+/* Class for text that should only be visible to screen readers */
+.visuallyHidden {
+  clip: rect(0, 0, 0, 0) !important;
+  height: 1px !important;
+  margin: -1px !important; // Fix for https://github.com/twbs/bootstrap/issues/25686
+  overflow: hidden !important;
+  padding: 0 !important;
+  position: absolute !important;
+  white-space: nowrap !important;
+  width: 1px !important;
+}
+
+/* Skip link behavior */
+.skipLink {
+  inset-block-start: -100px;
+  position: fixed;
+  z-index: 999;
+
+  &:focus {
+    inset-block-start: 0;
+  }
+}
+
+/**
+* Box Helpers
+*/
+
+.boxPadding {
+  padding: var(--box-padding);
+}
+
+.boxBorder {
+  border: solid 2px var(--color-border);
+}
+
+/**
+* Themes
+*/
+
+[data-theme] {
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+/**
+* Custom Classes
+*/
+
+.mobileHidden {
+  @apply hidden;
+
+  @screen mobile {
+    @apply block;
+  }
+}
+
+.desktopHidden {
+  @apply block;
+  
+  @screen mobile {
+    @apply hidden;
+  }
+}
+
+.angle {
+  &-tr {
+    clip-path: polygon(0 0, 0 100%, 100% 100%, 100% 7.5%, 90% 0);
+  }
+
+  &-br {
+    clip-path: polygon(0 0, 0 100%, 90% 100%, 100% 90%, 100% 0);
+  }
+}

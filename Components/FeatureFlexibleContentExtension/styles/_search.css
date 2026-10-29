@@ -1,0 +1,45 @@
+.acf-flexible-content .flyntComponentSearch {
+  display: flex;
+  flex-direction: column;
+  margin-block-start: -2px;
+
+  + ul {
+    margin-block: 6px;
+  }
+
+  &-field[type='search']{
+    border: 0;
+    border-block-end: 1px solid #d0d5dd;
+    border-radius: 0;
+    border-start-end-radius: 5px;
+    border-start-start-radius: 5px;
+    font-size: 13px;
+    inline-size: calc(100% + 16px);
+    margin-inline: -8px;
+    padding-block: 12px;
+    padding-inline: 18px;
+
+    &:focus {
+      background-color: #f6f7f7;
+      box-shadow: none;
+    }
+  }
+
+  &-noResults {
+    color: #101828;
+    inline-size: 100%;
+    margin-block-end: -6px;
+    margin-block-start: 6px;
+    overflow: hidden;
+    padding-block: 5px;
+    padding-inline: 10px;
+    position: relative;
+    text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  + ul li {
+    block-size: unset;
+  }
+}

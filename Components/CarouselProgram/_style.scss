@@ -1,0 +1,272 @@
+// Featured program point + card grid. Measurements come from the Figma
+// "Carousel Programm" frame (1200px content width); they have no equivalent in
+// the Tailwind token scale, so they stay component-scoped here while colours
+// and fonts reference theme tokens.
+$gap: 20px;
+$radius: 12px;
+$feature-body-width: 512px;
+$badge-size: 55.5px;
+$badge-icon-size: 32px;
+$small-font-size: 12px;
+$extrasmall-font-size: 10px;
+$nav-size: 24px;
+
+.carousel-program {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--primary-font-family);
+  gap: 64px;
+
+  // ---- Featured entry ----
+
+  &__feature {
+    background-color: theme('colors.greenFaded');
+    border-radius: $radius;
+    display: flex;
+    flex-direction: column;
+    gap: $gap;
+    overflow: hidden;
+
+    @media (min-width: theme('screens.tablet')) {
+      align-items: stretch;
+      flex-direction: row;
+      gap: 32px;
+    }
+  }
+
+  &__feature-body {
+    display: flex;
+    flex-direction: column;
+    gap: 19px;
+    order: 2;
+    padding: $gap;
+
+    @media (min-width: theme('screens.tablet')) {
+      flex: 0 1 $feature-body-width;
+      order: 1;
+    }
+  }
+
+  &__feature-meta {
+    display: flex;
+    flex-wrap: wrap;
+    font-size: $small-font-size;
+    font-weight: 600;
+    gap: 12px;
+    justify-content: space-between;
+    margin-bottom: 0;
+  }
+
+  &__feature-when {
+    display: flex;
+    gap: 12px;
+  }
+
+  &__feature-venue {
+    text-align: right;
+  }
+
+  &__feature-title {
+    margin-bottom: 0;
+  }
+
+  // Title links never underline, in any state.
+  &__feature-title a,
+  &__card-title a {
+    &,
+    &:hover,
+    &:focus {
+      text-decoration: none;
+    }
+  }
+
+  &__feature-intro {
+    margin-bottom: 0;
+  }
+
+  // The button sits at the bottom of the panel, as in the design.
+  &__feature-button {
+    margin-top: auto;
+  }
+
+  &__feature-media {
+    aspect-ratio: 350 / 225;
+    background-color: var(--grey-200);
+    order: 1;
+    overflow: hidden;
+    position: relative;
+
+    @media (min-width: theme('screens.tablet')) {
+      border-bottom-right-radius: $radius;
+      border-top-right-radius: $radius;
+      flex: 1 0 0;
+      order: 2;
+    }
+  }
+
+  &__feature-image {
+    height: 100%;
+    inset: 0;
+    object-fit: cover;
+    position: absolute;
+    width: 100%;
+  }
+
+  &__feature-nav {
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    height: $nav-size;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: $nav-size;
+    z-index: 1;
+
+    svg {
+      filter: drop-shadow(0 0 2px rgb(0 0 0 / 35%));
+      height: 100%;
+      width: 100%;
+    }
+
+    &--prev {
+      left: $gap;
+    }
+
+    &--next {
+      right: $gap;
+
+      svg {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  // ---- Grid ----
+
+  // One column on mobile, two on tablet, four on desktop.
+  &__grid {
+    display: grid;
+    gap: $gap;
+    grid-template-columns: minmax(0, 1fr);
+
+    @media (min-width: theme('screens.tablet')) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (min-width: theme('screens.desktop')) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  &__card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    // `display: flex` would otherwise override the hidden attribute.
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  &__card-media {
+    aspect-ratio: 350 / 225;
+    background-color: var(--grey-200);
+    border-radius: $radius;
+    display: block;
+    overflow: hidden;
+    position: relative;
+  }
+
+  &__card-image {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  &__card-when {
+    display: flex;
+    font-size: $small-font-size;
+    font-weight: 600;
+    gap: 12px;
+    margin-bottom: 0;
+  }
+
+  &__card-title {
+    margin-bottom: 0;
+  }
+
+  &__card-org {
+    font-size: $small-font-size;
+    font-weight: 600;
+    margin-bottom: 0;
+    // Pinned to the bottom so the organisation lines up across cards.
+    margin-top: auto;
+  }
+
+  // ---- Shared ----
+
+  // Program-type glyph, matching the map pins.
+  &__badge {
+    align-items: center;
+    background-color: var(--white);
+    border-radius: 9px;
+    display: flex;
+    height: $badge-size;
+    justify-content: center;
+    left: 10px;
+    position: absolute;
+    top: 10px;
+    width: $badge-size;
+    z-index: 1;
+
+    img {
+      height: $badge-icon-size;
+      width: $badge-icon-size;
+    }
+  }
+
+  &__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  &__tag {
+    background-color: theme('colors.greenFaded');
+    border-radius: 8px;
+    font-size: $small-font-size;
+    font-weight: 500;
+    padding: 2px 6px;
+
+    &--primary {
+      background-color: var(--green);
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $gap;
+    justify-content: center;
+  }
+
+  &__empty {
+    background-color: theme('colors.greenFaded');
+    border-radius: $radius;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 0;
+    padding: 8px 18px;
+    width: fit-content;
+  }
+}
+
+// The featured badge sits on the right of the image in the design, opposite
+// the card badges.
+.carousel-program__feature-media .carousel-program__badge {
+  left: auto;
+  right: 10px;
+}

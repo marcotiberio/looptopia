@@ -1,0 +1,30 @@
+flynt-component[name='ListingVideoFeat'] {
+  .masonry-grid {
+    column-count: 1;
+    column-gap: 1.5625rem;
+    width: 100%;
+
+    @media (min-width: 768px) {
+      column-count: 2;
+    }
+
+    .post {
+      break-inside: avoid;
+      page-break-inside: avoid;
+      display: inline-block;
+      width: 100%;
+      margin-bottom: 1.5625rem;
+    }
+  }
+
+  .post {
+    &:hover {
+      .button {
+        &--outline {
+          @apply text-white;
+          @apply bg-black;
+        }
+      }
+    }
+  }
+}

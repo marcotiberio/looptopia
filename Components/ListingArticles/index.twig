@@ -1,0 +1,69 @@
+{% if articles|length > 0 %}
+  <flynt-component load:on="visible" name="ListingArticles" class="w-full">
+    <div class="boxed flex flex-col gap-md">
+
+      {# Header: Title + See All #}
+      {% if blockTitle or seeAllLink %}
+        <div class="flex flex-row items-center justify-between">
+          {% if blockTitle %}
+            <h2 class="!mb-0">{{ blockTitle|e }}</h2>
+          {% endif %}
+          {% if seeAllLink %}
+            <a href="{{ seeAllLink.url }}" class="see-all-button flex flex-row items-center gap-xs font-body hover:opacity-70 transition-opacity" {% if seeAllLink.target %}target="{{ seeAllLink.target }}"{% endif %}>
+              <span>{{ seeAllLink.title|default('See All') }}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {# Articles Grid #}
+      <div class="grid grid-cols-1 desktop:grid-cols-3 gap-sm">
+        {% for article in articles %}
+          <a href="{{ article.post.link }}" class="group flex flex-col gap-xs no-underline" title="{{ article.post.title }}">
+
+            {# Halftone or Featured Image #}
+            <div class="relative w-full aspect-4/3 overflow-hidden">
+              {% if article.halftoneSvg %}
+                <div class="halftone-image absolute inset-0 w-full h-full overflow-hidden [&_svg]:absolute [&_svg]:inset-0 [&_svg]:w-full [&_svg]:h-full">
+                  {{ article.halftoneSvg|raw }}
+                </div>
+              {% elseif article.postImage %}
+                <img
+                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  src="{{ article.postImage.src }}"
+                  alt="{{ article.postImage.alt|e | default('') }}"
+                  loading="lazy"
+                />
+              {% endif %}
+            </div>
+
+            {# Info Box #}
+            <div class="flex flex-col gap-xs">
+              <h3 class="!mb-0 font-h3">{{ article.post.title }}</h3>
+              <div class="flex flex-row gap-xs items-center flex-wrap">
+                {% set postCategories = article.post.terms('category') %}
+                {% for term in postCategories %}
+                  <span class="font-bodySmall !mb-0 px-xs py-min bg-grei">{{ term }}{% if not loop.last %},{% endif %}</span>
+                {% endfor %}
+                {% if article.post.date %}
+                  <span class="font-bodySmall !mb-0 px-xs py-min bg-grei">{{ article.post.date('d.m.Y') }}</span>
+                {% endif %}
+                {% if post.meta('postAuthor') %}
+                  {% for author in Post(post.meta('postAuthor')) %}
+                    <span class="font-bodySmall !mb-0 px-xs py-min bg-grei">{{ author.title }}</span>
+                  {% endfor %}
+                {% endif %}
+              </div>
+            </div>
+
+          </a>
+        {% endfor %}
+      </div>
+
+    </div>
+  </flynt-component>
+{% endif %}

@@ -1,0 +1,9 @@
+flynt-component[name='BlockImageTextPost'] {
+  [data-image-position='right'] {
+    @apply sm:flex-row-reverse;
+  }
+
+  [data-image-position='left'] {
+    @apply sm:flex-row;
+  }
+}

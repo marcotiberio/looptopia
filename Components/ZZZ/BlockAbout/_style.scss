@@ -1,0 +1,105 @@
+flynt-component[name='BlockAbout'] {
+  .wpcf7 {
+    align-items: flex-start;
+    display: flex;
+    justify-content: flex-start;
+
+    label {
+      color: var(--black);
+    }
+
+    form {
+      align-items: flex-start;
+      display: flex;
+      justify-content: flex-start;
+      width: 100%;
+    }
+
+    &-list-item {
+      margin: 0 20px 0 0;
+
+      label {
+        align-items: center;
+        display: flex;
+
+        input {
+          margin-block-start: 0;
+        }
+      }
+    }
+
+    &-spinner {
+      display: none;
+    }
+
+    &-response-output {
+      bottom: 0;
+      position: absolute;
+    }
+
+    #{$input-selectors} {
+      appearance: none;
+      background-color: transparent;
+      border: 1px solid var(--black);
+      border-radius: 0;
+      caret-color: var(--black);
+      color: var(--black);
+      font-size: var(--body-font-size-small);
+      max-width: 100%;
+      outline: none;
+      padding: 10px;
+      transition: border-color 0.3s ease-in-out;
+      width: 100%;
+    
+      &::placeholder {
+        color: var(--black);
+        opacity: 0.5;
+      }
+    
+      &:disabled {
+        cursor: default;
+        opacity: 0.5;
+        pointer-events: none;
+      }
+    
+      &:invalid {
+        border-color: var(--color-error);
+      }
+    }
+
+    input {
+      @apply px-sm;
+      @apply py-sm;
+      @apply m-0;
+      @apply bg-transparent;
+    }
+
+    input[type='submit'] {
+      @include reset-link;
+      @apply appearance-none;
+      @apply cursor-pointer;
+      @apply flex;
+      @apply gap-sm;
+      @apply items-center;
+      @apply no-underline;
+      @apply p-[10px];
+      @apply lg:px-sm;
+      @apply uppercase;
+      @apply relative;
+      @apply text-center;
+      @apply transition-all;
+      @apply ease-linear;
+      @apply duration-200;
+      @apply h-fit;
+      @apply w-fit;
+      @apply z-50;
+      @apply bg-transparent;
+      @apply hover:bg-black;
+      @apply text-black;
+      @apply hover:text-white;
+      @apply border;
+      @apply border-black;
+      @apply hover:border-transparent;
+    }
+  }
+}

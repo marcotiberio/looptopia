@@ -1,0 +1,30 @@
+<flynt-component load:on="visible" name="HeroImageText" class="">
+  <div class="wrapper w-screen mx-auto" style="background-color: {% if options.colorBackground %}{{ options.colorBackground }}{% else %}var(--transparent){% endif %};">
+    <div class="w-full h-full max-w-screen-max mx-auto flex items-end justify-between {% if imagePosition == 'right' %} flex-col-reverse sm:flex-row {% else %} flex-col sm:flex-row-reverse {% endif %}">
+    {% if contentHtml %}
+      <div class="w-full sm:w-1/2 h-full px-sm py-sm sm:py-lg flex flex-col justify-between sm:items-center gap-sm">
+        <div class="mx-0 sm:mx-auto wysiwyg">{{ contentHtml|e('wp_kses_post') }}</div>
+        {# {% if buttonLink %}
+          <div class="w-full flex justify-start items-end">
+            <a 
+              class="button button--outline" 
+              href="{{ buttonLink.url }}" 
+              {% if buttonLink.target %} target="{{ buttonLink.target }}" rel="noreferrer noopener"{% endif %}>
+              {{ buttonLink.title }}
+            </a>
+          </div>
+        {% endif %} #}
+      </div>
+      {% endif %}
+      <div class="w-full md:w-1/2 h-full">
+        {% if image %}
+          <img class="lazyload h-full w-full object-cover"
+            src="{{ image.src | resize(32) }}"
+            data-srcset="{{function('wp_get_attachment_image_srcset', image.id)}}"
+            data-sizes="auto"
+            alt="{{ image.alt|e }}">
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</flynt-component>

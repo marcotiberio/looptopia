@@ -1,0 +1,102 @@
+<flynt-component load:on="visible" name="NavigationFooter" class="bg-gradient-to-t from-green to-white text-black mt-xs">
+  <div class="boxed !min-h-fit flex flex-row justify-between items-end">
+    <div class="w-full flex flex-col gap-sm sm:gap-lg">
+      {# Row 1 #}
+      <div class="w-full mt-md">
+        {% if logoFooter %}
+          <img class="lazyload h-auto w-full"
+            src="{{ logoFooter.src }}"
+            data-srcset="{{function('wp_get_attachment_image_srcset', logoFooter.id)}}"
+            data-sizes="auto">
+        {% endif %}
+      </div>
+      {# Row 2 #}
+      {# <div class="flex flex-row gap-y-sm md:gap-x-xs md:gap-y-0 align-start justify-start md:justify-between">
+        {% for column in columns %}
+          <div class="column flex flex-col w-1/2 sm:w-1/3 md:w-1/4">
+            <div class="wysiwyg">{{ column.contentHtml|e('wp_kses_post') }}</div>
+            {% if column.enableNewsletter %}
+              <div id="mc_embed_shell">
+                <div id="mc_embed_signup">
+                  <form action="https://studio.us2.list-manage.com/subscribe/post?u=53b361306408427d9ffbc9980&amp;id=cf376efd5e&amp;f_id=00bce7e3f0" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_self" novalidate="">
+                        <div id="mc_embed_signup_scroll">
+                            <div class="mc-field-group">
+                              <input type="email" name="EMAIL" class="required email" id="mce-EMAIL" required="" value="" placeholder="Your email">
+                            </div>
+                        <div id="mce-responses" class="clear foot">
+                            <div class="response" id="mce-error-response" style="display: none;"></div>
+                            <div class="response" id="mce-success-response" style="display: none;"></div>
+                        </div>
+                    <div aria-hidden="true" style="position: absolute; left: -5000px;">
+                        /* real people should not fill this in and expect good things - do not remove this or risk form bot signups */
+                        <input type="text" name="b_53b361306408427d9ffbc9980_cf376efd5e" tabindex="-1" value="">
+                    </div>
+                        <div class="optionalParent">
+                            <div class="clear foot">
+                                <input type="submit" name="subscribe" id="mc-embedded-subscribe" class="btn btn--outline" value="Send">
+                            </div>
+                        </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div> #}
+      {% if menu %}
+      <div class="w-full flex flex-col md:flex-row justify-between md:items-center gap-sm sm:gap-lg">
+        <nav class="navigation w-full flex justify-between items-end" aria-label="{{ labels.ariaLabel }}">
+          {% include 'Partials/_menu.twig' with { 'items': menu.get_items, 'level': '0', 'maxLevel': maxLevel } only %}
+        </nav>
+        <div class="md:w-[40%] flex flex-col justify-start items-start gap-sm">
+          {% if funders.logos or funders2.logos %}
+            <div class="funders flex flex-row items-start gap-sm">
+              {% for group in [funders, funders2] %}
+                {% if group.logos %}
+                  <div class="flex flex-col items-start gap-xs">
+                    {% if group.label %}<span class="font-menu !mb-0 text-sm">{{ group.label }}</span>{% endif %}
+                    <div class="flex flex-row items-center gap-sm">
+                      {% for funder in group.logos %}
+                        {% if funder.logo %}
+                          {% if funder.link %}
+                            <a class="funders__item block" href="{{ funder.link.url }}"{% if funder.link.target %} target="{{ funder.link.target }}" rel="noreferrer noopener"{% endif %}>
+                              <img class="lazyload h-auto w-auto max-h-[40px]" src="{{ funder.logo.src }}" alt="{{ funder.logo.alt|e | default('') }}" loading="lazy">
+                            </a>
+                          {% else %}
+                            <img class="funders__item lazyload h-auto w-auto max-h-[40px]" src="{{ funder.logo.src }}" alt="{{ funder.logo.alt|e | default('') }}" loading="lazy">
+                          {% endif %}
+                        {% endif %}
+                      {% endfor %}
+                    </div>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+      {# Brand wordmark #}
+      <div class="flex items-center">
+        <img class="w-full h-auto" src="{{ wordmarkUrl }}" alt="LOOPTOPIA">
+      </div>
+      {# Col 5 #}
+      {# <div class="w-full lg:w-1/5 flex flex-col gap-sm sm:gap-lg justify-start sm:justify-end items-start sm:items-end mb-[1.2rem]">
+        {% if newsletterLink %}
+          <a 
+            class="button button--outline flex flex-row justify-between items-center" 
+            href="{{ newsletterLink.url }}" 
+            {% if newsletterLink.target %} target="{{ newsletterLink.target }}" rel="noreferrer noopener"{% endif %}>
+            {{ newsletterLink.title }}
+            <svg width="31" height="23" viewBox="0 0 31 23" fill="none">
+              <path d="M27.6933 0.906679C20.5513 1.80808 6.64693 6.6942 1.93273 9.0176C1.1425 9.40708 1.06896 10.1361 1.76885 10.6103C2.78976 11.302 4.68672 12.4567 8.14198 14.2445C8.14198 14.2445 8.29882 21.4548 10.1545 21.6642C12.3995 21.3905 14.7919 20.2037 16.8628 18.449C19.4365 19.6513 21.1233 20.3362 22.1139 20.7075C22.8003 20.9647 23.6072 20.85 23.9848 20.3552C26.3691 17.2313 29.096 7.37394 29.6037 2.24169C29.6846 1.4243 28.7889 0.768411 27.6933 0.906679Z" stroke="#28321E" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M25.7092 3.97778C25.7092 3.97778 16.5524 11.1149 12.4485 14.8984C12.2984 15.0367 12.2068 15.1988 12.1714 15.3737C11.9899 16.2707 11.333 19.2531 10.2004 21.5377" stroke="#28321E" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        {% endif %}
+      </div> #}
+      {# {% include 'Partials/_backtotop.twig' %} #}
+    </div>
+  </div>
+</flynt-component>

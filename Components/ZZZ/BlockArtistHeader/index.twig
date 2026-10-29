@@ -1,0 +1,37 @@
+<flynt-component load:on="visible" name="BlockArtistHeader" class="">
+  <div class="flex flex-col lg:flex-row gap-sm">
+    <div class="h-auto lg:h-[calc(100vh_-_120px)] w-full lg:w-[33.3vw] grow flex flex-col justify-between lg:pb-xl">
+      <h1>{{ post.title }}</h1>
+      <div class="w-full flex flex-col gap-lg">
+        <div>{{ post.artistBio|wpautop }}</div>
+        <div class="flex flex-row gap-sm lg:gap-md">
+          {% for panelOuter in post.repeaterOuter %}
+            <div class="w-1/3 lg:w-auto grow flex flex-col align-top items-start justify-start" id="content-{{ loop.index }}">
+              <div class="mb-sm">{{ panelOuter.title }}</div>
+              {% for panelInner in panelOuter.repeaterInner %}
+                <a class="inline-block no-underline hover:underline underline-offset-3 text-currentColor transition-all duration-200" href="{{ panelInner.socialLink.url|e }}" {% if panelInner.socialLink.target %} target="{{ panelInner.socialLink.target }}" rel="noreferrer noopener"{% endif %} alt="{{ panelInner.socialLink.alt|e }}">
+                  {{ panelInner.socialLink.title|e }}
+                </a>
+              {% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <div class="w-full lg:w-[25vw] grow flex flex-col justify-start h1">
+    {% if post.bookingLink %}
+      <a class="inline-block no-underline hover:underline underline-offset-3 text-currentColor transition-all duration-200" href="{{ bookingLink.url|e }}" {% if bookingLink.target %} target="{{ bookingLink.target }}" rel="noreferrer noopener"{% endif %} alt="{{ bookingLink.alt|e }}">
+        {{ post.bookingLink.title|e }}
+      </a>
+    {% endif %}
+    </div>
+    {% if post.thumbnail %}
+      <div class="featuredImage w-full lg:w-[41.7vw] grow">
+        <img class="figure-image lazyload object-cover h-auto lg:h-[calc(100vh_-_120px)]"
+          src="{{ post.thumbnail.src }}"
+          data-srcset="{{function('wp_get_attachment_image_srcset', post.thumbnail.id)}}"
+          data-sizes="auto">
+      </div>
+    {% endif %}
+  </div>
+</flynt-component>

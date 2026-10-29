@@ -1,0 +1,67 @@
+flynt-component[name='ListComponents'] {
+  .components {
+    --item-max-width: calc((var(--container-max-width) / 3) - var(--grid-column-gap));
+    --posts-max-width: calc(var(--item-max-width) * var(--grid-columns) + ((var(--grid-columns) - 1) * var(--grid-column-gap)));
+    @include reset-list;
+    @include grid;
+    margin-inline: auto;
+    max-width: var(--posts-max-width);
+
+    @screen tablet {
+      --grid-columns: 2;
+    }
+
+    @screen tablet {
+      --grid-columns: 3;
+    }
+  }
+
+  .component {
+    display: flex;
+    flex-wrap: wrap;
+    margin-inline: auto;
+    max-width: calc(var(--container-max-width) / var(--grid-columns));
+
+    .imageWrapper {
+      height: 0;
+      overflow: hidden;
+      padding-block-end: calc(100% * (800 / 1280));
+      position: relative;
+      width: 100%;
+
+      .image {
+        height: auto;
+        position: absolute;
+
+        &--isSmallerThanWrapper {
+          height: 100%;
+          object-fit: contain;
+        }
+      }
+    }
+
+    .componentLink {
+      @include reset-link;
+      display: block;
+      text-decoration: none;
+      width: 100%;
+    }
+
+    .content {
+      color: var(--color-text);
+    }
+
+    footer {
+      align-items: center;
+      align-self: flex-end;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 var(--box-padding) var(--box-padding);
+      width: 100%;
+
+      .button--text {
+        margin-inline-start: auto;
+      }
+    }
+  }
+}

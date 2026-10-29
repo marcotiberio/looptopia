@@ -1,0 +1,48 @@
+<flynt-component 
+  load:on="visible" name="BlockPostHeader" 
+  class="w-full mx-auto flex flex-col justify-between items-center">
+  <div class="wrapper max-w-screen-max mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-2 h-full relative">
+      <div class="w-full">
+        {% set halftone_svg = post.meta('halftone_svg') %}
+        {% if halftone_svg %}
+          <div class="halftone-image relative h-screen overflow-hidden [&_svg]:absolute [&_svg]:inset-0 [&_svg]:w-full [&_svg]:h-full">{{ halftone_svg|raw }}</div>
+        {% elseif post.thumbnail %}
+          <img class="igure-image lazyload object-cover"
+            src="{{ post.thumbnail.src }}"
+            alt="{{ post.thumbnail.alt|e | default('') }}"
+            loading="lazy"
+            style="opacity: 0; transition: opacity 0.5s ease-in-out;"
+            onload="this.style.opacity='1'">
+        {% endif %}
+      </div>
+      <div class="w-full lg:w-full h-full flex flex-col justify-between p-sm">
+        <div class="flex flex-col gap-sm">
+          <div class="w-full">
+            <h3 class="font-h3">{{ post.postCustomText }}</h3>
+          </div>
+          <div class="w-full">
+            <h2 class="font-h1">„{{ post.title }}”</h2>
+          </div>
+          <div class="w-full flex flex-row gap-sm items-center justify-start mt-lg">
+            <div class="">
+              {% set postCategories = post.terms('category') %}
+              {% for term in postCategories %}
+                <span class="font-bodySmall !mb-0">{{ term }}{% if not loop.last %},{% endif %}</span>
+              {% endfor %}
+            </div>
+            {% if post.date %}
+              <div class="font-bodySmall !mb-0">{{ post.date('d.m.Y') }}</div>
+            {% endif %}
+            {% if post.postAuthor %}
+              <div class="font-bodySmall !mb-0">{{ post.postAuthor }}</div>
+            {% endif %}
+          </div>
+          <div class="text-center flex justify-center items-center border-t border-b p-sm">
+            {{ post.postIntro }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</flynt-component>

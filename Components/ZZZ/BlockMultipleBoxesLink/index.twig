@@ -1,0 +1,55 @@
+<flynt-component
+  load:on="idle" name="BlockMultipleBoxesLink"
+  class="pb-0 lg:pb-xl overflow-hidden"
+>
+  <script type="application/json">{{ jsonData|json_encode }}</script>
+  <div class="wrapper w-screen mx-auto boxed">
+    {% if headlineTitle %}
+      <h2 class="max-w-screen-lg mx-auto flex justify-center items-center text-center">{{ headlineTitle }}</h2>
+    {% endif %}
+
+    <div class="flex flex-col sm:flex-row justify-between gap-sm pt-lg">
+      {% for box in boxes %}
+        {% if box.boxLink %}
+        <a 
+          href="{{ box.boxLink }}" target="_blank" 
+          class="w-full h-auto flex flex-col" 
+          style="background-color: {% if box.colorBackground %}{{ box.colorBackground }}{% else %}var(--secondary){% endif %}; color:{% if box.colorText %}{{ box.colorText }}{% else %}var(--white){% endif %};"
+          >
+        {% else %}
+        <div 
+          href="{{ box.boxLink }}" target="_blank" 
+          class="w-full h-auto flex flex-col" 
+          style="background-color: {% if box.colorBackground %}{{ box.colorBackground }}{% else %}var(--secondary){% endif %}; color:{% if box.colorText %}{{ box.colorText }}{% else %}var(--white){% endif %};"
+          >
+        {% endif %}
+          <div>
+            {% if box.image %}
+              <div class="flex flex-row items-start justify-start">
+                <img class="logo lazyload w-auto max-w-full h-auto object-cover aspect-video sm:aspect-square"
+                src="{{ box.image.src | resize(32) }}"
+                data-srcset="{{function('wp_get_attachment_image_srcset', box.image.id)}}"
+                data-sizes="auto">
+              </div>
+            {% endif %}
+          </div>
+          <div class="content">
+            <div class="accordion">
+              {% if box.title %}
+                <div x-data="{ open: false }" class="panel">
+                  <div @click="open = !open" class="panel-trigger font-smallTitle text-black !font-sans !mb-0 py-sm flex flex-row justify-between items-center w-full pointer-events-none" type="button" aria-expanded="false" aria-controls="content-{{ loop.index }}">
+                    {{ box.title|e }}
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% if box.boxLink %}
+        </a>
+        {% else %}
+        </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</flynt-component>

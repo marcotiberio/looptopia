@@ -1,0 +1,173 @@
+<flynt-component load:on="visible" name="CarouselProgram" class="w-full">
+  <div class="wrapper boxed max-w-screen-max mx-auto">
+    {% if title %}
+      <h2 class="font-h1 mb-sm">{{ title }}</h2>
+    {% endif %}
+
+    {# {% if preContentHtml %}
+      <div class="wysiwyg mb-sm">{{ preContentHtml|e('wp_kses_post') }}</div>
+    {% endif %} #}
+
+    <div class="carousel-program">
+      {% if not featured %}
+        <p class="carousel-program__empty">{{ __('Noch keine Programmpunkte veröffentlicht.', 'flynt') }}</p>
+      {% else %}
+
+        {# ============ Featured: chosen in the backend, else closest in time ============ #}
+        <article class="carousel-program__feature">
+          <div class="carousel-program__feature-body">
+            <p class="carousel-program__feature-meta">
+              <span class="carousel-program__feature-when">
+                <span>{{ featured.when.date }}</span>
+                <span>{{ featured.when.time }}</span>
+              </span>
+              {% if featured.venue %}
+                <span class="carousel-program__feature-venue" data-no-translation>{{ featured.venue }}</span>
+              {% endif %}
+            </p>
+
+            <h3 class="carousel-program__feature-title font-h2">
+              <a href="{{ featured.link }}">{{ featured.title }}</a>
+            </h3>
+
+            {% if featured.intro %}
+              <p class="carousel-program__feature-intro">{{ featured.intro }}</p>
+            {% endif %}
+
+            <a href="{{ featured.link }}" class="button button--white carousel-program__feature-button">
+              {{ __('Mehr erfahren', 'flynt') }}
+            </a>
+          </div>
+
+          {# Cover image plus gallery; the chevrons page through them. #}
+          <div
+            class="carousel-program__feature-media"
+            {% if featured.images|length > 1 %}
+              x-data="{
+                active: 0,
+                count: {{ featured.images|length }},
+                step(delta) { this.active = (this.active + delta + this.count) % this.count }
+              }"
+            {% endif %}
+          >
+            {% for image in featured.images %}
+              <img
+                class="carousel-program__feature-image"
+                src="{{ image.url }}"
+                alt="{{ image.alt }}"
+                loading="lazy"
+                {% if featured.images|length > 1 %}
+                  x-show="active === {{ loop.index0 }}"
+                  {# Without Alpine the cover image stays the only one visible. #}
+                  {% if not loop.first %}style="display: none"{% endif %}
+                {% endif %}
+              >
+            {% endfor %}
+
+            <span class="carousel-program__badge">
+              <img src="{{ featured.icon }}" alt="" width="32" height="32">
+            </span>
+
+            {% if featured.images|length > 1 %}
+              <button
+                type="button"
+                class="carousel-program__feature-nav carousel-program__feature-nav--prev"
+                aria-label="{{ __('Vorheriges Bild', 'flynt') }}"
+                x-on:click="step(-1)"
+              >{% include 'assets/icons/event/chevron-left.svg' ignore missing %}</button>
+              <button
+                type="button"
+                class="carousel-program__feature-nav carousel-program__feature-nav--next"
+                aria-label="{{ __('Nächstes Bild', 'flynt') }}"
+                x-on:click="step(1)"
+              >{% include 'assets/icons/event/chevron-left.svg' ignore missing %}</button>
+            {% endif %}
+          </div>
+        </article>
+
+        {# ============ Grid: a random pick, reshuffled on every load ============ #}
+        {% if showGrid and entries|length > 0 %}
+          <div
+            class="carousel-program__grid"
+            {# Shuffled in the browser, as a server-side shuffle would be frozen by the page cache. #}
+            x-data="{
+              max: {{ maxCards }},
+              init() {
+                const cards = Array.from(this.$el.children);
+                for (let i = cards.length - 1; i > 0; i--) {
+                  const j = Math.floor(Math.random() * (i + 1));
+                  [cards[i], cards[j]] = [cards[j], cards[i]];
+                }
+                cards.forEach((card, index) => {
+                  card.hidden = index >= this.max;
+                  this.$el.append(card);
+                });
+              }
+            }"
+          >
+            {% for entry in entries %}
+              {# Without Alpine the soonest entries stay visible. #}
+              <article class="carousel-program__card" {% if loop.index0 >= maxCards %}hidden{% endif %}>
+                {# Duplicate of the title link, so kept out of the tab order and screen reader output. #}
+                <a class="carousel-program__card-media" href="{{ entry.link }}" tabindex="-1" aria-hidden="true">
+                  {% if entry.image %}
+                    <img
+                      class="carousel-program__card-image"
+                      src="{{ entry.image.url }}"
+                      alt="{{ entry.image.alt }}"
+                      loading="lazy"
+                    >
+                  {% endif %}
+                  <span class="carousel-program__badge">
+                    <img src="{{ entry.icon }}" alt="" width="32" height="32">
+                  </span>
+                </a>
+
+                <p class="carousel-program__card-when">
+                  <span>{{ entry.when.date }}</span>
+                  <span>{{ entry.when.time }}</span>
+                </p>
+
+                <h3 class="carousel-program__card-title font-h3">
+                  <a href="{{ entry.link }}">{{ entry.title }}</a>
+                </h3>
+
+                <div class="carousel-program__tags">
+                  {% if entry.programTypeLabel %}
+                    <span class="carousel-program__tag carousel-program__tag--primary">{{ entry.programTypeLabel }}</span>
+                  {% endif %}
+                  {% for label in entry.sectorLabels %}
+                    <span class="carousel-program__tag">{{ label }}</span>
+                  {% endfor %}
+                </div>
+
+                {% if entry.org %}
+                  <p class="carousel-program__card-org" data-no-translation>{{ entry.org }}</p>
+                {% endif %}
+              </article>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% if programLink.url or mapLink.url %}
+          <div class="carousel-program__actions">
+            {% if programLink.url %}
+              <a
+                class="button button--green"
+                href="{{ programLink.url }}"
+                target="{{ programLink.target|default('_self') }}"
+              >{{ programLink.title|default(__('Programm entdecken', 'flynt')) }}</a>
+            {% endif %}
+            {% if mapLink.url %}
+              <a
+                class="button button--green"
+                href="{{ mapLink.url }}"
+                target="{{ mapLink.target|default('_self') }}"
+              >{{ mapLink.title|default(__('Zur Karte', 'flynt')) }}</a>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</flynt-component>

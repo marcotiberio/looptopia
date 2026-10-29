@@ -1,0 +1,167 @@
+// Filter bar of the Event feature — day pills, dropdowns and toggles as they
+// appear above the program list and over the map. Sizes come from the Figma
+// "Programm" frames and have no equivalent in the Tailwind token scale, so they
+// are kept as values here; colours reference theme tokens.
+//
+// Positioning is left to the consumer: the list places the bar in the flow, the
+// map overlays it on the canvas (see Components/BlockEventMap/_style.scss).
+$event-filters-radius: 20px;
+$event-filters-control-radius: 12px;
+$event-filters-font-size: 16px;
+$event-filters-icon-size: 24px;
+$event-filters-gap: 12px;
+
+.event-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  &__inner {
+    background-color: theme('colors.greenFaded');
+    border-radius: $event-filters-radius;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: $event-filters-gap;
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  &__pill {
+    align-items: center;
+    background-color: var(--white);
+    border-radius: $event-filters-control-radius;
+    display: flex;
+    flex-shrink: 0;
+    font-size: $event-filters-font-size;
+    font-weight: 600;
+    gap: 8px;
+    justify-content: center;
+    line-height: 1.5;
+    padding: 8px 18px;
+    white-space: nowrap;
+
+    img,
+    svg {
+      height: $event-filters-icon-size;
+      width: $event-filters-icon-size;
+    }
+
+    &--day {
+      background-color: rgb(255 255 255 / 75%);
+      position: relative;
+
+      &.is-active {
+        background-color: var(--green);
+      }
+    }
+
+    &--icon {
+      padding-inline: 14px;
+    }
+
+    // Any control that is currently narrowing the result set.
+    &.is-filtering {
+      background-color: var(--green);
+    }
+  }
+
+  // The weekday sits in the pill's top padding, as in the design, so day
+  // pills keep the same height as the other controls.
+  &__pill-weekday {
+    font-size: 8px;
+    inset-inline: 0;
+    line-height: 1;
+    position: absolute;
+    text-align: center;
+    text-transform: uppercase;
+    top: 4px;
+  }
+
+  &__dropdown {
+    position: relative;
+  }
+
+  &__menu {
+    background-color: var(--white);
+    border-radius: $event-filters-control-radius;
+    display: flex;
+    flex-direction: column;
+    gap: $event-filters-gap;
+    left: 0;
+    margin-top: 8px;
+    max-height: 50vh;
+    min-width: 260px;
+    overflow-y: auto;
+    padding: 16px;
+    position: absolute;
+    top: 100%;
+    z-index: 3;
+  }
+
+  &__menu-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__menu-legend {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  &__option {
+    align-items: flex-start;
+    cursor: pointer;
+    display: flex;
+    font-size: 14px;
+    gap: 8px;
+    line-height: 1.3;
+  }
+
+  // Shares the pill shape, but takes whatever space the pills leave on the
+  // last row — below its basis it wraps and spans the bar on its own line.
+  &__search {
+    align-items: center;
+    background-color: var(--white);
+    border-radius: $event-filters-control-radius;
+    display: flex;
+    flex: 1 1 200px;
+    gap: 8px;
+    min-width: 0;
+    padding: 8px 14px;
+
+    &.is-filtering {
+      background-color: var(--green);
+    }
+  }
+
+  &__search-input {
+    background-color: transparent;
+    border: 0;
+    flex: 1;
+    font-size: $event-filters-font-size;
+    font-weight: 600;
+    line-height: 1.5;
+    min-width: 0;
+    outline: none;
+    width: 100%;
+
+    // Safari draws its own clear button next to ours.
+    &::-webkit-search-cancel-button {
+      appearance: none;
+    }
+  }
+
+  &__search-clear {
+    display: flex;
+    flex-shrink: 0;
+
+    img,
+    svg {
+      height: 16px;
+      width: 16px;
+    }
+  }
+}

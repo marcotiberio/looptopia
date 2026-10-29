@@ -1,0 +1,24 @@
+flynt-component[name='ColumnsWysiwyg'] {
+  // .content {
+  //   padding: theme('spacing.large') 0;
+  // }
+
+  .columns {
+    display: grid;
+    gap: theme('spacing.large');
+
+    @screen mobile {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @screen tablet {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .image {
+      aspect-ratio: 4/3;
+      margin-bottom: theme('spacing.small');
+      object-fit: cover;
+    }
+  }
+}

@@ -1,0 +1,79 @@
+/**
+* GSAP Smooth Scroll Styles
+*/
+
+body {
+  height: auto !important;
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+/**
+* Custom Classes
+*/
+
+.mobileHidden {
+  @apply hidden;
+
+  @screen mobile {
+    @apply block;
+  }
+}
+
+.desktopHidden {
+  @apply block;
+  
+  @screen mobile {
+    @apply hidden;
+  }
+}
+
+// Scopes
+
+.single {
+  flynt-component[name='BlockWysiwyg'],
+  flynt-component[name='BlockEmbed'] {
+    .boxed {
+      @apply px-0 !important;
+      
+      &--inner {
+        @apply p-0 !important;
+      }
+    }
+  }
+}
+
+// Cookie banner
+
+#cookie-notice {
+  @apply flex flex-row justify-end items-center;
+  @apply bottom-0 lg:bottom-[70px];
+  @apply right-0;
+  @apply bg-transparent !important;
+  font-family: 'FKGroteskNeue', Arial, sans-serif !important;
+  
+
+  .cookie-notice-container {
+    @apply flex flex-row justify-between items-center;
+    @apply w-full md:w-[50%] !important;
+    @apply p-xs lg:py-0 lg:px-[5px];
+
+    span,
+    button {
+        font-size: 1rem !important;
+    }
+
+    .cn-text-container {
+        @apply m-0;
+    }
+
+    .cn-button {
+        @apply bg-transparent !important;
+    }
+
+    .cn-close-icon {
+        @apply hidden;
+    }
+  }
+}

@@ -1,0 +1,12 @@
+<flynt-component name="BlockNotFound" class="h-full">
+  <div class="boxed h-full flex flex-col items-center justify-center">
+    <div class="flex flex-col items-center justify-center">
+      <div class="wysiwyg">{{ contentHtml|e('wp_kses_post') }}</div>
+      <p>
+        <a class="button mt-md" href="{{ function('home_url') }}">
+          {{ backLinkLabel|e }}
+        </a>
+      </p>
+    </div>
+  </div>
+</flynt-component>

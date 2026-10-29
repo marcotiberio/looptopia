@@ -1,0 +1,36 @@
+<flynt-component
+  load:on="idle"
+  name="GridLogos"
+  class=""
+  style="
+    background-color: {% if options.colorBackground %}{{ options.colorBackground }}{% else %}transparent{% endif %};">
+  <div class="wrapper max-w-screen-max mx-auto boxed !py-sm">
+    {% if blockTitle or blockSubtitle %}
+      <div class="max-w-screen-lg mx-auto flex flex-col gap-md place-content-center items-center">
+        <div class="font-heroSubtitle">{{ blockTitle }}</div>
+        <div class="font-body">{{ blockSubtitle }}</div>
+      </div>
+    {% endif %}
+    <div 
+      class="
+        w-full max-w-screen-max 
+        mx-auto 
+        grid gap-xs xs:gap-md"
+        {{ options.gridColumns ? 'data-grid-columns="' ~ options.gridColumns ~ '"' }}>
+      {% for item in logos %}
+        <div class="item w-full flex justify-center">
+          {% if item.logo %}
+            <a class="" href="{{ item.logoLink }}" target="_blank" rel="noreferrer noopener">
+              <figure class="figure flex w-full h-full">
+                <img class="figure-image lazyload w-full h-full object-contain"
+                  src="{{ item.logo.src | resize(32) }}"
+                  data-srcset="{{function('wp_get_attachment_image_srcset', item.logo.id)}}"
+                  data-sizes="auto">
+              </figure>
+            </a>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</flynt-component>

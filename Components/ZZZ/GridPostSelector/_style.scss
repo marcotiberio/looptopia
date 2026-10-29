@@ -1,0 +1,67 @@
+flynt-component[name='GridPostSelector'] {
+  [data-grid-columns='1'] {
+    @apply grid-cols-1;
+    @apply md:grid-cols-1;
+
+    figure {
+      img {
+        @apply aspect-video;
+      }
+    }
+  }
+
+  [data-grid-columns='2'] {
+    @apply grid-cols-1;
+    @apply md:grid-cols-2;
+
+    figure {
+      img {
+        @apply aspect-video;
+      }
+    }
+  }
+
+  [data-grid-columns='3'] {
+    @apply grid-cols-1;
+    @apply md:grid-cols-3;
+
+    figure {
+      img {
+        @apply aspect-4/3;
+      }
+    }
+  }
+
+  [data-grid-columns='4'] {
+    @apply grid-cols-1;
+    @apply md:grid-cols-4;
+
+    figure {
+      img {
+        @apply aspect-square;
+      }
+    }
+  }
+
+  [data-grid-columns='5'] {
+    @apply grid-cols-1;
+    @apply md:grid-cols-5;
+
+    figure {
+      img {
+        @apply aspect-square;
+      }
+    }
+  }
+
+  [data-grid-columns='6'] {
+    @apply grid-cols-1;
+    @apply md:grid-cols-6;
+
+    figure {
+      img {
+        @apply aspect-square;
+      }
+    }
+  }
+}

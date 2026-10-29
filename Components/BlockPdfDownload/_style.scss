@@ -1,0 +1,23 @@
+flynt-component[name='BlockPdfDownload'] {
+  [data-image-position='right'] {
+    @apply flex-col;
+    @apply lg:flex-row-reverse;
+  }
+
+  [data-image-position='left'] {
+    @apply flex-col;
+    @apply lg:flex-row;
+  }
+
+  [data-image-alignment='top'] {
+    @apply md:items-start;
+  }
+
+  [data-image-alignment='center'] {
+    @apply md:items-center;
+  }
+
+  [data-image-alignment='bottom'] {
+    @apply md:items-end;
+  }
+}

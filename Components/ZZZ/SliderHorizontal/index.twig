@@ -1,0 +1,17 @@
+<flynt-component load:on="visible" name="SliderHorizontal">
+  <script type="application/json">{{ jsonData|json_encode }}</script>
+  <div class="">
+    <div data-ref="slider" class="slider swiper-container boxed">
+      <div class="swiper-wrapper">
+        {% for box in itemPanels %}
+          <img class="figure-image lazyload"
+            src="{{ box.image.src }}"
+            data-srcset="{{function('wp_get_attachment_image_srcset', box.image.id)}}"
+            data-sizes="auto">
+        {% endfor %}
+      </div>
+      <button type="button" data-ref="prev" class="slider-button slider-button--prev"></button>
+      <button type="button" data-ref="next" class="slider-button slider-button--next"></button>
+    </div>
+  </div>
+</flynt-component>

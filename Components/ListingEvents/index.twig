@@ -1,0 +1,291 @@
+<flynt-component load:on="visible" name="ListingEvents" class="w-full">
+  <div class="wrapper boxed max-w-screen-max mx-auto">
+    {% if title %}
+      <h2 class="font-h1 mb-sm">{{ title }}</h2>
+    {% endif %}
+
+    {% if preContentHtml %}
+      <div class="wysiwyg mb-sm">{{ preContentHtml|e('wp_kses_post') }}</div>
+    {% endif %}
+
+    {# Rows are rendered server side; Alpine only decides which ones show. #}
+    <div
+      class="listing-events"
+      x-data="{
+        filters: {},
+        day: '',
+        audiences: [],
+        sectors: [],
+        formats: [],
+        districts: [],
+        search: '',
+        accessibleOnly: false,
+        openMenu: '',
+        init() {
+          const json = this.$el.querySelector('script[data-ref=\'filters\']');
+          this.filters = JSON.parse(json ? json.textContent : '{}');
+        },
+        matches(entry) {
+          if (this.day && !entry.dates.includes(this.day)) return false;
+          if (this.audiences.length && !this.audiences.some((key) => entry.audiences.includes(key))) return false;
+          if (this.sectors.length && !this.sectors.some((key) => entry.sectors.includes(key))) return false;
+          if (this.formats.length && !this.formats.some((key) => entry.programTypes.includes(key))) return false;
+          if (this.districts.length && !this.districts.includes(entry.district)) return false;
+          if (this.searchTerm && !entry.search.includes(this.searchTerm)) return false;
+          if (this.accessibleOnly && !entry.accessible) return false;
+          return true;
+        },
+        /* Server side lowercases entry.search, so both sides compare the same. */
+        get searchTerm() {
+          return this.search.trim().toLowerCase();
+        },
+        /* Unknown IDs stay visible, so a row is never hidden by a data gap. */
+        isVisible(id) {
+          const entry = this.filters[id];
+          return entry ? this.matches(entry) : true;
+        },
+        get visibleCount() {
+          return Object.values(this.filters).filter((entry) => this.matches(entry)).length;
+        },
+        toggleMenu(name) {
+          this.openMenu = this.openMenu === name ? '' : name;
+        },
+        closeMenu(name) {
+          if (this.openMenu === name) this.openMenu = '';
+        }
+      }"
+      x-on:keydown.escape.window="openMenu = ''"
+    >
+      {% if entries|length == 0 %}
+        <p class="listing-events__empty">{{ __('Noch keine Programmpunkte veröffentlicht.', 'flynt') }}</p>
+      {% else %}
+
+      {# ============ Filter bar ============ #}
+      <div class="event-filters listing-events__filters">
+        <div class="event-filters__inner">
+          <button
+            type="button"
+            class="event-filters__pill"
+            :class="day === '' && 'is-active'"
+            :aria-pressed="day === ''"
+            x-on:click="day = ''"
+          >{{ __('Alle Tage', 'flynt') }}</button>
+
+          {% for entry in days %}
+            <button
+              type="button"
+              class="event-filters__pill event-filters__pill--day"
+              :class="day === '{{ entry.key }}' && 'is-active'"
+              :aria-pressed="day === '{{ entry.key }}'"
+              aria-label="{{ entry.label }}"
+              x-on:click="day = day === '{{ entry.key }}' ? '' : '{{ entry.key }}'"
+            >
+              <span class="event-filters__pill-weekday">{{ entry.weekday }}</span>
+              <span>{{ entry.day }}</span>
+            </button>
+          {% endfor %}
+
+          {# Zielgruppe — grouped checkboxes #}
+          <div class="event-filters__dropdown" x-on:click.outside="closeMenu('audiences')">
+            <button
+              type="button"
+              class="event-filters__pill event-filters__pill--menu"
+              :class="audiences.length > 0 && 'is-filtering'"
+              :aria-expanded="openMenu === 'audiences'"
+              x-on:click="toggleMenu('audiences')"
+            >
+              <span>{{ __('Zielgruppe', 'flynt') }}</span>
+              {% include 'assets/icons/map-chevron-down.svg' ignore missing %}
+            </button>
+            <div class="event-filters__menu" x-show="openMenu === 'audiences'" x-cloak x-transition.opacity>
+              {% for group in audienceGroups %}
+                <fieldset class="event-filters__menu-group">
+                  <legend class="event-filters__menu-legend">{{ group.label }}</legend>
+                  {% for value, label in group.choices %}
+                    <label class="event-filters__option">
+                      <input type="checkbox" value="{{ value }}" x-model="audiences">
+                      <span>{{ label }}</span>
+                    </label>
+                  {% endfor %}
+                </fieldset>
+              {% endfor %}
+            </div>
+          </div>
+
+          {# Sektor #}
+          <div class="event-filters__dropdown" x-on:click.outside="closeMenu('sectors')">
+            <button
+              type="button"
+              class="event-filters__pill event-filters__pill--menu"
+              :class="sectors.length > 0 && 'is-filtering'"
+              :aria-expanded="openMenu === 'sectors'"
+              x-on:click="toggleMenu('sectors')"
+            >
+              <span>{{ __('Sektor', 'flynt') }}</span>
+              {% include 'assets/icons/map-chevron-down.svg' ignore missing %}
+            </button>
+            <div class="event-filters__menu" x-show="openMenu === 'sectors'" x-cloak x-transition.opacity>
+              {% for value, label in sectors %}
+                <label class="event-filters__option">
+                  <input type="checkbox" value="{{ value }}" x-model="sectors">
+                  <span>{{ label }}</span>
+                </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          {# Format #}
+          <div class="event-filters__dropdown" x-on:click.outside="closeMenu('formats')">
+            <button
+              type="button"
+              class="event-filters__pill event-filters__pill--menu"
+              :class="formats.length > 0 && 'is-filtering'"
+              :aria-expanded="openMenu === 'formats'"
+              x-on:click="toggleMenu('formats')"
+            >
+              <span>{{ __('Format', 'flynt') }}</span>
+              {% include 'assets/icons/map-chevron-down.svg' ignore missing %}
+            </button>
+            <div class="event-filters__menu" x-show="openMenu === 'formats'" x-cloak x-transition.opacity>
+              {% for value, label in formats %}
+                <label class="event-filters__option">
+                  <input type="checkbox" value="{{ value }}" x-model="formats">
+                  <span>{{ label }}</span>
+                </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          {# Bezirk — only the districts the program actually uses #}
+          {% if districts|length > 0 %}
+            <div class="event-filters__dropdown" x-on:click.outside="closeMenu('districts')">
+              <button
+                type="button"
+                class="event-filters__pill event-filters__pill--menu"
+                :class="districts.length > 0 && 'is-filtering'"
+                :aria-expanded="openMenu === 'districts'"
+                x-on:click="toggleMenu('districts')"
+              >
+                <span>{{ __('Bezirk', 'flynt') }}</span>
+                {% include 'assets/icons/map-chevron-down.svg' ignore missing %}
+              </button>
+              <div class="event-filters__menu" x-show="openMenu === 'districts'" x-cloak x-transition.opacity>
+                {% for value, label in districts %}
+                  <label class="event-filters__option">
+                    <input type="checkbox" value="{{ value }}" x-model="districts">
+                    <span>{{ label }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+
+          {# Barrierefreiheit — single toggle #}
+          <button
+            type="button"
+            class="event-filters__pill event-filters__pill--icon"
+            :class="accessibleOnly && 'is-filtering'"
+            :aria-pressed="accessibleOnly"
+            x-on:click="accessibleOnly = !accessibleOnly"
+          >
+            <img src="{{ icons.accessibility }}" alt="{{ __('Nur barrierefreie Angebote', 'flynt') }}" width="24" height="24">
+          </button>
+
+          {# Suche — free text over title, organiser, tags and address #}
+          <div class="event-filters__search" :class="searchTerm !== '' && 'is-filtering'">
+            <input
+              type="search"
+              class="event-filters__search-input"
+              placeholder="{{ __('Suche', 'flynt') }}"
+              aria-label="{{ __('Programm durchsuchen', 'flynt') }}"
+              x-model.debounce.200ms="search"
+            >
+            <button
+              type="button"
+              class="event-filters__search-clear"
+              x-show="search !== ''"
+              x-cloak
+              aria-label="{{ __('Suche zurücksetzen', 'flynt') }}"
+              x-on:click="search = ''"
+            >{% include 'assets/icons/map-close.svg' ignore missing %}</button>
+          </div>
+        </div>
+      </div>
+
+      {# ============ Rows ============ #}
+      <div class="listing-events__list">
+        {% for entry in entries %}
+          <article class="listing-events__row" x-show="isVisible({{ entry.id }})">
+            <div class="listing-events__media">
+              {% if entry.image %}
+                <img
+                  class="listing-events__image"
+                  src="{{ entry.image }}"
+                  alt="{{ entry.imageAlt }}"
+                  loading="lazy"
+                  width="200"
+                  height="128"
+                >
+              {% endif %}
+              <span class="listing-events__badge">
+                <img src="{{ entry.icon }}" alt="" width="32" height="32">
+              </span>
+            </div>
+
+            <div class="listing-events__schedule">
+              {% for row in entry.schedule %}
+                {# With a day selected, only that day's times stay on the row. #}
+                <p class="listing-events__schedule-row" x-show="day === '' || day === '{{ row.key }}'">
+                  <span>{{ row.date }}</span>
+                  <span>{{ row.time }}</span>
+                </p>
+              {% endfor %}
+            </div>
+
+            <h3 class="listing-events__title font-h3">
+              <a href="{{ entry.link }}" class="no-underline">{{ entry.title }}</a>
+            </h3>
+
+            <div class="listing-events__tags">
+              {% for label in entry.programTypeLabels %}
+                <span class="listing-events__tag listing-events__tag--primary">{{ label }}</span>
+              {% endfor %}
+              {% for label in entry.sectorLabels %}
+                <span class="listing-events__tag">{{ label }}</span>
+              {% endfor %}
+            </div>
+
+            <div class="listing-events__meta">
+              {# Names and addresses stay as entered — keep TranslatePress from machine-translating them #}
+              <div class="listing-events__address" data-no-translation>
+                {% if entry.org %}
+                  <p class="listing-events__org">{{ entry.org }}</p>
+                {% endif %}
+                {% for line in entry.addressLines %}
+                  <p>{{ line }}</p>
+                {% endfor %}
+              </div>
+
+              <div class="listing-events__icons">
+                {% if entry.family %}
+                  <img src="{{ icons.family }}" alt="{{ __('Für Familien & Kinder', 'flynt') }}" width="24" height="24">
+                {% endif %}
+                {% if entry.accessible %}
+                  <img src="{{ icons.accessibility }}" alt="{{ __('Barrierefrei', 'flynt') }}" width="24" height="24">
+                {% endif %}
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+
+      <p class="listing-events__empty" x-show="visibleCount === 0" x-cloak>
+        {{ __('Keine Programmpunkte für diese Auswahl.', 'flynt') }}
+      </p>
+
+      {# Filter keys per entry — read by Alpine (init). #}
+      <script type="application/json" data-ref="filters">{{ filterData|raw }}</script>
+      {% endif %}
+    </div>
+  </div>
+</flynt-component>

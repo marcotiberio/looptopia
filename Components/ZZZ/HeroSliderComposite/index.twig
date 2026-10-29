@@ -1,0 +1,65 @@
+<flynt-component load:on="visible" name="HeroSliderComposite">
+  <script type="application/json">{{ jsonData|json_encode }}</script>
+  <div class="h-full w-full pb-md sm:pb-xl md:pb-xxl">
+    {% if headlineTitleHtml %}
+      <div class="h-full max-w-screen-lg w-full py-md px-sm md:py-lg md:px-md">{{ headlineTitleHtml }}</div>
+    {% endif %}
+    <div data-ref="slider" class="slider swiper-container w-full h-full">
+      <div class="swiper-wrapper w-full h-full">
+        {% for sliderItem in sliderItems %}
+          <div class="slider-item swiper-slide w-full h-full flex flex-col">
+            <figure class="figure w-full h-full relative">
+              <img class="lazyload w-full h-full object-cover relative"
+                src="{{ sliderItem.image.src | resize(32) }}"
+                data-srcset="{{function('wp_get_attachment_image_srcset', sliderItem.image.id)}}"
+                data-sizes="auto"
+                alt="{{ sliderItem.image.alt|e }}">
+            </figure>
+            <div class="w-[calc(100%_-_40px)] md:w-full max-w-[1100px] mx-auto h-full flex flex-col sm:flex-row justify-start items-start gap-sm sm:gap-md md:gap-lg px-sm pt-sm sm:px-sm sm:pt-md mg:px-lg md:pt-lg">
+              <div class="w-full sm:w-1/2 flex flex-col justify-end items text-black">
+                {% if sliderItem.title %}
+                  <div class="text-black flex justify-start mb-sm sm:mb-md">{{ loop.index }}/{{ sliderItems|length }}</div>
+                  <div class="font-h2 flex justify-start">
+                    {{ sliderItem.title }}
+                  </div>
+                {% endif %}
+              </div>
+              <div class="w-full sm:w-1/2 flex flex-col justify-start items-start">
+                {% if sliderItem.subtitle %}
+                  <div class="w-full pb-sm border-b">
+                    {{ sliderItem.subtitle }}
+                  </div>
+                {% endif %}
+                {% if sliderItem.descriptionHtml %}
+                  <div class="w-full pt-sm">
+                    {{ sliderItem.descriptionHtml }}
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      {# <div data-slider-pagination data-ref="pagination" class="slider-pagination swiper-pagination-fraction"></div>
+      <button type="button" data-ref="prev" class="slider-button slider-button--prev">
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <g clip-path="url(#clip0_172_2512)">
+            <path d="M6.875 20.625L0.625001 14.375L6.875 8.125" stroke="var(--black)" stroke-width="1.25" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M0.625 14.375L29.375 14.375" stroke="var(--black)" stroke-width="1.25" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+          <defs>
+            <clipPath id="clip0_172_2512">
+              <rect width="30" height="30" fill="white" transform="translate(30 30) rotate(-180)"/>
+            </clipPath>
+          </defs>
+        </svg>
+      </button>
+      <button type="button" data-ref="next" class="slider-button slider-button--next">
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M23.125 9.375L29.375 15.625L23.125 21.875" stroke="var(--black)" stroke-width="1.25" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M29.375 15.625H0.625" stroke="var(--black)" stroke-width="1.25" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button> #}
+    </div>
+  </div>
+</flynt-component>

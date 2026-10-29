@@ -1,0 +1,51 @@
+flynt-component[name='ListingHomepage'] {
+  .listing {
+    column-count: 2;
+
+    @screen tablet {
+      column-count: 3;
+      // display: flex;
+      // flex-flow: row wrap;
+      // justify-content: space-between;
+      list-style: none;
+    }
+  }
+
+  .post {
+    width: 100%;
+
+    .link {
+      @include reset-link;
+      color: currentColor;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    figure {
+      padding: theme('spacing.small');
+    }
+
+    .content {
+      color: var(--color-text);
+      flex-grow: 1;
+
+      #{$heading-selectors} {
+        color: var(--color-headline);
+      }
+    }
+
+    .footer {
+      align-items: center;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 var(--box-padding) var(--box-padding);
+      position: relative;
+      width: 100%;
+
+      .readingTime {
+        color: var(--color-text-muted);
+      }
+    }
+  }
+}

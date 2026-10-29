@@ -1,0 +1,55 @@
+html {
+  @apply bg-white text-black;
+
+  &.dark {
+    filter: invert(1) hue-rotate(180deg);
+
+    img:not([src$=".svg"]),
+    video,
+    picture,
+    canvas,
+    iframe,
+    .halftone-image {
+      filter: invert(1) hue-rotate(180deg);
+    }
+  }
+  font-size: var(--base-font-size-mobile, 16px);
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+
+  @screen mobile {
+    font-size: var(--base-font-size-mobile, 14px);
+  }
+
+  @screen desktop {
+    font-size: var(--base-font-size-desktop, 16px);
+  }
+}
+
+:disabled {
+  pointer-events: none;
+}
+
+::selection {
+  @apply text-white bg-black;
+}
+
+body {
+  @apply text-black;
+  font-family: var(--primary-font-family, 'Inter', Arial, sans-serif);
+}
+
+// ── Halftone SVG hover effect ─────────────────────────────────────────────────
+// Replicates the p5.js canvas effect: all dots shrink to 60% on container hover.
+// transform-box: fill-box makes each circle scale around its own centre.
+.halftone-image circle {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.4s ease;
+}
+
+.halftone-image:hover circle {
+  transform: scale(0.6);
+}

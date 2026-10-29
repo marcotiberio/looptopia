@@ -1,0 +1,17 @@
+flynt-component[name='BlockFixedPage'] {
+  [data-image-position='right'] {
+    @apply flex-col-reverse;
+    
+    @screen desktop {
+      @apply flex-row-reverse;
+    }
+  }
+
+  [data-image-position='left'] {
+    @apply flex-col;
+
+    @screen desktop {
+      @apply flex-row;
+    }
+  }
+}

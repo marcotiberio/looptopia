@@ -1,0 +1,18 @@
+<flynt-component load:on="visible" name="BlockDownloads" class="boxed" id="artistDownloads">
+  <div class="wrapper">
+    {% if preContent %}
+      <div class="preContent h1">
+        {{ preContent}}
+      </div>
+    {% endif %}
+    <div class="downloads">
+      {% for download in repeaterDownloads %}
+        <a class="download button button--full" href="{{ download.file.url|e }}" alt="{{ download.file.alt|e }}" target="_blank" rel="noreferrer noopener">
+          <div class="download-title">
+            <p class="sans">{{ download.file.title|e }}</p>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</flynt-component>

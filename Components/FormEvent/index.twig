@@ -1,0 +1,480 @@
+<flynt-component name="FormEvent" class="w-full">
+  <div class="wrapper boxed max-w-screen-max mx-auto">
+    {% if preContentHtml %}
+      <div class="wysiwyg mb-sm">{{ preContentHtml|e('wp_kses_post') }}</div>
+    {% endif %}
+
+    <form
+      class="event-form flex flex-col gap-md"
+      novalidate
+      :class="attempted ? 'attempted' : ''"
+      x-data="{
+        attempted: false,
+        form: {
+          orgName: '', contactPerson: '', contactEmail: '', website: '', instagram: '', linkedin: '',
+          goals: [], sectors: [], registration: '', registrationLink: '', costs: '', price: '', paymentLink: '',
+          description: '', programTypes: [], format: '', language: [], audiences: [],
+          eventTitle: '', intro: '', credits: '',
+          dates: [],
+          times: { {% for value, label in config.dates %}'{{ value }}': { start: '', end: '' }{% if not loop.last %}, {% endif %}{% endfor %} },
+          venueName: '', locationMode: '', street: '', postalCode: '', mobilityInfo: '',
+          venueOpenForOthers: false, accessibility: [],
+          fundingInterest: false, acceptCriteria: false, acceptTerms: false, newsletter: false,
+          website_hp: ''
+        },
+        state: 'idle',
+        message: '',
+        showModal: false,
+        validate() {
+          if (!this.form.dates.length) return '{{ __('Bitte wähle mindestens einen Veranstaltungstag.', 'flynt') }}';
+          for (const d of this.form.dates) {
+            if (!this.form.times[d].start) return '{{ __('Bitte gib für jeden gewählten Tag eine Startzeit an.', 'flynt') }}';
+          }
+          if (!this.form.goals.length) return '{{ __('Bitte wähle mindestens ein Thema.', 'flynt') }}';
+          if (!this.form.sectors.length) return '{{ __('Bitte wähle mindestens einen Sektor.', 'flynt') }}';
+          if (!this.form.programTypes.length) return '{{ __('Bitte wähle die Art des Programmpunkts.', 'flynt') }}';
+          if (!this.form.accessibility.length) return '{{ __('Bitte gib Infos zur Barrierefreiheit an.', 'flynt') }}';
+          if (!this.form.acceptCriteria || !this.form.acceptTerms) return '{{ __('Bitte akzeptiere die Teilnahmekriterien und Nutzungsbedingungen.', 'flynt') }}';
+          return null;
+        },
+        async submit() {
+          this.attempted = true;
+          const err = this.validate();
+          if (err || !this.$el.checkValidity()) {
+            this.state = 'error';
+            this.message = err || '{{ __('Bitte fülle die rot markierten Pflichtfelder aus.', 'flynt') }}';
+            const firstInvalid = this.$el.querySelector(':invalid');
+            if (firstInvalid) firstInvalid.focus();
+            return;
+          }
+          this.state = 'loading';
+          this.message = '';
+          const fd = new FormData();
+          Object.entries(this.form).forEach(([key, value]) => {
+            if (Array.isArray(value)) { value.forEach(v => fd.append(key + '[]', v)); }
+            else if (typeof value === 'boolean') { if (value) fd.append(key, '1'); }
+            else if (value && typeof value === 'object') {
+              // Nested maps like `times` → times[date][start]=…
+              Object.entries(value).forEach(([sub, fields]) => {
+                Object.entries(fields).forEach(([k, v]) => fd.append(`${key}[${sub}][${k}]`, v));
+              });
+            }
+            else { fd.append(key, value); }
+          });
+          ['orgLogo', 'featuredImage'].forEach(ref => {
+            const el = this.$refs[ref];
+            if (el && el.files[0]) fd.append(ref, el.files[0]);
+          });
+          if (this.$refs.gallery) {
+            Array.from(this.$refs.gallery.files).forEach(f => fd.append('gallery[]', f));
+          }
+          try {
+            const res = await fetch('{{ restUrl }}', {
+              method: 'POST',
+              body: fd
+            });
+            const data = await res.json();
+            if (!res.ok || !data.success) {
+              throw new Error(data.message || '{{ __('Etwas ist schiefgelaufen. Bitte versuche es erneut.', 'flynt') }}');
+            }
+            this.state = 'success';
+            this.showModal = true;
+            this.$el.dispatchEvent(new CustomEvent('formevent:success', { bubbles: true }));
+            window.scrollTo({ top: this.$el.offsetTop - 80, behavior: 'smooth' });
+          } catch (e) {
+            this.state = 'error';
+            this.message = e.message;
+          }
+        }
+      }"
+      x-on:submit.prevent="submit()"
+    >
+      {# Success state replaces the form (persists behind the popup once it's closed) #}
+      <div x-show="state === 'success'" x-cloak x-transition class="wysiwyg rounded bg-green p-sm">
+        {% if successHtml %}
+          {{ successHtml|e('wp_kses_post') }}
+        {% else %}
+          <p>{{ __('Danke! Dein Eintrag wurde zur Prüfung eingereicht.', 'flynt') }}</p>
+        {% endif %}
+      </div>
+
+      {# Success popup — confetti fires on open (see script.js) #}
+      <div
+        x-show="showModal"
+        x-cloak
+        x-transition.opacity
+        class="event-form__overlay fixed inset-0 z-[3001] flex items-center justify-center p-sm"
+        x-on:keydown.escape.window="showModal = false"
+      >
+        <div class="absolute inset-0 bg-green/50" x-on:click="showModal = false"></div>
+        <div
+          x-show="showModal"
+          x-transition:enter="transition ease-out duration-300 delay-100"
+          x-transition:enter-start="opacity-0 scale-90"
+          x-transition:enter-end="opacity-100 scale-100"
+          class="event-form__modal wysiwyg relative z-[3001] w-full max-w-screen-desktop rounded bg-white p-md text-center"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="event-form-success-title"
+        >
+          <button
+            type="button"
+            class="event-form__close absolute right-sm top-xs leading-none"
+            x-on:click="showModal = false"
+            aria-label="{{ __('Schließen', 'flynt') }}"
+          >&times;</button>
+          {% if successHtml %}
+            {{ successHtml|e('wp_kses_post') }}
+          {% else %}
+            <p id="event-form-success-title" class="font-h3 mb-xs">{{ __('Geschafft! 🎉', 'flynt') }}</p>
+            <p>{{ __('Danke! Dein Eintrag wurde zur Prüfung eingereicht.', 'flynt') }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <template x-if="state !== 'success'">
+        <div class="flex flex-col gap-md">
+          {# Honeypot #}
+          <div class="absolute left-[-9999px]" aria-hidden="true">
+            <label>{{ __('Leave this field empty', 'flynt') }}
+              <input type="text" tabindex="-1" autocomplete="off" x-model="form.website_hp">
+            </label>
+          </div>
+
+          {# ============ 1. Organisation ============ #}
+          <fieldset class="flex flex-col gap-sm">
+            <legend class="font-h3 mb-xs">{{ sections.org.title }}</legend>
+            {% if sections.org.intro %}<div class="wysiwyg">{{ sections.org.intro|e('wp_kses_post') }}</div>{% endif %}
+
+            <label class="flex flex-col gap-xs">
+              <span class="font-bodySmall">{{ fieldLabels.orgName }} *</span>
+              <input type="text" required x-model="form.orgName" class="rounded border border-black p-xs bg-white">
+            </label>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-sm">
+              <label class="flex flex-col gap-xs">
+                <span class="font-bodySmall">{{ fieldLabels.contactPerson }} *</span>
+                <input type="text" required x-model="form.contactPerson" class="rounded border border-black p-xs bg-white">
+              </label>
+              <label class="flex flex-col gap-xs">
+                <span class="font-bodySmall">{{ fieldLabels.contactEmail }} *</span>
+                <input type="email" required x-model="form.contactEmail" class="rounded border border-black p-xs bg-white">
+              </label>
+            </div>
+
+            <label class="flex flex-col gap-xs">
+              <span class="font-bodySmall">{{ fieldLabels.orgLogo }} * <small>(.jpg, .jpeg, .png, .svg)</small></span>
+              <input type="file" required x-ref="orgLogo" accept=".jpg,.jpeg,.png,.svg">
+            </label>
+
+            <div class="grid grid-cols-1 md:grid-cols-1 md:grid-cols-3 gap-sm">
+              <label class="flex flex-col gap-xs">
+                <span class="font-bodySmall">{{ fieldLabels.website }}</span>
+                <input type="url" x-model="form.website" class="rounded border border-black p-xs bg-white">
+              </label>
+              <label class="flex flex-col gap-xs">
+                <span class="font-bodySmall">{{ fieldLabels.instagram }}</span>
+                <input type="url" x-model="form.instagram" class="rounded border border-black p-xs bg-white">
+              </label>
+              <label class="flex flex-col gap-xs">
+                <span class="font-bodySmall">{{ fieldLabels.linkedin }}</span>
+                <input type="url" x-model="form.linkedin" class="rounded border border-black p-xs bg-white">
+              </label>
+            </div>
+          </fieldset>
+
+          {# ============ 2. Angebot ============ #}
+          <fieldset class="flex flex-col gap-sm">
+            <legend class="font-h3 mb-xs">{{ sections.offer.title }}</legend>
+            {% if sections.offer.intro %}<div class="wysiwyg">{{ sections.offer.intro|e('wp_kses_post') }}</div>{% endif %}
+
+            <fieldset class="flex flex-col gap-xs">
+              <legend class="font-bodySmall mb-xs">{{ fieldLabels.goalsQuestion }} *</legend>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-sm" :class="attempted && !form.goals.length ? 'field-error' : ''">
+                {% for group in config.goalGroups %}
+                  <fieldset class="flex flex-col gap-xs">
+                    <legend class="font-bodySmall font-bold mb-xs">{{ group.label }}</legend>
+                    {% for value, label in group.choices %}
+                      <label class="flex items-start gap-xs">
+                        <input type="checkbox" value="{{ value }}" x-model="form.goals" class="mt-1"><span>{{ label }}</span>
+                      </label>
+                    {% endfor %}
+                  </fieldset>
+                {% endfor %}
+              </div>
+            </fieldset>
+
+            <fieldset class="flex flex-col gap-xs">
+              <legend class="font-bodySmall mb-xs">{{ fieldLabels.sectorsQuestion }} *</legend>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-min" :class="attempted && !form.sectors.length ? 'field-error' : ''">
+                {% for value, label in config.sectors %}
+                  <label class="flex items-start gap-xs">
+                    <input type="checkbox" value="{{ value }}" x-model="form.sectors" class="mt-1"><span>{{ label }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+            </fieldset>
+
+            <fieldset class="flex flex-col gap-xs">
+              <legend class="font-bodySmall mb-xs">{{ fieldLabels.registrationQuestion }} *</legend>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-min" :class="attempted && !form.registration ? 'field-error' : ''">
+                {% for value, label in config.registration %}
+                  <label class="flex items-center gap-xs">
+                    <input type="radio" name="registration" value="{{ value }}" required x-model="form.registration"><span>{{ label }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+            </fieldset>
+            <label class="flex flex-col gap-xs" x-show="form.registration === 'anmeldung'" x-cloak>
+              <span class="font-bodySmall">{{ fieldLabels.registrationLink }} *</span>
+              <input type="text" x-model="form.registrationLink" :required="form.registration === 'anmeldung'" class="rounded border border-black p-xs bg-white">
+            </label>
+
+            <fieldset class="flex flex-col gap-xs">
+              <legend class="font-bodySmall mb-xs">{{ fieldLabels.costsQuestion }} *</legend>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-min" :class="attempted && !form.costs ? 'field-error' : ''">
+                {% for value, label in config.costs %}
+                  <label class="flex items-center gap-xs">
+                    <input type="radio" name="costs" value="{{ value }}" required x-model="form.costs"><span>{{ label }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+            </fieldset>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-sm" x-show="form.costs === 'ja'" x-cloak>
+              <label class="flex flex-col gap-xs">
+                <span class="font-bodySmall">{{ fieldLabels.price }} *</span>
+                <input type="text" x-model="form.price" :required="form.costs === 'ja'" class="rounded border border-black p-xs bg-white">
+              </label>
+              <label class="flex flex-col gap-xs">
+                <span class="font-bodySmall">{{ fieldLabels.paymentLink }}</span>
+                <input type="url" x-model="form.paymentLink" class="rounded border border-black p-xs bg-white">
+              </label>
+            </div>
+          </fieldset>
+
+          {# ============ 3. Details ============ #}
+          <fieldset class="flex flex-col gap-sm">
+            <legend class="font-h3 mb-xs">{{ sections.details.title }}</legend>
+            {% if sections.details.intro %}<div class="wysiwyg">{{ sections.details.intro|e('wp_kses_post') }}</div>{% endif %}
+
+            <label class="flex flex-col gap-xs">
+              <span class="font-bodySmall">{{ fieldLabels.description }} *</span>
+              <textarea required rows="6" x-model="form.description" class="rounded border border-black p-xs bg-white"></textarea>
+            </label>
+
+            <fieldset class="flex flex-col gap-xs">
+              <legend class="font-bodySmall mb-xs">{{ fieldLabels.programTypesQuestion }} *</legend>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-min" :class="attempted && !form.programTypes.length ? 'field-error' : ''">
+                {% for value, label in config.programTypes %}
+                  <label class="flex items-start gap-xs">
+                    <input type="checkbox" value="{{ value }}" x-model="form.programTypes" class="mt-1"><span>{{ label }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+            </fieldset>
+
+            {# <fieldset class="flex flex-col gap-xs">
+              <legend class="font-bodySmall mb-xs">{{ fieldLabels.formatQuestion }} *</legend>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-min" :class="attempted && !form.format ? 'field-error' : ''">
+                {% for value, label in config.format %}
+                  <label class="flex items-center gap-xs">
+                    <input type="radio" name="format" value="{{ value }}" required x-model="form.format"><span>{{ label }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+            </fieldset> #}
+
+            {# Multi-select: invalid state comes from `select:invalid` in _style.scss,
+               which a required <select multiple> triggers while nothing is picked. #}
+            <label class="flex flex-col gap-xs md:w-1/2">
+              <span class="font-bodySmall">{{ fieldLabels.languageQuestion }} * <small>({{ __('Mehrfachauswahl möglich', 'flynt') }})</small></span>
+              <select multiple size="8" required x-model="form.language" class="event-form__multiselect rounded border border-black p-xs bg-white">
+                {% for value, label in config.languages %}
+                  <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+              </select>
+            </label>
+          </fieldset>
+
+          {# ============ 3.1. Zielgruppe ============ #}
+          <fieldset class="flex flex-col gap-xs">
+            <legend class="font-h3 mb-xs">{{ sections.audience.title }}</legend>
+            {% if sections.audience.intro %}<div class="wysiwyg">{{ sections.audience.intro|e('wp_kses_post') }}</div>{% endif %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-sm">
+              {% for group in config.audienceGroups %}
+                <fieldset class="flex flex-col gap-xs">
+                  <legend class="font-bodySmall font-bold mb-xs">{{ group.label }}</legend>
+                  {% for value, label in group.choices %}
+                    <label class="flex items-start gap-xs">
+                      <input type="checkbox" value="{{ value }}" x-model="form.audiences" class="mt-1"><span>{{ label }}</span>
+                    </label>
+                  {% endfor %}
+                </fieldset>
+              {% endfor %}
+            </div>
+          </fieldset>
+
+          {# ============ 4. Veranstaltung ============ #}
+          <fieldset class="flex flex-col gap-sm">
+            <legend class="font-h3 mb-xs">{{ sections.event.title }}</legend>
+            {% if sections.event.intro %}<div class="wysiwyg">{{ sections.event.intro|e('wp_kses_post') }}</div>{% endif %}
+
+            <label class="flex flex-col gap-xs">
+              <span class="font-bodySmall">{{ fieldLabels.eventTitle }} *</span>
+              <input type="text" required x-model="form.eventTitle" class="rounded border border-black p-xs bg-white">
+            </label>
+
+            <label class="flex flex-col gap-xs">
+              <span class="font-bodySmall">{{ fieldLabels.intro }} *</span>
+              <input type="text" required x-model="form.intro" class="rounded border border-black p-xs bg-white">
+            </label>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-sm">
+              <label class="flex flex-col gap-xs">
+                <span class="font-bodySmall">{{ fieldLabels.featuredImage }} * <small>(.jpg, .jpeg, .png)</small></span>
+                <input type="file" required x-ref="featuredImage" accept=".jpg,.jpeg,.png">
+              </label>
+              <label class="flex flex-col gap-xs">
+                <span class="font-bodySmall">{{ fieldLabels.gallery }} <small>(.jpg, .jpeg, .png)</small></span>
+                <input type="file" multiple x-ref="gallery" accept=".jpg,.jpeg,.png">
+              </label>
+            </div>
+
+            <label class="flex flex-col gap-xs">
+              <span class="font-bodySmall">{{ fieldLabels.credits }}</span>
+              <input type="text" x-model="form.credits" class="rounded border border-black p-xs bg-white">
+            </label>
+
+            {# When — one or both event days, each with its own start/end time #}
+            <fieldset class="flex flex-col gap-sm">
+              <legend class="font-bodySmall mb-xs">{{ fieldLabels.datesQuestion }} *</legend>
+              <div class="flex flex-col gap-min" :class="attempted && !form.dates.length ? 'field-error' : ''">
+                {% for value, label in config.dates %}
+                  <div class="flex flex-col gap-xs">
+                    <label class="flex items-start gap-xs">
+                      <input type="checkbox" value="{{ value }}" x-model="form.dates" class="mt-1"><span>{{ label }}</span>
+                    </label>
+                    <div class="grid grid-cols-2 gap-sm md:w-1/2" x-show="form.dates.includes('{{ value }}')" x-cloak>
+                      <label class="flex flex-col gap-xs">
+                        <span class="font-bodySmall">{{ fieldLabels.timeStart }} *</span>
+                        <input type="time" x-model="form.times['{{ value }}'].start" :required="form.dates.includes('{{ value }}')" class="rounded border border-black p-xs bg-white">
+                      </label>
+                      <label class="flex flex-col gap-xs">
+                        <span class="font-bodySmall">{{ fieldLabels.timeEnd }}</span>
+                        <input type="time" x-model="form.times['{{ value }}'].end" class="rounded border border-black p-xs bg-white">
+                      </label>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </fieldset>
+
+            <label class="flex flex-col gap-xs">
+              <span class="font-bodySmall">{{ fieldLabels.venueName }}</span>
+              <input type="text" x-model="form.venueName" class="rounded border border-black p-xs bg-white">
+            </label>
+
+            {# Where #}
+            <fieldset class="flex flex-col gap-xs">
+              <legend class="font-bodySmall mb-xs">{{ fieldLabels.locationQuestion }} *</legend>
+              <div class="grid grid-cols-1 gap-min" :class="attempted && !form.locationMode ? 'field-error' : ''">
+                {% for value, label in config.locationMode %}
+                  <label class="flex items-start gap-xs">
+                    <input type="radio" name="locationMode" value="{{ value }}" required x-model="form.locationMode" class="mt-1"><span>{{ label }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+            </fieldset>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-sm" x-show="form.locationMode === 'eigen'" x-cloak>
+              <label class="flex flex-col gap-xs">
+                <span class="font-bodySmall">{{ fieldLabels.street }} *</span>
+                <input type="text" x-model="form.street" :required="form.locationMode === 'eigen'" autocomplete="street-address" class="rounded border border-black p-xs bg-white">
+              </label>
+              <label class="flex flex-col gap-xs">
+                <span class="font-bodySmall">{{ fieldLabels.postalCode }} *</span>
+                <input type="text" x-model="form.postalCode" :required="form.locationMode === 'eigen'" autocomplete="postal-code" class="rounded border border-black p-xs bg-white">
+              </label>
+            </div>
+
+            <label class="flex flex-col gap-xs">
+              <span class="font-bodySmall">{{ fieldLabels.mobilityInfo }}</span>
+              <textarea rows="3" x-model="form.mobilityInfo" class="rounded border border-black p-xs bg-white"></textarea>
+            </label>
+
+            <label class="flex items-start gap-xs">
+              <input type="checkbox" x-model="form.venueOpenForOthers" class="mt-1">
+              <span>{{ __('Mein Veranstaltungsort bietet Möglichkeiten für weitere Programmpunkte oder Kooperationen.', 'flynt') }}</span>
+            </label>
+
+            <fieldset class="flex flex-col gap-xs">
+              <legend class="font-bodySmall mb-xs">{{ fieldLabels.accessibilityQuestion }} *</legend>
+              <div class="grid grid-cols-1 md:grid-cols-4 gap-min" :class="attempted && !form.accessibility.length ? 'field-error' : ''">
+                {% for value, label in config.accessibility %}
+                  <label class="flex items-start gap-xs">
+                    <input type="checkbox" value="{{ value }}" x-model="form.accessibility" class="mt-1"><span>{{ label }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+            </fieldset>
+          </fieldset>
+
+          {# ============ 5. Zustimmung ============ #}
+          <fieldset class="flex flex-col gap-min">
+            <legend class="font-h3 mb-xs">{{ sections.consent.title }}</legend>
+            {% if sections.consent.intro %}<div class="wysiwyg">{{ sections.consent.intro|e('wp_kses_post') }}</div>{% endif %}
+
+            <label class="flex items-start gap-xs">
+              <input type="checkbox" x-model="form.fundingInterest" class="mt-1">
+              <span>{{ __('Ja, ich möchte mich für einen Bonus in Höhe von 100 € netto bewerben.', 'flynt') }}</span>
+            </label>
+
+            <label class="flex items-start gap-xs" :class="attempted && !form.acceptCriteria ? 'field-error' : ''">
+              <input type="checkbox" required x-model="form.acceptCriteria" class="mt-1">
+              <span>
+                {{ __('Ja, ich stimme den Teilnahmekriterien zu', 'flynt') }}
+                {% if criteriaLink %}
+                  (<a href="{{ criteriaLink.url }}" target="_blank" rel="noopener" class="underline">{{ criteriaLink.title ?: __('öffnen', 'flynt') }}</a>)
+                {% endif %} *
+              </span>
+            </label>
+
+            <label class="flex items-start gap-xs" :class="attempted && !form.acceptTerms ? 'field-error' : ''">
+              <input type="checkbox" required x-model="form.acceptTerms" class="mt-1">
+              <span>
+                {{ __('Ja, ich stimme den Nutzungsbedingungen zu', 'flynt') }}
+                {% if termsLink %}
+                  (<a href="{{ termsLink.url }}" target="_blank" rel="noopener" class="underline">{{ termsLink.title ?: __('öffnen', 'flynt') }}</a>)
+                {% endif %} *
+              </span>
+            </label>
+
+            <label class="flex items-start gap-xs">
+              <input type="checkbox" x-model="form.newsletter" class="mt-1">
+              <span>{{ newsletterLabel ?: __('Ja, wir möchten den Circular Berlin Newsletter abonnieren', 'flynt') }}</span>
+            </label>
+          </fieldset>
+
+          <div x-show="state === 'error'" x-cloak x-transition
+            class="form-message--error rounded p-xs" x-text="message"></div>
+
+          <button type="submit"
+            class="button button--green w-fit"
+            x-bind:disabled="state === 'loading'"
+            x-bind:class="state === 'loading' ? 'button--disabled' : ''">
+            <span x-show="state !== 'loading'">{{ submitLabel ?: __('Anmeldeformular absenden', 'flynt') }}</span>
+            <span x-show="state === 'loading'" x-cloak>{{ __('Wird gesendet…', 'flynt') }}</span>
+          </button>
+        </div>
+      </template>
+
+      {% if isLocal %}
+        {# Local-only preview trigger for the success popup + confetti. #}
+        <button
+          type="button"
+          class="button w-fit border border-dashed border-black opacity-70"
+          x-on:click="showModal = true; $el.dispatchEvent(new CustomEvent('formevent:success', { bubbles: true }))"
+        >🎉 {{ __('Test: Erfolgs-Popup (nur lokal)', 'flynt') }}</button>
+      {% endif %}
+    </form>
+  </div>
+</flynt-component>

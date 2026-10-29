@@ -1,0 +1,21 @@
+<flynt-component load:on="visible" name="BlockGalleryMedia" class="boxed !py-[7.5px]" id="galleryMedia">
+  <div class="grid grid-cols-3 lg:grid-cols-12 gap-xs align-start justify-start lg:justify-between fade-in">
+    {% for item in mediaItems %}
+      <div class="media-item w-full column flex {{ item.colStart }} {{ item.colEnd }}" id="media-item-{{ loop.index }}">
+        {% if item.acf_fc_layout == 'image' %}
+          <div class="media-item--image w-full flex {{ item.alignY }}">
+            {% include 'Components/BlockGalleryMedia/Partials/image.twig' %}
+          </div>
+        {% elseif item.acf_fc_layout == 'video' %}
+          <div class="media-item--video w-full flex {{ item.alignY }}">
+            {% include 'Components/BlockGalleryMedia/Partials/video.twig' %}
+          </div>
+        {% elseif item.acf_fc_layout == 'oembed' %}
+          <div class="media-item--oembed w-full flex {{ item.alignY }}">
+            {% include 'Components/BlockGalleryMedia/Partials/oembed.twig' %}
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</flynt-component> 

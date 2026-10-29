@@ -1,0 +1,60 @@
+{% if items|length > 0 %}
+  <flynt-component 
+    load:on="visible" 
+    name="ListingJournalRelated" 
+    class=""
+    style="
+      color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};
+      background-color: {% if options.colorBackground %}{{ options.colorBackground }}{% else %}transparent{% endif %};">
+
+    <script type="application/json">{{ jsonData|json_encode }}</script>
+    <div class="wrapper overflow-hidden max-w-screen-max mx-auto boxed flex flex-col gap-sm fade-in" x-data="{ selectedCategories: [], searchQuery: '', filtersOpen: false }">
+
+      <!-- Posts Grid -->
+      <div data-ref="slider" class="slider swiper-container pt-xs md:pb-sm border-t">
+        {% if labels.preContentHtml %}
+          <div class="font-body !mb-md">{{ labels.preContentHtml|e('wp_kses_post') }}</div>
+        {% endif %}
+        <div data-ref="dots" class="flex justify-end h-fit absolute !top-xs right-0 z-[40] slider-pagination swiper-pagination-fraction"></div>
+        <div class="swiper-wrapper flex flex-row">
+          {% for item in items %}
+            <div 
+              class="slider-item swiper-slide post [&_.group]:hover:text-black hover:cursor-pointer" 
+              x-show="(selectedCategories.length === 0 || selectedCategories.some(cat => {{ item.postType|default([])|json_encode }}.includes(cat))) &&
+                     (searchQuery === '' || '{{ item.title|lower }}'.includes(searchQuery.toLowerCase()))"
+              x-transition:enter="transition ease-out duration-100"
+              x-transition:enter-start="opacity-0 scale-95"
+              x-transition:enter-end="opacity-100 scale-100"
+              x-transition:leave="transition ease-in duration-100"
+              x-transition:leave-start="opacity-100 scale-100"
+              x-transition:leave-end="opacity-0 scale-95"
+            >
+              <a class="group flex flex-col gap-xs w-full" href="{{ item.link }}" title="{{ item.title }}" aria-label="Go to post">
+                <img 
+                  class="figure-image lazyload object-cover aspect-8/5"
+                  src="{{ item.thumbnail.src }}"
+                  alt="{{ item.thumbnail.alt|e | default('') }}"
+                  loading="lazy"
+                  style="opacity: 0; transition: opacity 0.5s ease-in-out;"
+                  onload="this.style.opacity='1'"
+                  aria-label="Go to post"
+                />
+                <div class="flex flex-row gap-xs items-center">
+                  <span class="font-bodySmall !mb-0">{{ post.end_date }}</span>
+                  <div class="flex flex-row gap-xs">
+                    {% for term in allTerms %}
+                      <span class="font-bodySmall !mb-0">{{ term.name }}</span>
+                    {% endfor %}
+                  </div>
+                </div>
+                <h3 class="w-full !mb-0 font-body">{{ item.title }}</h3>
+                <span class="font-bodySmall">{{ item.postAuthor }}</span>
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      
+    </div>
+  </flynt-component>
+{% endif %}

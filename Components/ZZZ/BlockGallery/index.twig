@@ -1,0 +1,29 @@
+<flynt-component load:on="visible" name="BlockGallery" class="boxed" id="artistOverview">
+  {% if preContent %}
+    <div class="preContent h1">
+      {{ preContent }}
+    </div>
+  {% endif %}
+  <div class="wrapper">
+    {% for box in boxes %}
+      <div class="box" id="box-{{ loop.index }}">
+        <div class="box-inner box-inner--image box-front">
+          <img
+            class="figure-image lazyload"
+            src="{{ box.image.src }}"
+            data-srcset="{{function('wp_get_attachment_image_srcset', box.image.id)}}"
+            data-sizes="auto">
+          {% if box.contentHtml %}
+            <div class="box-inner--content">
+              <div class="top">{{ box.title }}</div>
+              <div class="bottom">
+                <div class="wysiwyg">{{ box.contentHtml|e('wp_kses_post') }}</div>
+                <a href="mailto:pim@semester9.com" target="_blank" class="button button--full">Request Info</a>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</flynt-component>

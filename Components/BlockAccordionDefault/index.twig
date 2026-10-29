@@ -1,0 +1,26 @@
+<flynt-component load:on="visible" name="BlockAccordionDefault" class="scroll-mt-24">
+  <div class="boxed flex flex-col gap-md">
+    {% if blockTitle %}
+      <div class="font-h1">
+        {{ blockTitle }}
+      </div>
+    {% endif %}
+    <div class="list-none flex flex-col flex-wrap gap-xs">
+      {% for panel in accordionPanels %}
+        <div x-data="{ open: false }" class="bg-green text-black rounded">
+          <button @click="open = !open" class="items-center cursor-pointer flex font-extrabold justify-between m-0 py-xs px-sm md:py-sm md:px-md relative w-full z-[2]" type="button" aria-expanded="false" aria-controls="content-{{ loop.index }}">
+            <div class="font-button">{{ panel.panelTitle|e }}</div>
+            <div class="min-w-[40px] flex items-center justify-end">
+              {% include 'assets/icons/chevron-down.svg' ignore missing %}
+            </div>
+          </button>
+          <div x-show="open" class="mx-auto py-sm px-md transition-all duration-300 ease-in-out z-[1]" aria-hidden="true" id="content-{{ loop.index }}">
+            <div class="p-0 wysiwyg">
+              {{ panel.panelContent|e('wp_kses_post') }}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</flynt-component>

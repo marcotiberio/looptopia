@@ -1,0 +1,19 @@
+{% extends 'templates/_document.twig' %}
+
+{% block content %}
+  <article class="post mt-[87px]">
+    <header class="post-header boxed !pb-0 !min-h-fit flex flex-col w-full md:w-2/3 mx-auto">
+      <div class="font-h2 pb-sm">{{ post.title }}</div>
+    </header>
+    <section class="post-main">
+      {% for component in post.meta('videoComponents') %}
+        {{ renderComponent(component) }}
+      {% endfor %}
+    </section>
+    {# <footer>
+      <div class="post-related">
+        {{ renderComponent('ListingVideosRelated', {'preContentHtml': '<h3>' ~ __('Related Videos') ~ '</h3>','taxonomies': post.categories(), 'options': {'columns': 4}}) }}
+      </div>
+    </footer> #}
+  </article>
+{% endblock %}

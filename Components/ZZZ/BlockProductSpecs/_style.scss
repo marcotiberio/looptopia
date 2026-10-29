@@ -1,0 +1,66 @@
+flynt-component[name='BlockProductSpecs'] {
+  .slider {
+    overflow: hidden;
+    position: relative;
+
+    &-button {
+      align-items: center;
+      color: var(--color-background);
+      cursor: pointer;
+      display: flex;
+      height: 40px;
+      inset-block-start: 50%;
+      justify-content: center;
+      position: absolute;
+      transform: translateY(-50%);
+      width: 40px;
+      z-index: 10;
+
+      &::before {
+        background-color: var(--white);
+        border-radius: 50%;
+        content: '';
+        height: 100%;
+        inset-block-start: 0;
+        inset-inline-start: 0;
+        position: absolute;
+        transition: opacity 0.2s ease;
+        width: 100%;
+        will-change: opacity;
+      }
+
+      &.swiper-button-disabled {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+
+      &--prev {
+        inset-inline-start: 15px;
+
+        &::after {
+          border-block-start: 2px solid currentColor;
+          border-inline-start: 2px solid currentColor;
+          content: '';
+          height: 15px;
+          margin-inline-start: 5px;
+          transform: rotate(-45deg);
+          width: 15px;
+        }
+      }
+
+      &--next {
+        inset-inline-end: 15px;
+
+        &::after {
+          border-block-start: 2px solid currentColor;
+          border-inline-end: 2px solid currentColor;
+          content: '';
+          height: 15px;
+          margin-inline-end: 5px;
+          transform: rotate(45deg);
+          width: 15px;
+        }
+      }
+    }
+  }
+}

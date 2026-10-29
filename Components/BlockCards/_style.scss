@@ -1,0 +1,17 @@
+flynt-component[name='BlockCards'] {
+  .card {
+    // Multi-line card titles need a little leading so the number and the
+    // wrapped heading don't collapse onto one cramped line.
+    h3 {
+      line-height: 1.15;
+    }
+
+    .wysiwyg {
+      color: theme('colors.grey.800');
+
+      p:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}

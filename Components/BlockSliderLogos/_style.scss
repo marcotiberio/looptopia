@@ -1,0 +1,48 @@
+flynt-component[name='BlockSliderLogos'] {
+  .marquee-container {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    
+    // Fade gradients on left and right sides
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 15vw;
+      z-index: 10;
+      pointer-events: none;
+    }
+    
+    &::before {
+      left: 0;
+      background: linear-gradient(to right, var(--marquee-fade-color, rgba(9,0,25, 1)), transparent);
+    }
+    
+    &::after {
+      right: 0;
+      background: linear-gradient(to left, var(--marquee-fade-color, rgba(9,0,25, 1)), transparent);
+    }
+    
+    .marquee-content {
+      will-change: transform;
+      display: inline-flex;
+      flex-wrap: nowrap;
+      min-width: fit-content;
+      
+      figure {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      
+      img {
+        flex-shrink: 0;
+      }
+    }
+  }
+}

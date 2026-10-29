@@ -1,0 +1,11 @@
+flynt-component[name='ListTextLink'] {
+  a {
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      .arrow {
+        transform: translateX(10px);
+      }
+    }
+  }
+}

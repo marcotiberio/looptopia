@@ -1,0 +1,13 @@
+flynt-component[name='BlockWysiwygColumns'] {
+  .wysiwyg {
+    > :last-child {
+      margin-block-end: 0;
+    }
+
+    @media (max-width: theme('screens.tablet')) {
+      br {
+        content: '\00a0';
+      }
+    }
+  }
+} 

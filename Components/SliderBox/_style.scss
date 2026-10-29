@@ -1,0 +1,39 @@
+flynt-component[name='SliderBox'] {
+  .slider {
+    max-width: 100%;
+    position: relative;
+
+    .swiper-wrapper {
+      box-sizing: inherit;
+    }
+
+    .swiper-slide {
+      display: flex;
+    }
+    
+    &-button {
+      align-items: center;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      z-index: 10;
+
+      &.swiper-button-disabled {
+        opacity: 0;
+        pointer-events: none;
+      }
+    }
+  }
+
+  .swiper-pagination-bullet {
+    background: transparent !important;
+    border: 1px solid var(--black) !important;
+    height: 15px;
+    opacity: 1;
+    width: 15px;
+
+    &-active {
+      background: var(--black) !important;
+    }
+  }
+}

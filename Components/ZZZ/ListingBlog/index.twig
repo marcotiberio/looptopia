@@ -1,0 +1,188 @@
+{% if posts|length > 0 %}
+  <flynt-component 
+    load:on="visible" 
+    name="ListingBlog" 
+    class=""
+    style="
+      color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};
+      background-color: {% if options.pageBackground %}{{ options.pageBackground }}{% else %}transparent{% endif %};">
+    
+    <div class="wrapper max-w-screen-max mx-auto boxed flex flex-col gap-sm" x-data="{ selectedCategories: [], searchQuery: '', filtersOpen: false }">
+      <div class="flex flex-col justify-between gap-sm md:gap-lg">
+        
+        {% if headlineTitle %}
+          <div class="max-w-screen-lg mx-auto font-heroSubtitle text-center" style="color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};">
+            {{ headlineTitle }}
+          </div>
+        {% endif %}
+
+        <!-- Filters and Search Wrapper -->
+        <div class="flex flex-col flex-wrap justify-between gap-sm">
+          <!-- Filters Section -->
+          <div class="flex flex-col flex-wrap justify-start gap-sm">
+            <div class="flex items-center gap-xs cursor-pointer" @click="filtersOpen = !filtersOpen">
+              <div class="uppercase font-bold">Filter</div>
+              <svg 
+                class="w-4 h-4 transition-transform duration-200" 
+                :class="filtersOpen ? 'rotate-180' : ''"
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+                style="color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+            
+            <!-- Filters Accordion Content -->
+            <div 
+              x-show="filtersOpen" 
+              x-transition:enter="transition ease-out duration-200"
+              x-transition:enter-start="opacity-0 transform -translate-y-2"
+              x-transition:enter-end="opacity-100 transform translate-y-0"
+              x-transition:leave="transition ease-in duration-200"
+              x-transition:leave-start="opacity-100 transform translate-y-0"
+              x-transition:leave-end="opacity-0 transform -translate-y-2"
+              class="w-full flex flex-col-reverse md:flex-row-reverse justify-between gap-sm">
+              
+              <!-- Search and Clear Section -->
+              <div class="flex flex-col justify-between items-start gap-sm">
+                <!-- Search Section -->
+                <div class="flex flex-col justify-between items-end gap-[5px] h-full">
+                  <div class="relative w-full">
+                    <input 
+                      type="text" 
+                      placeholder="Suche" 
+                      x-model="searchQuery"
+                      class="!w-[350px] px-xs py-[2px] !mb-0 border focus:outline-none focus:border-transparent font-sans font-bold uppercase pr-[30px]"
+                      style="border-radius: 0px !important; color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %}; background-color: transparent; border-color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};">
+                    <div class="absolute right-[10px] top-1/2 transform -translate-y-1/2 pointer-events-none" style="color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};">
+                      <svg width="27" height="14" viewBox="0 0 27 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0.269531 7.00011H24.7319M24.7319 7.00011L18.1204 0.884521M24.7319 7.00011L18.1204 13.1157" stroke="#303030" stroke-width="1.74731"/>
+                      </svg>
+                    </div>
+                  </div>
+                  
+                  <!-- Clear Filters Section -->
+                  <div class="flex flex-row justify-end gap-xs w-full">
+                    <button 
+                      class="cursor-pointer hover:underline underline-offset-4 font-sans"
+                      @click="selectedCategories = []; searchQuery = ''"
+                      style="color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};">
+                      Filter zurücksetzen
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Filters -->
+              <div class="flex flex-row flex-wrap justify-start gap-sm md:gap-xl">
+              <!-- Dynamic Categories Filters -->
+                <div class="flex flex-col flex-wrap justify-start gap-[5xs]">
+                  <div class="uppercase font-bold mb-[10px]">Kategorie</div>
+                  
+                  {% for category in categories %}
+                    {% set slug = category.name|lower|replace({' ' : '-'}) %}
+                    <div 
+                      class="cursor-pointer hover:underline underline-offset-4"
+                      :class="selectedCategories.includes('{{ slug }}') ? 'underline underline-offset-4' : ''"
+                      @click="selectedCategories.includes('{{ slug }}') 
+                        ? selectedCategories = selectedCategories.filter(c => c !== '{{ slug }}') 
+                        : selectedCategories.push('{{ slug }}')">
+                      {{ category.name }}
+                    </div>
+                  {% endfor %}
+                </div>
+
+                <!-- Dynamic Branche Filters -->
+                <div class="flex flex-col flex-wrap justify-start gap-[5xs]">
+                  <div class="uppercase font-bold mb-[10px]">Branche</div>
+                  
+                  {% set branches = function('get_terms', {'taxonomy': 'branche', 'hide_empty': true}) %}
+                  {% for branche in branches %}
+                    {% set slug = branche.name|lower|replace({' ' : '-'}) %}
+                    <div 
+                      class="cursor-pointer hover:underline underline-offset-4"
+                      :class="selectedCategories.includes('{{ slug }}') ? 'underline underline-offset-4' : ''"
+                      @click="selectedCategories.includes('{{ slug }}') 
+                        ? selectedCategories = selectedCategories.filter(c => c !== '{{ slug }}') 
+                        : selectedCategories.push('{{ slug }}')">
+                      {{ branche.name }}
+                    </div>
+                  {% endfor %}
+                </div>
+
+                <!-- Dynamic Thema Filters -->
+                <div class="flex flex-col flex-wrap justify-start gap-[5xs]">
+                  <div class="uppercase font-bold mb-[10px]">Thema</div>
+                  
+                  {% set themas = function('get_terms', {'taxonomy': 'thema', 'hide_empty': true}) %}
+                  {% for thema in themas %}
+                    {% set slug = thema.name|lower|replace({' ' : '-'}) %}
+                    <div 
+                      class="cursor-pointer hover:underline underline-offset-4"
+                      :class="selectedCategories.includes('{{ slug }}') ? 'underline underline-offset-4' : ''"
+                      @click="selectedCategories.includes('{{ slug }}') 
+                        ? selectedCategories = selectedCategories.filter(c => c !== '{{ slug }}') 
+                        : selectedCategories.push('{{ slug }}')">
+                      {{ thema.name }}
+                    </div>
+                  {% endfor %}
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Filters and Search Wrapper -->
+
+      <!-- Posts Grid -->
+      <div class="flex flex-col gap-md md:gap-sm">
+        {% for post in posts %}
+          {% set themaTerms = post.terms('thema') %}
+          {% set brancheTerms = post.terms('branche') %}
+          {% set categoryTerms = post.terms('category') %}
+          {% set allTerms = themaTerms|merge(brancheTerms)|merge(categoryTerms) %}
+          {% set postCategorySlugs = allTerms|map(term => term.name|lower|replace({' ' : '-'}) ) %}
+
+          <a 
+            class="post w-full [&_h2]:hover:underline transition duration-200 ease-in-out" 
+            href="{{ post.link }}" 
+            x-show="(selectedCategories.length === 0 || selectedCategories.some(cat => ['{{ postCategorySlugs|join("','") }}'].includes(cat))) && 
+                     (searchQuery === '' || '{{ post.title|lower }}'.includes(searchQuery.toLowerCase()))"
+            x-transition:enter="transition ease-out duration-100"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-100"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+          >
+            <div class="post w-full flex flex-col md:flex-row gap-sm md:gap-xl justify-between items-start">
+              {% if post.thumbnail %}
+                <img 
+                  class="lazyload transition duration-200 ease-in-out md:w-2/5 object-cover" 
+                  src="{{ post.thumbnail.src }}"
+                  data-srcset="{{ function('wp_get_attachment_image_srcset', post.thumbnail.id) }}"
+                  data-sizes="auto"
+                  alt="{{ post.title }}">
+              {% endif %}
+
+              <div class="content md:w-3/5 flex flex-col gap-xs md:gap-md justify-start" style="color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};">
+                <div class="flex flex-col gap-xs">
+                  <div class="flex flex-wrap gap-xs">
+                  {% for term in allTerms %}
+                    <span class="font-label">{{ term.name|upper }}</span>
+                  {% endfor %}
+                </div>
+                  <h2 class="w-full md:w-3/4 !mb-0">{{ post.title }}</h2>
+                </div>
+                <div class="w-full wysiwyg">{{ post.postIntro }}</div>
+                <button class="button button--outline" href="{{ post.link }}" aria-label="{{ post.title }}">Lesen</button>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+
+  </flynt-component>
+{% endif %}

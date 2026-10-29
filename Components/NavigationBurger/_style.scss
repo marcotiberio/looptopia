@@ -1,0 +1,52 @@
+flynt-component[name='NavigationBurger'] {
+  transition: all 0.3s ease-in-out;
+
+  &.scrolled {
+    transition: all 0.3s ease-in-out;
+    @apply translate-y-[-50px];
+    @apply bg-white;
+}
+
+  .wrapper {
+    align-items: center;
+    background-color: var(--black);
+    display: flex;
+    inset-block-start: 0;
+    inset-inline: 0;
+    justify-content: space-between;
+    padding-block: 12px;
+    position: fixed;
+    width: 100%;
+    z-index: 99;
+    // @apply h-[66px];
+    // @apply sm:h-[85px];
+
+    .left {
+      width: 48px;
+    }
+
+    .admin-bar & {
+      inset-block-start: var(--wp-admin--admin-bar--height);
+    }
+  }
+
+  .button {
+    font-size: 1rem;
+    padding: 5px 10px;
+  }
+
+  .current-language-menu-item {
+    @apply text-black;
+  }
+
+  @import 'Partials/hamburger';
+  @import 'Partials/menu';
+}
+
+// Overwriting wp defaults to keep admin bar fixed
+@media screen and (max-width: 600px) {
+  // stylelint-disable-next-line selector-max-id
+  #wpadminbar {
+    position: fixed;
+  }
+}

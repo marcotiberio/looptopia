@@ -1,0 +1,9 @@
+ <ul class="filter">
+  {% for term in terms %}
+    <li class="item">
+      <a href="{{ term.link }}" class="button {{- term.isActive ? '' : ' button--outlined' }}">
+        <span class="visuallyHidden">{{ __("Filter by", "flynt") }}</span>{{ term.title }}
+      </a>
+    </li>
+  {% endfor %}
+</ul>

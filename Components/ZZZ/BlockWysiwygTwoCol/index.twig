@@ -1,0 +1,90 @@
+<flynt-component 
+  load:on="visible" 
+  name="BlockWysiwygTwoCol" 
+  class="">
+  <div class="" style="color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};">
+    {% if blockTitle %}
+      <div class="boxed !pb-0 font-h2">
+        {{ blockTitle }}
+      </div>
+    {% endif %}
+
+    {# Mobile #}
+    <div class="flex lg:hidden boxed !p-0 flex-col lg:flex-row align-top justify-between">
+      <div class="content-left lg:w-1/2 wysiwyg px-xs py-sm sm:p-sm md:p-md" style="background-color: {% if colorBackgroundLeft %}{{ colorBackgroundLeft }}{% else %}transparent{% endif %};">
+        {% if contentHtmlLeft %}
+          {{ contentHtmlLeft|e('wp_kses_post') }}
+        {% endif %}
+        {% if buttonLinkLeft %}
+          <a 
+            class="button button--outline" 
+            href="{{ buttonLinkLeft.url }}" 
+            {% if buttonLinkLeft.target %} target="{{ buttonLinkLeft.target }}" rel="noreferrer noopener"{% endif %}>
+            {{ buttonLinkLeft.title }}
+          </a>
+        {% endif %}
+        {# {% if embedHtmlLeft %}
+          {{ embedHtmlLeft }}
+        {% endif %} #}
+      </div>
+      <div class="content-right lg:w-1/2 wysiwyg px-xs py-sm sm:p-sm md:p-md" style="background-color: {% if colorBackgroundRight %}{{ colorBackgroundRight }}{% else %}transparent{% endif %};">
+        {% if contentHtmlRight %}
+          {{ contentHtmlRight|e('wp_kses_post') }}
+        {% endif %}
+        {% if buttonLinkRight %}
+          <a 
+            class="button button--outline" 
+            href="{{ buttonLinkRight.url }}" 
+            {% if buttonLinkRight.target %} target="{{ buttonLinkRight.target }}" rel="noreferrer noopener"{% endif %}>
+            {{ buttonLinkRight.title }}
+          </a>
+        {% endif %}
+        {# {% if embedHtmlRight %}
+          {{ embedHtmlRight }}
+        {% endif %} #}
+      </div>
+    </div>
+
+    {# Desktop #}
+    <div class="hidden lg:block relative">
+      <div class="absolute inset-0 w-full h-full flex z-0 pointer-events-none">
+        <div class="w-1/2 h-full" style="background-color: {% if colorBackgroundLeft %}{{ colorBackgroundLeft }}{% else %}transparent{% endif %};"></div>
+        <div class="w-1/2 h-full" style="background-color: {% if colorBackgroundRight %}{{ colorBackgroundRight }}{% else %}transparent{% endif %};"></div>
+      </div>
+      <div class="boxed flex flex-col lg:flex-row !p-0 relative z-10">
+        <div class="content-left lg:w-1/2 wysiwyg px-xs py-sm sm:p-sm md:p-md">
+          {% if contentHtmlLeft %}
+            {{ contentHtmlLeft|e('wp_kses_post') }}
+          {% endif %}
+          {% if buttonLinkLeft %}
+            <a 
+              class="button button--outline" 
+              href="{{ buttonLinkLeft.url }}" 
+              {% if buttonLinkLeft.target %} target="{{ buttonLinkLeft.target }}" rel="noreferrer noopener"{% endif %}>
+              {{ buttonLinkLeft.title }}
+            </a>
+          {% endif %}
+          {# {% if embedHtmlLeft %}
+            {{ embedHtmlLeft }}
+          {% endif %} #}
+        </div>
+        <div class="content-right lg:w-1/2 wysiwyg px-xs py-sm sm:p-sm md:p-md">
+          {% if contentHtmlRight %}
+            {{ contentHtmlRight|e('wp_kses_post') }}
+          {% endif %}
+          {% if buttonLinkRight %}
+            <a 
+              class="button button--outline" 
+              href="{{ buttonLinkRight.url }}" 
+              {% if buttonLinkRight.target %} target="{{ buttonLinkRight.target }}" rel="noreferrer noopener"{% endif %}>
+              {{ buttonLinkRight.title }}
+            </a>
+          {% endif %}
+          {# {% if embedHtmlRight %}
+            {{ embedHtmlRight }}
+          {% endif %} #}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

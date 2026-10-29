@@ -1,0 +1,13 @@
+<div class="video-wrapper w-full h-full">
+  <video 
+    class="w-full h-full !h-[30.4vw]" 
+    autoplay 
+    muted 
+    loop 
+    playsinline
+    preload="auto"
+    data-video-url="{{ item.video.url }}">
+    <source src="{{ item.video.url }}" type="{{ item.video.mime_type }}">
+    {{ __('Your browser does not support the video tag.', 'flynt') }}
+</video>
+</div>

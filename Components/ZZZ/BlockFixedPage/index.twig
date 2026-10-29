@@ -1,0 +1,22 @@
+<flynt-component load:on="visible" name="BlockFixedPage">
+  <div class="h-auto lg:h-[calc(100vh_-_120px)] flex flex-col lg:flex-row gap-sm" {{ imagePosition ? 'data-image-position="' ~ imagePosition ~ '"' }}>
+    <div class="w-full lg:w-[58.3vw]">
+      {% if image %}
+        <img class="lazyload w-full h-full object-cover aspect-4/3"
+          src="{{ image.src }}"
+          data-srcset="{{function('wp_get_attachment_image_srcset', image.id)}}"
+          data-sizes="auto"
+          alt="{{ image.alt|e }}"
+          data-parallax
+          >
+      {% endif %}
+      {% if image.caption %}
+        <figcaption>{{ image.caption|e }}</figcaption>
+      {% endif %}
+    </div>
+    <div class="w-full lg:w-[41.7vw] flex flex-col gap-md lg:gap-xl">
+      <h1>{{ title }}</h1>
+      <div class="wysiwyg">{{ contentHtml|e('wp_kses_post') }}</div>
+    </div>
+  </div>
+</flynt-component>

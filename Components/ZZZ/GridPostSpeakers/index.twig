@@ -1,0 +1,44 @@
+<flynt-component load:on="visible" name="GridPostSpeakers" class="" style="background-color: {% if options.colorBackground %}{{ options.colorBackground }}{% else %}transparent{% endif %};">
+  <div class="wrapper max-w-screen-max mx-auto boxed">
+    {% if headlineTitle %}
+      <div class="max-w-screen-lg mx-auto font-heroSubtitle text-center" style="color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--white){% endif %};">
+        {{ headlineTitle }}
+      </div>
+    {% endif %}
+    <div 
+      class="w-full max-w-screen-max mx-auto mt-md md:mt-xl grid gap-sm"
+      {{ options.gridColumns ? 'data-grid-columns="' ~ options.gridColumns ~ '"' }}>
+      {% for post in selectedPosts %}
+        <div class="grid-item flex flex-col">
+          <a class="pointer-events-none" href="{{ post.link }}" title="{{ post.title }}">
+            {% if post.thumbnail %}
+              <figure class="figure w-full">
+                <img class="lazyload w-full object-cover aspect-video"
+                  src="{{ post.thumbnail.src }}"
+                  data-srcset="{{function('wp_get_attachment_image_srcset', post.thumbnail.id)}}"
+                  data-sizes="auto"
+                  alt="{{ post.thumbnail.alt|e }}">
+              </figure>
+            {% endif %}
+            <div class="content w-full flex flex-col grow justify-between">
+              <div class="w-full flex flex-col p-xs" style="color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--white){% endif %};">
+                {% if post.title %}
+                  <div class="font-body !mb-0">{{ post.title }}</div>
+                  <div class="font-bodySmall !font-serif">{{ post.speakerCompany }}</div>
+                  <div class="font-bodySmall !font-serif">{{ post.speakerPosition }}</div>
+                {% endif %}
+              </div>
+            </div>
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+    {% if seeAllButton %}
+      <div class="w-full p-sm md:p-md flex flex-row items-center justify-center">
+        <a class="button button--fullBlue" href="{{ seeAllButton.url }}"{% if seeAllButton.target %} target="{{ seeAllButton.target }}" rel="noreferrer noopener"{% endif %}>
+          {{ seeAllButton.title|e }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</div>

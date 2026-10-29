@@ -1,0 +1,62 @@
+flynt-component[name='BlockEmbed'] {
+  .content {
+    > :last-child {
+      margin-block-end: 0;
+    }
+
+    @media (max-width: theme('screens.tablet')) {
+      br {
+        content: '\00a0';
+      }
+    }
+  }
+
+  .stickyText {
+    @apply sticky;
+    @apply top-[91px];
+    @apply self-start;
+    // Create new stacking context
+    // The [class*="sticky"] rule in _custom.scss should handle this,
+    // but we're being explicit here
+    transform: translateZ(0);
+    will-change: transform;
+    z-index: 1;
+  }
+
+  .embed {
+    @apply w-full;
+
+    iframe,
+    embed,
+    object,
+    video {
+      @apply max-w-full;
+    }
+
+    &--center {
+      iframe,
+      embed,
+      object,
+      video {
+        @apply mx-auto block;
+      }
+    }
+
+    &--fluid {
+      iframe,
+      embed,
+      object,
+      video {
+        @apply w-full;
+      }
+    }
+  }
+
+  [data-text-align='left'] {
+    text-align: start;
+  }
+
+  [data-text-align='center'] {
+    text-align: center;
+  }
+}

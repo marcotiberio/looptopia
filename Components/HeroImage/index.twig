@@ -1,0 +1,32 @@
+<flynt-component
+  load:on="visible" name="HeroImage"
+  class="w-full lgplus:w-screen {{ height|default('h-screen') }} mx-auto relative overflow-hidden">
+  {% if image %}
+    <img 
+      data-ref="backgroundImageDesktop"
+      class="hidden lgplus:block figure-image w-full h-full max-h-screen object-cover rounded-image"
+      src="{{ image.src }}"
+      alt="{{ image.alt|e | default('') }}"
+      loading="eager"
+    />
+  {% endif %}
+  {% if imageMobile %}
+    <img 
+      data-ref="backgroundImageMobile"
+      class="block lgplus:hidden figure-image w-full h-full max-h-screen object-cover rounded-image"
+      src="{{ imageMobile.src }}"
+      alt="{{ imageMobile.alt|e | default('') }}"
+      loading="eager"
+    />
+  {% endif %}
+  <div class="absolute inset-0 z-10 pointer-events-none"></div>
+    <div class="boxed px-xs py-sm md:p-sm flex flex-col gap-sm">
+      <div class="wysiwyg">{{ titleHtml|e('wp_kses_post') }}</div>
+      {# {% if buttonLink %}
+        <a class="button button--fullRed" href="{{ buttonLink.url }}" target="{{ buttonLink.target }}" rel="noreferrer noopener">
+          {{ buttonLink.title }}
+        </a>
+      {% endif %} #}
+    </div>
+  </div>
+</flynt-component>

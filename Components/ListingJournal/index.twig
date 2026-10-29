@@ -1,0 +1,129 @@
+{% if posts|length > 0 %}
+  <flynt-component 
+    load:on="visible" 
+    name="ListingJournal" 
+    class=""
+    style="
+      color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};
+      background-color: {% if options.pageBackground %}{{ options.pageBackground }}{% else %}transparent{% endif %};">
+    
+    <div class="boxed !pb-0 flex flex-col gap-sm" x-data="{ 
+      selectedCategory: '', 
+      searchQuery: '', 
+      filtersOpen: false,
+      isTransitioning: false,
+      transitionDelay: 150
+    }">
+      <div class="grid grid-cols-12 gap-xs">
+        
+        <div class="flex flex-col flex-wrap justify-start col-start-1 col-end-13 lg:col-start-8">
+          
+          <!-- All Category Filter -->
+          <div 
+            class="font-body !mb-0 cursor-pointer hover:text-black w-fit"
+            :class="selectedCategory === '' ? 'text-black' : ''"
+            @click="
+              if (selectedCategory !== '') {
+                isTransitioning = true;
+                setTimeout(() => {
+                  selectedCategory = '';
+                  setTimeout(() => isTransitioning = false, transitionDelay);
+                }, transitionDelay);
+              }
+            ">
+            All
+          </div>
+          
+          {% set journalCategories = [
+            {'name': 'Events', 'slug': 'events'},
+            {'name': 'Longreads', 'slug': 'longreads'},
+            {'name': 'News', 'slug': 'news'},
+            {'name': 'Resources', 'slug': 'resources'},
+          ] %}
+          {% for journalCategory in journalCategories %}
+            <div 
+              class="font-body !mb-0 cursor-pointer hover:text-black w-fit"
+              :class="selectedCategory === '{{ journalCategory.slug }}' ? 'text-black' : ''"
+              @click="
+                if (selectedCategory !== '{{ journalCategory.slug }}') {
+                  isTransitioning = true;
+                  setTimeout(() => {
+                    selectedCategory = '{{ journalCategory.slug }}';
+                    setTimeout(() => isTransitioning = false, transitionDelay);
+                  }, transitionDelay);
+                }
+              ">
+              {{ journalCategory.name }}
+            </div>
+          {% endfor %}
+        </div>            
+
+      </div>
+
+      <!-- Posts Grid -->
+      <div class="flex flex-col border-t">
+        {% for post in posts %}
+          {% set journalCategoryTerms = post.terms('journal-category') %}
+          {% set allTerms = journalCategoryTerms %}
+          {% set hardcodedCategories = {
+            'Events': 'events',
+            'Longreads': 'longreads',
+            'News': 'news',
+            'Resources': 'resources'
+          } %}
+          {% set postCategorySlugs = allTerms|map(term => hardcodedCategories[term.name]|default(term.name|lower|replace({' ' : '-'}))) %}
+
+          <div 
+            class="fade-in post w-full py-sm [&_h2]:hover:text-black border-b last:border-b-0 hover:cursor-pointer transition-opacity duration-300" 
+            x-show="(selectedCategory === '' || ['{{ postCategorySlugs|join("','") }}'].includes(selectedCategory)) && 
+                     (searchQuery === '' || '{{ post.title|lower }}'.includes(searchQuery.toLowerCase()))"
+            :class="isTransitioning ? 'opacity-0' : 'opacity-100'"
+          >
+            <a href="{{ post.link }}" title="{{ post.title }}" aria-label="Go to post">
+              <div class="w-full flex flex-col lg:grid grid-cols-12 gap-xs items-start">
+                {% set halftone_svg = post.meta('halftone_svg') %}
+                {% if halftone_svg %}
+                  <div class="halftone-image relative grid col-start-1 col-end-4 aspect-8/5 overflow-hidden [&_svg]:absolute [&_svg]:inset-0 [&_svg]:w-full [&_svg]:h-full">
+                    {{ halftone_svg|raw }}
+                  </div>
+                {% elseif post.thumbnail %}
+                  <img
+                    class="lazyload transition grid duration-200 ease-in-out col-start-1 col-end-4 aspect-8/5 object-cover"
+                    src="{{ post.thumbnail.src }}"
+                    alt="{{ post.thumbnail.alt|e | default('') }}"
+                    loading="lazy"
+                    style="opacity: 0; transition: opacity 0.5s ease-in-out;"
+                    onload="this.style.opacity='1'"
+                    aria-label="Go to post"
+                  />
+                {% endif %}
+                <div class="font-bodySmall !mb-0 col-start-4 col-end-5 flex flex-row gap-xs items-center">
+                  <span class="font-bodySmall !mb-0">{{ post.end_date }}</span>
+                  <div class="flex lg:hidden nd-11">
+                    {% for term in allTerms %}
+                      <span class="font-label">{{ term.name }}</span>
+                    {% endfor %}
+                  </div>
+                </div>
+
+                <div class="w-full h-full flex flex-col justify-between !mb-0 col-start-5 col-end-8">
+                  <h2 class="w-full !mb-0">{{ post.title }}</h2>
+                </div>
+
+                <div class="hidden lg:flex flex-row gap-xs col-start-9 col-end-11">
+                  {% for term in allTerms %}
+                    <span class="font-label">{{ term.name }}</span>
+                  {% endfor %}
+                </div>
+
+                <span class="font-bodySmall !mb-0 col-start-11 col-end-13">{{ post.postAuthor }}</span>
+                
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </flynt-component>
+{% endif %}

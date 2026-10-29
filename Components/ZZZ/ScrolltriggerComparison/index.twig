@@ -1,0 +1,40 @@
+<flynt-component
+  load:on="idle"
+  name="ScrolltriggerComparison"
+  class=""
+>
+  <div class="wrapper w-full mx-auto boxed">
+    {% if textBeforeComparison %}
+      <h1 class="flex justify-center items-center h-[30vh]">
+        {{ textBeforeComparison }}
+      </h1>
+    {% endif %}
+    <section class="comparisonSection">
+      <div class="comparisonImage beforeImage w-full h-full">
+        {% if imageOpenPool %}
+          <img 
+            class="w-full h-full absolute top-0"
+            src="{{ imageOpenPool.src }}"
+            data-srcset="{{function('wp_get_attachment_image_srcset', imageOpenPool.id)}}"
+            data-sizes="auto"
+            alt="opened">
+        {% endif %}
+      </div>
+      <div class="comparisonImage afterImage w-full h-full absolute overflow-hidden top-0">
+        {% if imageCoveredPool %}
+          <img 
+            class="w-full h-full absolute top-0"
+            src="{{ imageCoveredPool.src }}"
+            data-srcset="{{function('wp_get_attachment_image_srcset', imageCoveredPool.id)}}"
+            data-sizes="auto"
+            alt="covered">
+        {% endif %}
+      </div>
+    </section>
+    {% if textAfterComparison %}
+      <h1 class="flex justify-center items-center h-[30vh]">
+        {{ textAfterComparison }}
+      </h1>
+    {% endif %}
+  </div>
+</flynt-component>

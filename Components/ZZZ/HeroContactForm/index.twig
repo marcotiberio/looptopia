@@ -1,0 +1,26 @@
+<flynt-component
+  load:on="idle"
+  name="HeroContactForm"
+  class=""
+  style="background-color: {% if options.colorBackground %}{{ options.colorBackground }}{% else %}var(--white){% endif %};"
+>
+  <div class="w-full max-w-screen-max mx-auto boxed">
+    {% if blockTitle %}
+      <div class="max-w-screen-max w-full mx-auto pb-sm lg:pb-lg flex flex-row justify-between align-bottom items-end content-end">
+        <div class="subtitle font-bold text-black">{{ blockTitle }}</div>
+      </div>
+    {% endif %}
+    <div class="max-w-screen-max mx-auto">
+      {{ contactForm }}
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-md sm:flex-row justify-between gap-sm md:gap-lg mt-md sm:mt-xl">
+      {% for item in contactInfo %}
+        <div class="item w-full pt-sm sm:pt-md first:border-t-0 sm:first:border-t border-t border-black">
+          {% if item.textEditorHtml %}
+            <div class="wysiwyg">{{ item.textEditorHtml|e('wp_kses_post') }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</flynt-component>

@@ -1,0 +1,104 @@
+<flynt-component 
+  load:on="visible" 
+  name="BlockWysiwygAccordion"
+  class="{% if options.firstComponent %}pt-[10vw] md:pt-[160px]{% endif %}"
+  style="
+    background-color: {% if options.colorBackground %}{{ options.colorBackground }}{% else %}transparent{% endif %};"
+  >
+  <div class="boxed !py-[22.5px] w-full fade-in">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-xs align-start justify-start lg:justify-between {% if options.stickyTitle %}stickyTitle{% endif %}">
+      {% for column in columns %}
+        <div class="column flex {{ column.colStart }} {{ column.colEnd }} lg:row-start-1 lg:row-end-2">
+          <div class="flex flex-col w-full">
+            {% if column.image %}
+              <img 
+                class="figure-image lazyload w-full aspect-8/5 object-cover mb-xs"
+                src="{{ column.image.src }}"
+                alt="{{ column.image.alt|e | default('') }}"
+                loading="lazy"
+                style="opacity: 0; transition: opacity 0.5s ease-in-out;"
+                onload="this.style.opacity='1'"
+              />
+            {% endif %}
+            {# Mobile #}
+            {% if column.title or column.contentHtml %}
+              <div class="block lg:hidden">
+                <div x-data="{ open: false }">
+                  <button @click="open = !open" class="w-full flex justify-between items-center {% if column.contentHtml %} !mb-0{% else %} mb-xs{% endif %}" type="button" :aria-expanded="open" aria-controls="content-{{ loop.index }}">
+                    <h2>{{ column.title|e }}</h2>
+                    {% if column.contentHtml %}
+                      <div class="accordion-icon transition-transform duration-300 ease-in-out" :class="{'rotate-180': open}">
+                        <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M0 8.49438H17" stroke="black" stroke-width="1.5"/>
+                          <path d="M8.50562 0L8.50561 17" stroke="black" stroke-width="1.5" :class="{'opacity-0': open}" class="transition-opacity duration-300 ease-in-out"/>
+                        </svg>
+                      </div>
+                    {% endif %}
+                  </button>
+                  <div 
+                    x-show="open" 
+                    x-transition:enter="transition ease-out duration-300" 
+                    x-transition:enter-start="opacity-0 transform -translate-y-2" 
+                    x-transition:enter-end="opacity-100 transform translate-y-0" 
+                    x-transition:leave="transition ease-in duration-200" 
+                    x-transition:leave-start="opacity-100 transform translate-y-0" 
+                    x-transition:leave-end="opacity-0 transform -translate-y-2" 
+                    class="" 
+                    :aria-hidden="!open" 
+                    id="content-{{ loop.index }}">
+                    <div class="wysiwyg mt-xs mb-sm">
+                      {{ column.contentHtml|e('wp_kses_post') }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {# Desktop #}
+              <div class="hidden lg:block">
+                {% if column.title %}
+                  <div class="title font-body {% if column.contentHtml %}mb-xs{% endif %}"><h2>{{ column.title }}</h2></div>
+                {% endif %}
+                {% if column.contentHtml %}
+                  <div class="wysiwyg">{{ column.contentHtml|e('wp_kses_post') }}</div>
+                {% endif %}
+              </div>
+            {% endif %}
+            {% if column.buttonLink %}
+              <a 
+                class="button button--outline" 
+                href="{{ column.buttonLink.url }}" 
+                {% if column.buttonLink.target %} target="{{ column.buttonLink.target }}" rel="noreferrer noopener"{% endif %}>
+                {{ column.buttonLink.title }}
+              </a>
+            {% endif %}
+            {% if column.enableNewsletter %}
+              <div class="mt-xs" id="mc_embed_shell">
+                <div id="mc_embed_signup">
+                    <form action="https://studio.us2.list-manage.com/subscribe/post?u=53b361306408427d9ffbc9980&amp;id=cf376efd5e&amp;f_id=00bce7e3f0" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_self" novalidate="">
+                        <div id="mc_embed_signup_scroll">
+                            <div class="mc-field-group">
+                              <input type="email" name="EMAIL" class="required email" id="mce-EMAIL" required="" value="" placeholder="Your email">
+                            </div>
+                        <div id="mce-responses" class="clear foot">
+                            <div class="response" id="mce-error-response" style="display: none;"></div>
+                            <div class="response" id="mce-success-response" style="display: none;"></div>
+                        </div>
+                    <div aria-hidden="true" style="position: absolute; left: -5000px;">
+                        /* real people should not fill this in and expect good things - do not remove this or risk form bot signups */
+                        <input type="text" name="b_53b361306408427d9ffbc9980_cf376efd5e" tabindex="-1" value="">
+                    </div>
+                        <div class="optionalParent">
+                            <div class="clear foot">
+                                <input type="submit" name="subscribe" id="mc-embedded-subscribe" class="btn btn--outline" value="Send">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</flynt-component> 

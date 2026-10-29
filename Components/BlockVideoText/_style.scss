@@ -1,0 +1,65 @@
+flynt-component[name='BlockVideoText'] {
+  .video {
+    margin: 0 auto;
+    position: relative;
+
+    &-player {
+      aspect-ratio: 16/9;
+      height: auto;
+      position: relative;
+      z-index: 10;
+
+      &[data-state='isLoading'] {
+        .video-loader {
+          display: block;
+        }
+
+        .video-playButton {
+          display: none;
+        }
+      }
+
+      &[data-state='isLoaded'] {
+        .video-loader,
+        .video-playButton {
+          display: none;
+        }
+
+        iframe {
+          display: block;
+        }
+      }
+    }
+
+    iframe {
+      display: none;
+      height: 100%;
+      inset-block-start: 0;
+      inset-inline-start: 0;
+      position: relative;
+      width: 100%;
+    }
+  }
+
+  [data-video-position='right'] {
+    @apply flex-col;
+    @apply lg:flex-row-reverse;
+  }
+
+  [data-video-position='left'] {
+    @apply flex-col;
+    @apply lg:flex-row;
+  }
+
+  [data-video-alignment='top'] {
+    @apply md:items-start;
+  }
+
+  [data-video-alignment='center'] {
+    @apply md:items-center;
+  }
+
+  [data-video-alignment='bottom'] {
+    @apply md:items-end;
+  }
+}

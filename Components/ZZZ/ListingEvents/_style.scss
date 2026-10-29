@@ -1,0 +1,16 @@
+flynt-component[name='ListingEvents'] {
+  .post {
+    &:hover {
+      .button {
+        &--outline {
+          @apply text-white;
+          @apply bg-black;
+  
+          &::after {
+            @apply invert;
+          }
+        }
+      }
+    }
+  }
+}

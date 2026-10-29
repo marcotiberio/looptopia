@@ -1,0 +1,7 @@
+<flynt-component load:on="visible" name="BlockAnnouncement" class="blockAnnouncement">
+  {% if ctaLink.url %}
+  <a class="cta h3" href="{{ ctaLink.url }}"{% if ctaLink.target %} target="{{ ctaLink.target }}" rel="noreferrer noopener"{% endif %}>
+    <div class="wrapper">{{ ctaLink.title|e }}</div>
+  </a>
+  {% endif %}
+</flynt-component>

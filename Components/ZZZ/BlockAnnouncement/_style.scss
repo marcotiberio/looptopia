@@ -1,0 +1,72 @@
+flynt-component[name='BlockAnnouncement'] {
+  padding: 0;
+
+  @media (max-width: theme('screens.tablet')) {
+    display: none;
+  }
+
+  .wrapper {
+    align-items: center;
+    background-color: transparent;
+    border: 2px solid var(--black);
+    border-radius: 100%;
+    display: flex;
+    flex-flow: column wrap;
+    height: 135px;
+    justify-content: center;
+    padding: 0 theme('spacing.large');
+    position: fixed;
+    right: 0;
+    text-align: center;
+    top: 160px;
+    transform: translateX(-20px) rotate(10deg);
+    transition: all 0.2s ease-in-out;
+    width: 240px;
+    z-index: 2000;
+
+    &:hover {
+      background-color: var(--white);
+      border: 4px solid var(--black);
+    }
+  }
+
+  .cta {
+    color: var(--black);
+    font-family: 'FKGroteskNeue', Arial, sans-serif;
+    font-size: 700;
+    line-height: 1.2;
+    margin-bottom: 0;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .close {
+    color: var(--black);
+    display: none;
+    font-weight: 700;
+    line-height: 2;
+    position: fixed;
+    right: 20px;
+    text-decoration: none;
+    text-transform: uppercase;
+    top: 0;
+    transform-origin: center;
+    transition: transform 0.4s ease-in-out;
+    
+    svg {
+      transform: scale(0.8);
+    }
+
+    &:hover,
+    &:focus {
+      cursor: pointer;
+      outline: 0;
+
+      svg {
+        transform: rotate(180deg) scale(0.8);
+        transform-origin: center;
+        transition: transform 0.4s ease-in-out;
+      }
+    }
+  }
+}

@@ -1,0 +1,54 @@
+<flynt-component load:on="visible" name="HeroSlider">
+  <script type="application/json">{{ jsonData|json_encode }}</script>
+  <div class="h-full w-full py-md px-sm md:py-lg md:px-md">
+    <div data-ref="slider" class="slider swiper-container w-full h-full">
+      <div data-slider-pagination data-ref="pagination" class="slider-pagination swiper-pagination-fraction"></div>
+      <button type="button" data-ref="prev" class="slider-button slider-button--prev" aria-label="{{ sliderOptions.a11y.prevSlideMessage|e }}">
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <g clip-path="url(#clip0_172_2512)">
+            <path d="M6.875 20.625L0.625001 14.375L6.875 8.125" stroke="black" stroke-width="1.25" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M0.625 14.375L29.375 14.375" stroke="black" stroke-width="1.25" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+          <defs>
+            <clipPath id="clip0_172_2512">
+              <rect width="30" height="30" fill="white" transform="translate(30 30) rotate(-180)"/>
+            </clipPath>
+          </defs>
+        </svg>
+      </button>
+      <button type="button" data-ref="next" class="slider-button slider-button--next" aria-label="{{ sliderOptions.a11y.prevSlideMessage|e }}">
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M23.125 9.375L29.375 15.625L23.125 21.875" stroke="black" stroke-width="1.25" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M29.375 15.625H0.625" stroke="black" stroke-width="1.25" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="swiper-wrapper w-full h-full">
+        {% for sliderItem in sliderItems %}
+          <div class="slider-item swiper-slide w-full h-full flex flex-col">
+            <div class="w-full h-full pt-lg pb-md flex flex-col md:flex-row gap-sm md:gap-0 justify-between md:justify-start items-start md:items-end">
+              {% if sliderItem.titleHtml %}
+                <div class="w-full md:w-3/4">
+                  {{ sliderItem.titleHtml }}
+                </div>
+              {% endif %}
+              {% if sliderItem.buttonLink %}
+                <div class="w-full md:w-1/4 flex justify-start md:justify-end">
+                  <a class="button button--yellow mb-[1rem]" href="{{ sliderItem.buttonLink.url }}"{% if sliderItem.buttonLink.target %} target="{{ sliderItem.buttonLink.target }}" rel="noreferrer noopener"{% endif %}>
+                    {{ sliderItem.buttonLink.title|e }}
+                  </a>
+                </div>
+              {% endif %}
+            </div>
+            <figure class="figure w-full h-full relative">
+              <img class="lazyload w-full h-full object-cover md:object-cover relative"
+                src="{{ sliderItem.image.src | resize(32) }}"
+                data-srcset="{{function('wp_get_attachment_image_srcset', sliderItem.image.id)}}"
+                data-sizes="auto"
+                alt="{{ sliderItem.image.alt|e }}">
+            </figure>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</flynt-component>

@@ -1,0 +1,29 @@
+flynt-component[name='BannerImageText'] {
+  [data-title-position='topLeft'] {
+    @apply bottom-md;
+    @apply left-md;
+    @apply md:top-xl;
+    @apply md:left-xl;
+  }
+
+  [data-title-position='topRight'] {
+    @apply bottom-md;
+    @apply left-md;
+    @apply md:top-xl;
+    @apply md:right-xl;
+  }
+
+  [data-title-position='bottomLeft'] {
+    @apply bottom-md;
+    @apply left-md;
+    @apply md:bottom-xl;
+    @apply md:left-xl;
+  }
+
+  [data-title-position='bottomRight'] {
+    @apply bottom-md;
+    @apply left-md;
+    @apply md:bottom-xl;
+    @apply md:right-xl;
+  }
+}

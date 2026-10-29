@@ -1,0 +1,35 @@
+<div class="menu list-none w-full gap-md flex flex-row justify-end items-center">
+  {% for item in items %}
+    {# regular menu item #}
+    {% if not item.children %}
+      <div class="item font-menu flex align-middle items-center hover:underline underline-offset-4 no-underline {{ item.classes|join(' ') }} {{- item.current ? ' underline underline-offset-4' }} {{- item.target == '_blank' ? ' external-link' }} {{- item.object == 'page' ? ' page-item' }} {{- item.object == 'post' ? ' post-item' }}">
+        <a class="link flex align-middle items-center no-underline transition-transform duration-200 ease-in-out" href="{{ item.link }}" {{ item.target == '_blank' ? 'target="_blank" rel="noopener noreferrer"' }}>
+          {{ item.title }}
+        </a>
+      </div>
+    {% endif %}
+    {# menu with submenu item #}
+    {% if item.children %}
+      <div x-data="{ showDropdown: false }" class="item font-menu flex align-middle items-center open-submenu hover:underline {{ item.classes|join(' ') }} {{- item.current ? ' underline underline-offset-4' }} {{- item.target == '_blank' ? ' external-link' }} {{- item.object == 'page' ? ' page-item' }} {{- item.object == 'post' ? ' post-item' }}" >
+        <a 
+          @mouseover="showDropdown = true"
+          @mouseleave="showDropdown = false"
+          @click="showDropdown = !showDropdown" 
+          class="link flex align-middle items-center no-underline transition-transform duration-200 ease-in-out cursor-pointer z-[100]" href="{{ item.link }}" {{ item.target == '_blank' ? 'target="_blank" rel="noopener noreferrer"' }}>
+            {{ item.title }}
+        </a>
+        <div 
+          class="menu submenu" x-cloak
+          x-show="showDropdown"
+          @mouseover="showDropdown = true"
+          @mouseleave="showDropdown = false">
+            {% for subitem in item.children %}
+              <div class="item font-menu hover:underline underline-offset-4 {{ subitem.classes|join(' ') }} {{- subitem.current ? ' underline underline-offset-4' }} {{- subitem.target == '_blank' ? ' external-link' }} {{- subitem.object == 'page' ? ' page-item' }} {{- subitem.object == 'post' ? ' post-item' }}">
+                <a class="link flex align-middle items-center no-underline transition-transform duration-200 ease-in-out" href="{{ subitem.link }}">{{ subitem.title }}</a>
+              </div>
+            {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>

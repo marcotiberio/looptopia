@@ -1,0 +1,24 @@
+<flynt-component 
+  load:on="visible" 
+  name="BlockNewsletter"
+  style="background-color: {% if options.colorBackground %}{{ options.colorBackground }}{% else %}transparent{% endif %};">
+  <div 
+    class="w-full max-w-screen-max mx-auto px-sm py-md lg:px-lg lg:py-xl">
+    <div 
+      class="
+        wysiwyg flex flex-col
+        {% if textPosition == 'right' %} justify-end w-full lg:w-[calc(50%_-_12.5px)] ml-auto{% endif %}
+        {% if textPosition == 'left' %} justify-start w-full lg:w-[calc(50%_-_12.5px)] mr-auto{% endif %}
+        {% if textPosition == 'center_narrow' %} justify-center w-full md:w-1/2 mx-auto{% endif %}
+        {% if textPosition == 'center_full' %} justify-center w-full mx-auto{% endif %}
+      ">
+      {{ contentHtml|e('wp_kses_post') }}
+      {% if newsletterHtml %}
+        <div class="">
+          {{ newsletterHtml }}
+          <script type="text/javascript" src="https://app.mailjet.com/pas-nc-embedded-v1.js"></script>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</flynt-component>

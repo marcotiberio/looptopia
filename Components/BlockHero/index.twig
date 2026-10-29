@@ -1,0 +1,65 @@
+<flynt-component
+  load:on="visible" name="BlockHero"
+  id="hero"
+  class="relative w-full  min-h-[calc(100vh-44px)] lg:min-h-[calc(100vh-72px)] overflow-hidden flex flex-col"
+  style="
+    color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};
+    background-color: {% if options.colorBackground %}{{ options.colorBackground }}{% else %}var(--white){% endif %};">
+
+  {% if backgroundImage %}
+    <img
+      class="absolute inset-0 w-full h-full object-cover z-0"
+      src="{{ backgroundImage.src }}"
+      alt="{{ backgroundImage.alt|e | default('') }}"
+      loading="eager">
+  {% endif %}
+
+  <div class="relative z-10 boxed flex flex-col justify-between flex-1 gap-lg py-sm">
+    <div class="flex flex-col gap-xs md:gap-0">
+      {# Top row: kicker + date #}
+      <div class="flex flex-row justify-between items-start gap-sm hero-fade hero-fade--2">
+        {% if kicker %}<span class="font-h1Hero hero-text-shadow">{{ kicker }}</span>{% endif %}
+        {% if dateText %}<span class="font-h1Hero hero-text-shadow">{{ dateText }}</span>{% endif %}
+      </div>
+
+      {# Brand wordmark #}
+      <div class="flex items-center hero-fade hero-fade--1">
+        <img class="w-full h-auto" src="{{ wordmark.src | default(wordmarkUrl) }}" alt="{{ wordmark.alt | default('LOOPTOPIA') }}">
+      </div>
+    </div>
+
+    <div class="flex flex-row justify-between items-end gap-sm flex-wrap hero-fade hero-fade--3">
+      {# Headline #}
+      <div class="flex flex-col gap-sm w-fit">
+        {% if headline %}<h1 class="font-bodyLarge hero-text-shadow">{{ headline }}</h1>{% endif %}
+        <div class="flex flex-col md:flex-row gap-sm w-fit">
+          {% if buttonLink %}
+            <a class="button button--green w-fit" href="{{ buttonLink.url }}" {% if buttonLink.target %} target="{{ buttonLink.target }}" rel="noreferrer noopener"{% endif %}>{{ buttonLink.title }}</a>
+          {% endif %}
+          {% if buttonSecondary %}
+            <a class="button button--lilac w-fit" href="{{ buttonSecondary.url }}" {% if buttonSecondary.target %} target="{{ buttonSecondary.target }}" rel="noreferrer noopener"{% endif %}>{{ buttonSecondary.title }}</a>
+          {% endif %}
+        </div>
+      </div>
+      {# Funders #}
+      {% if funders.logos or funders2.logos %}
+        <div class="flex flex-row flex-wrap items-start gap-sm">
+          {% for group in [funders, funders2] %}
+            {% if group.logos %}
+              <div class="flex flex-col items-end gap-xs">
+                {% if group.label %}<span class="font-body !mb-0 text-sm hero-text-shadow">{{ group.label }}</span>{% endif %}
+                <div class="flex flex-row flex-wrap items-center gap-sm">
+                  {% for item in group.logos %}
+                    {% if item.logo %}
+                      <img class="h-md lg:h-lg w-auto object-contain" src="{{ item.logo.src }}" alt="{{ item.logo.alt|e | default('') }}">
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</flynt-component>

@@ -1,0 +1,23 @@
+<flynt-component
+  load:on="idle" name="BlockMultipleBoxesSimple"
+  class="pb-0 lg:pb-xl overflow-hidden"
+>
+  <script type="application/json">{{ jsonData|json_encode }}</script>
+  <div class="wrapper w-screen mx-auto boxed">
+    {% if headlineTitle %}
+      <h2 class="max-w-screen-lg mx-auto flex justify-center items-center text-center">{{ headlineTitle }}</h2>
+    {% endif %}
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 justify-between gap-sm lg:gap-md">
+      {% for box in boxes %}
+        <div class="w-full h-full flex flex-col xs:min-h-[500px] md:min-h-[450px]">
+          {% if box.contentHtml %}
+            <div class="wysiwyg flex flex-col flex-grow p-sm" style="background-color: {% if box.colorBackground %}{{ box.colorBackground }}{% else %}var(--secondary){% endif %}; color:{% if box.colorText %}{{ box.colorText }}{% else %}var(--white){% endif %};">
+              {{ box.contentHtml|e('wp_kses_post') }}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</flynt-component>

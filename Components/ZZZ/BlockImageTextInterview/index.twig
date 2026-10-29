@@ -1,0 +1,19 @@
+<flynt-component load:on="visible" name="BlockImageTextInterview" class="interviewComponent">
+  <div class="lg:flex lg:align-start lg:justify-between lg:gap-lg p-sm lg:px-lg" {{ imagePosition ? 'data-image-position="' ~ imagePosition ~ '"' }}>
+    <div class="w-full">
+      {% if image %}
+      <img class="figure-image lazyload object-cover aspect-[2/1] h-auto"
+        src="{{ image.src }}"
+        data-srcset="{{function('wp_get_attachment_image_srcset', image.id)}}"
+        data-sizes="auto"
+        alt="{{ image.alt|e }}">
+      {% endif %}
+      {% if image.caption %}
+        <figcaption>{{ image.caption|e }}</figcaption>
+      {% endif %}
+    </div>
+    <div class="w-full wysiwyg">
+      {{ contentHtml|e('wp_kses_post') }}
+    </div>
+  </div>
+</flynt-component>

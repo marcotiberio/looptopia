@@ -1,0 +1,16 @@
+.figure {
+  margin-block-end: 0;
+
+  &[data-state='isHidden'] {
+    display: none;
+    visibility: hidden;
+  }
+
+  img {
+    @apply aspect-video;
+    @apply h-[175px];
+    @apply sm:h-[335px];
+    @apply md:h-[675px];
+    position: absolute;
+  }
+}

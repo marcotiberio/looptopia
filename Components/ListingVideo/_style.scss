@@ -1,0 +1,61 @@
+flynt-component[name='ListingVideo'] {
+  .filter-button {
+    &::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      transform: scaleX(0);
+      height: 2px;
+      bottom: 0;
+      left: 0;
+      background-color: var(--black);
+      transition: transform 0.25s ease-out;
+    }
+
+    &.text-red {
+      &::after {
+        transform: scaleX(1);
+        transform-origin: bottom right;
+      }
+    }
+
+    &:hover {
+      &::after {
+        transform: scaleX(1);
+        transform-origin: bottom right;
+      }
+    }
+  }
+
+  // .button--chevron {
+  //   @apply border-none !important;
+  //   @apply underline !important;
+
+  //   span {
+  //     &::after {
+  //       content: '';
+  //       position: absolute;
+  //       width: 100%;
+  //       transform: scaleX(1);
+  //       height: 1px;
+  //       bottom: 0;
+  //       left: 0;
+  //       background-color: var(--white);
+  //       transition: transform 0.25s ease-out;
+  //     }
+  //   }
+  // }
+
+  .post {
+    &:hover {
+      a {
+        span {
+          &::after {
+            transform: scaleX(0);
+            transform-origin: bottom right;
+          }
+        }
+      }
+    }
+  }
+}

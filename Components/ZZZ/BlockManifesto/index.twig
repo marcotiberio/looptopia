@@ -1,0 +1,70 @@
+<flynt-component load:on="visible" name="BlockManifesto" class="bg-black">
+  <div class="w-full h-[calc(100vh_-_106px)] max-w-screen-max mx-auto px-sm pt-sm pb-lg md:px-lg md:py-lg flex flex-col justify-between">
+    {% if preContentTitle %}
+      <div class="preContent">
+        <div class="preContentTitle text-black">
+          <h2>{{ preContentTitle }}</h2>
+        </div>
+      </div>
+    {% endif %}
+    <div class="mt-lg w-full max-w-screen-[1280px] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-md">
+      {% for panel in accordionPanels %}
+        <div x-cloak x-data="{ isOpen: false }" class="panel">
+          <div>
+            <div class="flex flex-row gap-sm">
+              <div class="flex flex-col gap-sm w-1/3">
+                <img class="lazyload object-cover h-[200px]"
+                  src="{{ panel.panelImage.src | resize(32) }}"
+                  data-srcset="{{function('wp_get_attachment_image_srcset', panel.panelImage.id)}}"
+                  data-sizes="auto"
+                  alt="{{ panel.panelImage.alt|e }}">
+              </div>
+              <div class="w-2/3">
+                <h3 class="text-black break-all">{{ panel.panelTitle|e }}</h3>
+                <div class="text-black wysiwyg">{{ panel.panelIntro|e('wp_kses_post') }}</div>
+              </div>
+            </div>
+            <div class="flex justify-center mt-sm">
+              <button 
+                @click="isOpen = true
+                $nextTick(() => $refs.modalCloseButton.focus())
+                " class="panel-trigger button button--plusOrange" type="button" aria-expanded="false" aria-controls="content-{{ loop.index }}">
+              </button>
+            </div>
+          </div>
+          <div 
+            x-show="isOpen" 
+            class="panel-content absolute top-0 right-0 w-full lg:w-[66vw] h-full bg-white px-sm py-md lg:px-lg lg:py-xl" 
+            x-transition:enter="transition cubic-bezier(0.19, 1, 0.22, 1) duration-800" 
+            x-transition:enter-start="opacity-0" 
+            x-transition:enter-end="opacity-100" 
+            x-transition:leave="transition cubic-bezier(0.19, 1, 0.22, 1) duration-800" 
+            x-transition:leave-start="opacity-100" 
+            x-transition:leave-end="opacity-0" 
+            aria-hidden="true" 
+            id="content-{{ loop.index }}">
+            <div class="h-full flex flex-col gap-md justify-between">
+              <div class="flex flex-row grow h-full justify-between align-start items-start gap-md">
+                <div class="w-2/3 flex flex-col grow h-full justify-between align-start items-start">
+                  <div class="h2 text-black break-all">{{ panel.panelTitle|e }}</div>
+                  <div class="cursor-pointer text-black h2" @click="isOpen = false"
+                    x-ref="modalCloseButton">
+                    ←
+                  </div>
+                </div>
+                <div class="w-1/3 h-full">
+                  <img class="lazyload w-full h-full object-cover aspect-3/4"
+                    src="{{ panel.panelImage.src | resize(32) }}"
+                    data-srcset="{{function('wp_get_attachment_image_srcset', panel.panelImage.id)}}"
+                    data-sizes="auto"
+                    alt="{{ panel.panelImage.alt|e }}">
+                </div>
+              </div>
+              <div class="text wysiwyg">{{ panel.panelContent|e('wp_kses_post') }}</div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</flynt-component>

@@ -1,0 +1,34 @@
+<flynt-component
+  load:on="visible" name="BlockFeaturedArticleTwo"
+  class="w-full mx-auto">
+  {% if posts|length %}
+    <div class="boxed grid grid-cols-1 md:grid-cols-2 divide-y-2 md:divide-x-2 md:divide-y-0 divide-black">
+      {% for post in posts %}
+        <a href="{{ post.link }}" class="no-underline">
+          <div class="max-w-screen-tablet mx-auto bg-white px-0 py-sm lg:py-sm lg:px-md flex flex-col gap-sm justify-center items-start">
+            <h2 class="font-h1">„{{ post.title }}"</h2>
+            {% if post.postIntro %}
+              <p class="font-body italic">{{ post.postIntro }}</p>
+            {% endif %}
+            <div class="w-full flex flex-row gap-xs items-center justify-start">
+              <div class="">
+                {% set postCategories = post.terms('category') %}
+                {% for term in postCategories %}
+                  <span class="font-bodySmall !mb-0 px-xs py-min bg-grei">{{ term }}{% if not loop.last %},{% endif %}</span>
+                {% endfor %}
+              </div>
+              {% if post.date %}
+                <div class="font-bodySmall !mb-0 px-xs py-min bg-grei">{{ post.date('d.m.Y') }}</div>
+              {% endif %}
+              {% if post.meta('postAuthor') %}
+                {% for author in Post(post.meta('postAuthor')) %}
+                  <span class="font-bodySmall !mb-0 px-xs py-min bg-grei">{{ author.title }}</span>
+                {% endfor %}
+              {% endif %}
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% endif %}
+</flynt-component>

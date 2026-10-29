@@ -1,0 +1,30 @@
+flynt-component[name='NavigationMainLeft'] {
+  .navigation {
+    .admin-bar & {
+      inset-block-start: var(--wp-admin--admin-bar--height);
+    }
+  }
+  
+  .submenu {
+    align-items: flex-start;
+    display: flex;
+    flex-flow: column wrap;
+    height: auto;
+    justify-content: space-between; 
+    // @apply -ml-xs;
+    // @apply bg-white;
+    position: absolute;
+    text-align: center;
+    top: 40px;
+    width: fit-content;
+    // @apply px-sm;
+    @apply pt-xs;
+    @apply pb-[7px];
+  }
+
+  .button {
+    @screen desktop {
+      font-size: 1.25rem;
+    }
+  }
+}

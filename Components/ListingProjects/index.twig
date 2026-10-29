@@ -1,0 +1,131 @@
+<flynt-component 
+  load:on="visible" 
+  name="ListingProjects" 
+  class=""
+  style="
+    color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};
+    background-color: {% if options.pageBackground %}{{ options.pageBackground }}{% else %}transparent{% endif %};">
+
+  <div class="wrapper max-w-screen-max mx-auto boxed flex flex-col gap-sm" x-data="{ 
+    selectedCategory: '', 
+    searchQuery: '', 
+    filtersOpen: false,
+    isTransitioning: false,
+    transitionDelay: 150
+  }">
+    <div class="grid grid-cols-12 gap-xs">
+      
+      <div class="flex flex-col flex-wrap justify-start col-start-1 col-end-13 lg:col-start-7 mt-sm">
+        
+        <!-- All Category Filter -->
+        <div 
+          class="font-body !mb-0 cursor-pointer hover:text-black w-fit"
+          :class="selectedCategory === '' ? 'text-black' : ''"
+          @click="
+            if (selectedCategory !== '') {
+              isTransitioning = true;
+              setTimeout(() => {
+                selectedCategory = '';
+                setTimeout(() => isTransitioning = false, transitionDelay);
+              }, transitionDelay);
+            }
+          ">
+          All
+        </div>
+        
+        {% set projektCategories = [
+          {'name': 'Strategy', 'slug': 'strategy'},
+          {'name': 'Implementation', 'slug': 'implementation'},
+          {'name': 'Communication', 'slug': 'communication'},
+        ] %}
+        {% for projektCategory in projektCategories %}
+          <div 
+            class="font-body !mb-0 cursor-pointer hover:text-black w-fit"
+            :class="selectedCategory === '{{ projektCategory.slug }}' ? 'text-black' : ''"
+            @click="
+              if (selectedCategory !== '{{ projektCategory.slug }}') {
+                isTransitioning = true;
+                setTimeout(() => {
+                  selectedCategory = '{{ projektCategory.slug }}';
+                  setTimeout(() => isTransitioning = false, transitionDelay);
+                }, transitionDelay);
+              }
+            ">
+            {{ projektCategory.name }}
+          </div>
+        {% endfor %}
+      </div>            
+    </div>
+
+    <!-- Posts Grid -->
+    <div class="">
+      <div class="flex flex-wrap flex-row justify-start gap-x-xs gap-y-md">
+        {% for item in projects %}
+          {% set project = item.project %}
+          {% set projektCategoryTerms = project.terms('category') %}
+          {% set hardcodedCategories = {
+            'Strategy': 'strategy',
+            'Implementation': 'implementation', 
+            'Communication': 'communication',
+          } %}
+          {% set postCategorySlugs = projektCategoryTerms|map(term => hardcodedCategories[term.name]|default(term.name|lower|replace({' ' : '-'}))) %}
+          <div 
+            class="post {{ item.width }} hover:cursor-pointer transition-opacity duration-300 [&_h2]:hover:text-black [&_.customText]:hover:text-black [&_.customText]:hover:opacity-100" 
+            x-show="(selectedCategory === '' || ['{{ postCategorySlugs|join("','") }}'].includes(selectedCategory)) && 
+                    (searchQuery === '' || '{{ project.title|lower }}'.includes(searchQuery.toLowerCase()))"
+            :class="isTransitioning ? 'opacity-0' : 'opacity-100'"
+          >
+            <a class="flex flex-col gap-xs w-full no-underline" href="{{ project.link }}" aria-label="Go to project">
+              {% if project.featVideo %}
+                <video class="figure-video object-cover lg:!h-[30.4vw]"
+                  autoplay 
+                  muted 
+                  loop 
+                  playsinline 
+                  preload="metadata"
+                  src="{{ project.featVideo.url }}"
+                  style="width:100%;height:auto;">
+                  Your browser does not support the video tag.
+                </video>
+              {% elseif project.featVideoEmbed %}
+                <div class="video-wrapper w-full h-full lg:!h-[30.4vw]">
+                  <div data-ref="videoPlayer" class="video-player w-full mx-auto" data-state="isLoaded">
+                    {{ project.featVideoEmbed }}
+                    <div class="video-loader"></div>
+                    <button data-ref="playButton" class="video-playButton" type="button" aria-label="Play Video"></button>
+                  </div>
+                </div>
+              {% elseif project.featImageAlt %}
+                <img 
+                  class="figure-image lazyload object-cover lg:!h-[30.4vw]"
+                  src="{{ project.featImageAlt.src }}"
+                  alt="{{ project.featImageAlt.alt|e | default('') }}"
+                  loading="lazy"
+                  style="opacity: 0; transition: opacity 0.5s ease-in-out;"
+                  onload="this.style.opacity='1'"
+                  aria-label="Go to project"
+                />
+              {% else %}
+                <img 
+                  class="figure-image lazyload object-cover"
+                  src="{{ project.thumbnail.src }}"
+                  alt="{{ project.thumbnail.alt|e | default('') }}"
+                  loading="lazy"
+                  style="opacity: 0; transition: opacity 0.5s ease-in-out;"
+                  onload="this.style.opacity='1'"
+                  aria-label="Go to project"
+                />
+              {% endif %}
+              <div class="flex flex-col">
+                <h2 class="font-body !mb-0">{{ project.title }}</h2>
+                <div class="flex flex-row gap-[5px]">
+                  <span class="customText opacity-0 font-bodySmall !mb-0">{{ project.postCustomText }}</span>
+                </div>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</flynt-component>

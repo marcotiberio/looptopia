@@ -1,0 +1,11 @@
+flynt-component[name='BlockMultipleBoxesSimple'] {
+  .accordion {
+    @include reset-list;
+  }
+
+  .wysiwyg {
+    p:last-child {
+      @apply mb-0;
+    }
+  }
+}

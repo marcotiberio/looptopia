@@ -1,0 +1,203 @@
+// Program list rows. Column widths come from the Figma "Programm Liste"
+// frame (1136px content width) and have no equivalent in the Tailwind token
+// scale, so they are kept as component-scoped values here; colours reference
+// theme tokens. The filter bar above the list is shared with the map overlay
+// (assets/styles/_eventFilters.scss).
+$row-gap: 20px;
+$row-image-width: 200px;
+$row-schedule-width: 150px;
+$row-meta-width: 211px;
+$badge-size: 57px;
+$badge-icon-size: 32px;
+$small-font-size: 12px;
+$icon-size: 24px;
+
+.listing-events {
+  font-family: var(--primary-font-family);
+
+  &__filters {
+    margin-bottom: 10px;
+    padding-block: 10px;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__row {
+    border-bottom: 1px solid var(--grey-200);
+    display: grid;
+    gap: $row-gap;
+    grid-template-areas:
+      'media'
+      'schedule'
+      'title'
+      'tags'
+      'meta';
+    grid-template-columns: minmax(0, 1fr);
+    padding-block: $row-gap;
+    position: relative;
+
+    &:last-child {
+      border-bottom: 0;
+    }
+
+    &:hover .listing-events__title a {
+      text-decoration: underline;
+    }
+
+    @media (min-width: theme('screens.tablet')) {
+      align-items: start;
+      column-gap: $row-gap;
+      grid-template-areas:
+        'media schedule'
+        'media title'
+        'media tags'
+        'media meta';
+      grid-template-columns: $row-image-width minmax(0, 1fr);
+      row-gap: 12px;
+    }
+
+    @media (min-width: theme('screens.desktop')) {
+      column-gap: $row-gap;
+      grid-template-areas: 'media schedule title tags meta';
+      // Title and tags share the remaining space evenly.
+      grid-template-columns:
+        $row-image-width
+        $row-schedule-width
+        minmax(0, 1fr)
+        minmax(0, 1fr)
+        $row-meta-width;
+      row-gap: 0;
+    }
+  }
+
+  // ---- Media ----
+
+  &__media {
+    aspect-ratio: 197 / 126;
+    background-color: var(--grey-200);
+    border-radius: 12px;
+    grid-area: media;
+    overflow: hidden;
+    position: relative;
+  }
+
+  &__image {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  // Program-type glyph, matching the map pins.
+  &__badge {
+    align-items: center;
+    background-color: var(--white);
+    border-radius: 9px;
+    display: flex;
+    height: $badge-size;
+    justify-content: center;
+    position: absolute;
+    right: 11px;
+    top: 11px;
+    width: $badge-size;
+
+    img {
+      height: $badge-icon-size;
+      width: $badge-icon-size;
+    }
+  }
+
+  // ---- Text columns ----
+
+  &__schedule {
+    font-size: 16px;
+    font-weight: 600;
+    grid-area: schedule;
+    line-height: 1.2;
+  }
+
+  &__schedule-row {
+    margin-bottom: 0;
+
+    span {
+      display: block;
+    }
+
+    & + & {
+      margin-top: 8px;
+    }
+  }
+
+  &__title {
+    grid-area: title;
+    margin-bottom: 0;
+
+    // The title link covers the row, so the whole row is clickable.
+    a::after {
+      content: '';
+      inset: 0;
+      position: absolute;
+    }
+  }
+
+  &__tags {
+    align-content: start;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    grid-area: tags;
+  }
+
+  &__tag {
+    background-color: theme('colors.greenFaded');
+    border-radius: 8px;
+    font-size: $small-font-size;
+    font-weight: 500;
+    padding: 2px 6px;
+
+    &--primary {
+      background-color: var(--green);
+    }
+  }
+
+  &__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    grid-area: meta;
+
+    p {
+      font-size: 1rem !important;
+    }
+  }
+
+  &__address p {
+    margin-bottom: 0;
+  }
+
+  &__org {
+    font-weight: 600;
+  }
+
+  &__icons {
+    display: flex;
+    gap: 12px;
+
+    img {
+      height: $icon-size;
+      width: $icon-size;
+    }
+  }
+
+  &__empty {
+    background-color: theme('colors.greenFaded');
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 0;
+    padding: 8px 18px;
+    width: fit-content;
+  }
+}

@@ -1,0 +1,30 @@
+flynt-component[name='BlockMultipleBoxes'] {
+  .accordion {
+    @include reset-list;
+  }
+
+  .panel {
+    &[aria-expanded='true'] {
+      &::after {
+        transform: rotateX(180deg);
+      }
+    }
+
+    // do not add margins or padding to this, it will break the layout
+    &-content {
+      margin: 0 auto;
+      transition: all 0.3s ease-in-out;
+      z-index: 1;
+    }
+  }
+
+  .rotate180 {
+    transform: rotate(180deg);
+  }
+
+  .title {
+    p {
+      @apply mb-0;
+    }
+  }
+}

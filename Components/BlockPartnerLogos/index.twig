@@ -1,0 +1,80 @@
+<flynt-component
+  load:on="idle" name="BlockPartnerLogos"
+  class="w-full boxed flex flex-col gap-md"
+  style="
+    color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};">
+  <div class="flex flex-col gap-md">
+    {% if blockTitle %}
+      <div class="font-h1">
+        {{ blockTitle }}
+      </div>
+    {% endif %}
+    <div 
+      class="w-full boxed flex flex-col gap-lg rounded"
+      style="
+        background-color: {% if options.colorBackground %}{{ options.colorBackground }}{% else %}transparent{% endif %};">
+      {% for row in logoRows %}
+        <div class="flex flex-col gap-sm">
+          {% if row.blockTitle %}
+            <h3 class="font-h3">{{ row.blockTitle }}</h3>
+          {% endif %}
+          <div
+            class="
+              grid gap-sm justify-items-center items-stretch
+              grid-cols-2
+              {% if row.columns == '3' %}sm:grid-cols-3{% endif %}
+              {% if row.columns == '4' %}sm:grid-cols-2 lg:grid-cols-4{% endif %}
+              {% if row.columns == '5' %}sm:grid-cols-3 lg:grid-cols-5{% endif %}
+              {% if row.columns == '6' %}sm:grid-cols-3 lg:grid-cols-6{% endif %}">
+            {% for item in row.logos %}
+              {% if item.logo %}
+                <div class="item flex justify-center items-center w-full h-full bg-white rounded p-xs md:py-sm md:px-sm">
+                  {% if item.logoLink %}
+                    <a class="w-full h-full flex items-center justify-center" href="{{ item.logoLink }}" target="_blank" rel="noreferrer noopener">
+                      <img class="figure-image lazyload w-full h-full max-h-[80px] object-contain"
+                        src="{{ item.logo.src | resize(95) }}"
+                        alt="{{ item.logo.alt|e | default('Partner logo') }}"
+                        data-srcset="{{ function('wp_get_attachment_image_srcset', item.logo.id) }}"
+                        data-sizes="auto">
+                    </a>
+                  {% else %}
+                    <img class="figure-image lazyload w-full h-full max-h-[80px] object-contain"
+                      src="{{ item.logo.src | resize(95) }}"
+                      alt="{{ item.logo.alt|e | default('Partner logo') }}"
+                      data-srcset="{{ function('wp_get_attachment_image_srcset', item.logo.id) }}"
+                      data-sizes="auto">
+                  {% endif %}
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+
+      {% if contentHtml or buttonLink %}
+        <div class="flex flex-col items-center gap-sm">
+          {% if contentHtml %}<div class="wysiwyg">{{ contentHtml|e('wp_kses_post') }}</div>{% endif %}
+          {% if buttonLink %}
+            <a class="button button--green" href="{{ buttonLink.url }}"
+              {% if buttonLink.target %} target="{{ buttonLink.target }}" rel="noreferrer noopener"{% endif %}>
+              {{ buttonLink.title }}
+            </a>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if badge %}
+        <div class="flex flex-col items-start">
+          {% if badgeLink %}
+            <a href="{{ badgeLink }}" target="_blank" rel="noreferrer noopener">
+              <img class="w-[136px] h-[136px] object-contain" src="{{ badge.src }}" alt="{{ badge.alt|e | default('') }}">
+            </a>
+          {% else %}
+            <img class="w-[136px] h-[136px] object-contain" src="{{ badge.src }}" alt="{{ badge.alt|e | default('') }}">
+          {% endif %}
+          {% if badgeCaption %}<span class="font-body !mb-0">{{ badgeCaption }}</span>{% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</flynt-component>

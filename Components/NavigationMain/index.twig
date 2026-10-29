@@ -1,0 +1,20 @@
+<flynt-component load:on="idle" name="NavigationMain" class="w-full flex justify-start items-center">
+  <nav class="navigation z-[99] w-full" aria-label="{{ labels.ariaLabel|e }}">
+    <div class="flex flex-row items-center justify-between gap-lg h-full w-full">
+      <div class="flex flex-row gap-xs items-center w-full">
+        {% include 'Partials/_logo.twig' with { 'logo': logo, 'site': site } only %}
+        {% if menu %}
+          {% include 'Partials/_menu.twig' with { 'items': menu.items } only %}
+        {% endif %}
+        {% if ctaLink %}
+          <a 
+            class="button button--fullOrange" 
+            href="{{ ctaLink.url }}" 
+            {% if ctaLink.target %} target="{{ ctaLink.target }}" rel="noreferrer noopener"{% endif %}>
+            {{ ctaLink.title }}
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+</flynt-component>

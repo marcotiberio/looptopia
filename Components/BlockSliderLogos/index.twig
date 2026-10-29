@@ -1,0 +1,32 @@
+<flynt-component
+  load:on="load" name="BlockSliderLogos"
+  class="overflow-hidden"
+  style="background-color: {% if options.colorBackground %}{{ options.colorBackground }}{% else %}transparent{% endif %};">
+  <script type="application/json">{{ jsonData|json_encode }}</script>
+  <div class="boxed !min-h-auto px-0 w-full fade-in">
+    {% if blockTitle %}
+      <h3 class="mb-xxl">{{ blockTitle }}</h3>
+    {% endif %}
+
+    <div 
+      data-ref="marquee" 
+      class="marquee-container relative w-full overflow-hidden"
+      style="--marquee-fade-color: {% if options.colorBackground %}{{ options.colorBackground }}{% else %}rgba(255, 255, 255, 1){% endif %};">
+      <div data-ref="marqueeContent" class="marquee-content inline-flex items-center gap-md md:gap-xl">
+        {% for box in contentBoxes %}
+          <figure class="figure flex-shrink-0 inline-block">
+            {% if box.panelLogo %}
+              <img 
+                class="logo lazyload object-contain block"
+                style="min-width: 100px; width: 100px; height: auto;"
+                src="{{ box.panelLogo.src | resize(32) }}"
+                data-srcset="{{function('wp_get_attachment_image_srcset', box.panelLogo.id)}}"
+                data-sizes="auto"
+                alt="{{ box.panelLogo.alt|e | default('Logo') }}">
+            {% endif %}
+          </figure>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</flynt-component>

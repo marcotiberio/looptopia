@@ -1,0 +1,116 @@
+flynt-component[name='HeroContactForm'] {
+  .wpcf7 {
+    align-items: flex-start;
+    display: flex;
+    justify-content: flex-start;
+
+    label {
+      color: var(--black);
+    }
+
+    form {
+      align-items: flex-start;
+      display: flex;
+      justify-content: flex-start;
+      width: 100%;
+    }
+
+    &-list-item {
+      margin: 0 20px 0 0;
+
+      label {
+        align-items: center;
+        display: flex;
+
+        input {
+          margin-block-start: 0;
+        }
+      }
+    }
+
+    &-spinner {
+      display: none;
+    }
+
+    &-not-valid-tip {
+      @apply caption;
+    }
+
+    &-response-output {
+      bottom: 0;
+      position: absolute;
+    }
+
+    #{$input-selectors} {
+      appearance: none;
+      background-color: transparent;
+      border: 3px solid var(--black);
+      border-radius: 0;
+      caret-color: var(--black);
+      color: var(--black);
+      font-size: var(--body-font-size-small);
+      margin-bottom: 0;
+      max-width: 100%;
+      outline: none;
+      padding: 10px;
+      transition: border-color 0.3s ease-in-out;
+      width: 100%;
+    
+      &::placeholder {
+        color: var(--black);
+        opacity: 0.5;
+      }
+    
+      &:disabled {
+        cursor: default;
+        opacity: 0.5;
+        pointer-events: none;
+      }
+    
+      &:invalid {
+        border-color: var(--color-error);
+      }
+    }
+
+    input {
+      @apply px-0;
+      @apply py-0;
+
+      @media (max-width: theme('screens.tablet')) {
+        max-width: 200px;
+      }
+    }
+
+    input[type='submit'] {
+      @include reset-link;
+      @apply appearance-none;
+      @apply cursor-pointer;
+      @apply flex;
+      @apply gap-sm;
+      @apply items-center;
+      @apply no-underline;
+      @apply px-sm;
+      @apply py-[10px];
+      @apply mt-md;
+      @apply relative;
+      @apply rounded-full;
+      @apply text-center;
+      @apply transition-all;
+      @apply ease-linear;
+      @apply duration-200;
+      @apply h-fit;
+      @apply w-fit;
+      @apply z-50;
+      @apply bg-black;
+      @apply hover:bg-black;
+      @apply text-black;
+      @apply hover:text-black;
+    }
+
+    #mfcf7_zl_add_file {
+      border: 3px solid var(--black);
+      font-size: 1.5rem !important;
+      padding: 10px 20px !important;
+    }
+  }
+}

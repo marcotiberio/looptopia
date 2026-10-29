@@ -1,0 +1,36 @@
+<flynt-component 
+  load:on="visible" 
+  name="BlockPdfDownload" 
+  style="
+    color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};
+    background-color: {% if options.colorBackground %}{{ options.colorBackground }}{% else %}transparent{% endif %};">
+  <div class="wrapper max-w-screen-max mx-auto">
+    <div class=" {% if image %}min-h-[350px] md:min-h-[550px]{% endif %} h-auto flex align-start justify-start md:justify-between" {{ imageAlignment ? 'data-image-alignment="' ~ imageAlignment ~ '"' }} {{ imagePosition ? 'data-image-position="' ~ imagePosition ~ '"' }}>
+      <div class="w-auto lg:w-1/2 h-auto flex flex-col">
+        {% if image %}
+          <img class="lazyload h-full w-full object-cover"
+            src="{{ image.src | resize(32) }}"
+            data-srcset="{{function('wp_get_attachment_image_srcset', image.id)}}"
+            data-sizes="auto"
+            alt="{{ image.alt|e }}">
+        {% endif %}
+        {# {% if image.title or image.caption %}
+        <div class="py-[5px]">
+          <figcaption class="font-bodySmall">{{ image.title|e }}</figcaption>
+          <figcaption class="font-bodySmall underline underline-offset-4">{{ image.caption|e }}</figcaption>
+        </div>
+        {% endif %} #}
+      </div>
+      <div class="w-full lg:w-1/2 h-full flex flex-col justify-between boxed">
+        {% if contentHtml %}
+          <div class="wysiwyg">{{ contentHtml|e('wp_kses_post') }}</div>
+        {% endif %}
+        <div class="flex flex-row gap-xs">
+          {% if LinkFileButton %}
+            <a class="button button--outline mt-sm" href="{{LinkFileButton.url}}" target="_blank" rel="noreferrer noopener">{{LinkFileButton.title}}</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</flynt-component>

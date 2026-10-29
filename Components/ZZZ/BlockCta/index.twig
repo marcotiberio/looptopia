@@ -1,0 +1,27 @@
+<flynt-component
+  load:on="idle" 
+  name="BlockCta" 
+  class="w-full" 
+  style="
+    color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};
+    background-color: {% if options.colorBackground %}{{ options.colorBackground }}{% else %}transparent{% endif %};"
+  >
+  <div class="w-full max-w-screen-max mx-auto py-md px-sm md:py-xl md:px-lg flex flex-col justify-center align-middle items-center gap-md">
+    {% if contentHtml or buttonLink %}
+      <div class="wysiwyg">{{ contentHtml|e('wp_kses_post') }}</div>
+      <a class="button button--grey" href="{{buttonLink.url}}">{{buttonLink.title}}</a>
+      <div class="flex flex-col items-center gap-xs">
+        {% if socialMediaTitle %}
+          <div class="font-body">{{ socialMediaTitle }}</div>
+        {% endif %}
+        <div class="flex flex-row gap-sm">
+          {% for socials in social %}
+            <a class="socialList-link" href="{{ socials.url }}" target="_blank" aria-label="{{ socials.platform.label }}">
+              <div class="text-textColor [&_circle]:hover:fill-hoverButtonColor" data-icon="{{ socials.platform.label|lower|replace({'/': "", ' ': ""}) }}"></div>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</flynt-component>

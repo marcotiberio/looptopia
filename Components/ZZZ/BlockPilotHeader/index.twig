@@ -1,0 +1,16 @@
+<flynt-component load:on="visible" name="BlockPilotHeader">
+  <div class="w-full max-w-screen-max mx-auto boxed flex flex-col gap-sm">
+    {# {% if post.thumbnail %}
+    <div class="featuredImage w-full grow">
+      <img class="figure-image lazyload object-cover aspect-square md:aspect-2/1 h-auto"
+        src="{{ post.thumbnail.src }}"
+        data-srcset="{{function('wp_get_attachment_image_srcset', post.thumbnail.id)}}"
+        data-sizes="auto">
+    </div>
+    {% endif %} #}
+    <div class="h-auto lg:h-auto w-full grow flex flex-col justify-start gap-sm">
+      <div class="font-h2">{{ post.title }}</div>
+      <div class="h3 text-black">{{ post.partner }}</div>
+    </div>
+  </div>
+</flynt-component>

@@ -1,0 +1,49 @@
+{% if items|length > 0 %}
+  <flynt-component load:on="visible" name="BlockRelatedBlog" class="">
+    <div class="wrapper max-w-screen-max mx-auto boxed flex flex-col gap-sm" x-data="{ selectedCategories: [] }">
+      
+      {% if headlineTitle %}
+        <div class="max-w-screen-lg mx-auto font-heroSubtitle text-center" style="color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};">
+          {{ headlineTitle }}
+        </div>
+      {% endif %}
+
+      <!-- Posts Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-sm gap-y-lg">
+        {% for item in items %}
+          <a 
+            class="w-full [&_img]:hover:brightness-110 transition duration-200 ease-in-out" 
+            href="{{ item.link }}" 
+            {% for term in item.terms('blog-category') %}
+              aria-label="{{ item.title }} {{ term|lower|replace({' ' : '-'}) }}"
+              x-show="selectedCategories.length === 0 || selectedCategories.includes('{{ term|lower|replace({' ' : '-'}) }}')">
+            {% endfor %}
+            
+            
+            <div class="post w-full flex flex-col gap-xs justify-between items-center">
+              {% if item.thumbnail %}
+                <img 
+                  class="lazyload transition duration-200 ease-in-out h-[250px] lg:h-[350px] object-cover" 
+                  src="{{ item.thumbnail.src }}"
+                  data-srcset="{{ function('wp_get_attachment_image_srcset', item.thumbnail.id) }}"
+                  data-sizes="auto"
+                  alt="{{ item.title }}">
+              {% endif %}
+              
+              <div class="content w-full flex flex-col gap-xs md:gap-sm justify-start" style="color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};">
+                <div class="flex flex-row gap-md">
+                  <span>{{ item.date|date("d.m.y")|escape('wp_kses_post') }}</span>
+                  {% for term in item.terms('blog-category') %}
+                    <span>{{ term|upper}}</span>
+                  {% endfor %}
+                </div>
+                <div class="w-full md:w-3/4 font-smallTitle !mb-0">{{ item.title }}</div>
+                <button class="button button--fullPost" href="{{ item.link }}" aria-label="{{ item.title }}">Lesen</button>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endif %}

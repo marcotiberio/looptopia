@@ -1,0 +1,30 @@
+<flynt-component 
+  load:on="visible" 
+  name="GridImages"
+  style="background-color:{% if options.colorBackground %}{{ options.colorBackground }}{% else %}var(--transparent){% endif %};">
+  <div class="boxed max-w-screen-max mx-auto flex flex-col gap-sm">
+    {% if title %}
+      <div class="font-h2">{{ title }}</div>
+    {% endif %}
+    <div 
+      class="w-full mx-auto grid gap-xs"
+      data-ref="imageGrid"
+      {{ options.gridColumns ? 'data-grid-columns="' ~ options.gridColumns ~ '"' }}>
+      {% for item in items %}
+        <div class="flex flex-col">
+          {% if item.image %}
+            <figure class="figure figureImage w-full cursor-pointer" data-ref="imageItem" data-image-index="{{ loop.index0 }}">
+              <img class="lazyload w-full mx-auto h-auto object-cover aspect-4/3"
+                src="{{ item.image.src | resize(32) }}"
+                data-srcset="{{function('wp_get_attachment_image_srcset', item.image.id)}}"
+                data-sizes="auto"
+                data-lightbox-src="{{ item.image.src }}"
+                data-lightbox-srcset="{{function('wp_get_attachment_image_srcset', item.image.id)}}"
+                alt="{{ item.image.alt|e }}">
+            </figure>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</flynt-component>

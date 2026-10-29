@@ -1,0 +1,75 @@
+flynt-component[name='blockGalleryEvent'] {
+  height: auto;
+  scroll-margin-top: 96px;
+
+  @screen tablet {
+    padding: theme('spacing.large') theme('spacing.large') 0;
+  }
+
+  .wrapper {
+    align-items: center;
+    display: flex;
+    flex-flow: row wrap;
+    gap: theme('spacing.small');
+    margin-block-start: 0;
+    padding-bottom: theme('spacing.small');
+
+    @media (min-width: calc(theme('screens.mobile') + 1px)) {
+      gap: theme('spacing.large');
+      padding-bottom: theme('spacing.large');
+    }
+
+    @screen desktop {
+      gap: theme('spacing.large');
+      padding-bottom: theme('spacing.large');
+    }
+  }
+
+  .box {
+    align-items: flex-start;
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+    transition: all 0.2s linear;
+
+    @media (min-width: calc(theme('screens.mobile') + 1px)) {
+      margin-bottom: theme('spacing.large');
+      width: 45%;
+    }
+
+    &-inner {
+      height: 100%;
+      position: relative;
+      text-align: center;
+      transition: transform 0.2s linear;
+      width: 100%;
+
+      &--image {
+        figure {
+          height: 100%;
+          margin: 0;
+
+          img {
+            height: 100%;
+            object-fit: cover;
+          }
+        }
+      }
+
+      &--content {
+        align-items: flex-start;
+        flex-flow: column;
+        justify-content: space-between;
+        padding: theme('spacing.small') 0;
+        text-align: left;
+        transition: all 0.2s linear;
+        width: 100%;
+
+        @media (max-width: calc(theme('screens.desktop') - 1px)) {
+          display: flex;
+          position: relative;
+        }
+      }
+    }
+  }
+}

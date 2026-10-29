@@ -1,0 +1,166 @@
+flynt-component[name='GridImages'] {
+  [data-grid-columns='1'] {
+    @apply grid-cols-2;
+    @apply sm:grid-cols-1;
+    @apply lg:grid-cols-1;
+
+    figure {
+      img {
+        @apply aspect-4/3;
+      }
+    }
+  }
+
+  [data-grid-columns='2'] {
+    @apply grid-cols-2;
+    @apply sm:grid-cols-2;
+    @apply lg:grid-cols-2;
+
+    figure {
+      img {
+        @apply aspect-4/3;
+      }
+    }
+  }
+
+  [data-grid-columns='3'] {
+    @apply grid-cols-2;
+    @apply sm:grid-cols-2;
+    @apply lg:grid-cols-3;
+
+    figure {
+      img {
+        @apply aspect-4/3;
+      }
+    }
+  }
+
+  [data-grid-columns='4'] {
+    @apply grid-cols-2;
+    @apply sm:grid-cols-2;
+    @apply lg:grid-cols-4;
+
+    figure {
+      img {
+        @apply aspect-4/3;
+      }
+    }
+  }
+
+  [data-grid-columns='5'] {
+    @apply grid-cols-2;
+    @apply sm:grid-cols-3;
+    @apply lg:grid-cols-5;
+
+    figure {
+      img {
+        @apply aspect-4/3;
+      }
+    }
+  }
+
+  // .figureImage {
+  //   position: relative;
+
+  //   &::before {
+  //     border-bottom: 40px solid transparent;
+  //     border-left: 40px solid transparent;
+  //     border-right: 40px solid var(--grey);
+  //     border-top: 40px solid transparent;
+  //     bottom: -40px;
+  //     content: '';
+  //     height: 0;
+  //     left: calc(100% - 79px);
+  //     position: absolute;
+  //     width: 0;
+  //     z-index: 1000;
+  //   }
+  // }
+
+
+  // Make images clickable
+  .figureImage {
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+}
+
+// basicLightbox custom styles
+.grid-images-lightbox {
+  .lightbox-close {
+    position: absolute;
+    top: theme('spacing.xs', 1rem);
+    right: theme('spacing.xs', 1rem);
+    color: white;
+    font-family: var(--font-body, inherit);
+    font-size: 1.5rem;
+    line-height: 1;
+    width: theme('spacing.md', 2rem);
+    height: theme('spacing.md', 2rem);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 10001;
+    padding: 0;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  .lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-family: var(--font-h2, inherit);
+    font-size: 2rem;
+    line-height: 1;
+    width: theme('spacing.lg', 3rem);
+    height: theme('spacing.lg', 3rem);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 10001;
+    padding: 0;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    &.lightbox-prev {
+      left: theme('spacing.md', 1rem);
+    }
+
+    &.lightbox-next {
+      right: theme('spacing.md', 1rem);
+    }
+  }
+
+  .lightbox-content {
+    width: auto;
+    height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lightbox-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    cursor: pointer;
+  }
+}

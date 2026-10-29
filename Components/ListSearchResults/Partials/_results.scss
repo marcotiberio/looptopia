@@ -1,0 +1,13 @@
+.results {
+  @include reset-list;
+  margin-block-start: calc(var(--component-spacing) / 2);
+
+  footer {
+    text-align: end;
+  }
+}
+
+.noResults {
+  margin-block-start: calc(var(--component-spacing) / 2);
+  text-align: center;
+}

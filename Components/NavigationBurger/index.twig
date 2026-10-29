@@ -1,0 +1,67 @@
+<flynt-component 
+  load:on="idle"
+  {# client:media="(max-width: 1023px)" #}
+  name="NavigationBurger"
+  class="block lg:hidden fixed top-0 left-0 w-screen z-50 flex-row justify-between mx-auto bg-white">
+  <nav aria-label="{{ labels.ariaLabel|e }}" class="h-auto w-full">
+    <div class="w-full h-auto max-w-screen-max mx-auto !px-sm !min-h-fit grid grid-cols-2 lg:gap-sm align-middle items-center z-[3001] relative bg-white">
+      {% include 'Partials/_logo.twig' with { 'logo': logo, 'site': site } only %}
+      {% if menu %}
+        <div class="flex justify-end items-center">
+          {% include 'Partials/_hamburger.twig' with { 'labels': labels } only %}
+        </div>
+      {% endif %}
+    </div>
+    {% if menu %}
+      <div
+        data-ref="menu" 
+        class="menu w-full h-auto !pt-[50px] z-40 relative bg-white">
+        <div class="w-full h-full max-w-screen-max mx-auto flex flex-col justify-start items-start gap-xs px-xs py-xs">
+          {% for item in menu.items %}
+            {# regular menu item #}
+            {% if not item.children %}
+              <div class="item {{- item.current ? ' current-menu-item underline underline-offset-4' }}">
+                <a class="link font-h3" href="{{ item.link }}" {{ item.target == '_blank' ? 'target="_blank" rel="noopener noreferrer"' }}>
+                  {{ item.title }}
+                </a>
+              </div>
+            {% endif %}
+            {# menu with submenu item #}
+            {% if item.children %}
+              <div class="item open-submenu {{- item.current ? ' current-menu-item underline underline-offset-4' }}" >
+                <a class="link font-h3" href="{{ item.link }}" {{ item.target == '_blank' ? 'target="_blank" rel="noopener noreferrer"' }}>
+                  {{ item.title }}
+                </a>
+                <div class="submenu">
+                  {% for subitem in item.children %}
+                    <div class="item {{- subitem.current ? ' current-menu-item underline underline-offset-4' }}">
+                      <a class="link !p-0 font-menu" href="{{ subitem.link }}" {{ subitem.target == '_blank' ? 'target="_blank" rel="noopener noreferrer"' }}>{{ subitem.title }}</a>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        {# Footer Links Section #}
+        {# <div class="w-full px-xs">
+          <div class="flex !px-0 py-sm border-t justify-between items-start">
+            <div class="flex flex-col gap-xs">
+              {% for footerLink in footerLinks %}
+                {% if footerLink.menuLink %}
+                  <a 
+                    class="" 
+                    href="{{ footerLink.menuLink.url }}" 
+                    {% if footerLink.menuLink.target %} target="{{ footerLink.menuLink.target }}" rel="noreferrer noopener"{% endif %}>
+                    {{ footerLink.menuLink.title }}
+                  </a>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        </div> #}
+      </div>
+    {% endif %}
+  </nav>
+</flynt-component>

@@ -1,0 +1,16 @@
+flynt-component[name='ListingLernen'] {
+  .post {
+    &:hover {
+      .button {
+        &--outline {
+          @apply text-white;
+          @apply bg-black;
+  
+          &::after {
+            @apply invert;
+          }
+        }
+      }
+    }
+  }
+}

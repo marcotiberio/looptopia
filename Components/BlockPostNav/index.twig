@@ -1,0 +1,41 @@
+<flynt-component 
+  load:on="visible" name="BlockPostNav" 
+  class="w-full mx-auto flex flex-col justify-between items-center">
+  <nav class="post-navigation boxed grid grid-cols-2 sm:grid-cols-3 gap-xs">
+    {% if post.prev %}
+      <a class="post-navigation__prev flex justify-start items-center gap-xs row-start-1 sm:row-auto" href="{{ post.prev.link }}">
+        <svg class="w-fit" width="21" height="14" viewBox="0 0 21 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20.0176 6.99964L1.9993 6.99964M1.9993 6.99964L8.61075 13.1152M1.9993 6.99964L8.61076 0.88405" stroke="#303030" stroke-width="1.74731"/>
+        </svg>
+        <span class="font-label uppercase">{{ labels.prevButton }}</span>
+      </a>
+    {% else %}
+      <span></span>
+    {% endif %}
+    <div class="flex justify-center items-center col-span-2 sm:col-span-1">
+      {% if post.type == 'post' %}
+        <a class="button button--outline button--outlineNoArrow h-fit z !font-bold" href="{{ labels.allArticlesBlogLink.url }}"{% if labels.allArticlesBlogLink.target %} target="{{ labels.allArticlesBlogLink.target }}" rel="noreferrer noopener"{% endif %}>
+          {{ labels.allArticlesBlogLink.title|e }}
+        </a>
+      {% endif %}
+      {% if post.type == 'event' %}
+        <a class="button button--outline button--outlineNoArrow h-fit !font-bold" href="{{ labels.allArticlesEventsLink.url }}"{% if labels.allArticlesEventsLink.target %} target="{{ labels.allArticlesEventsLink.target }}" rel="noreferrer noopener"{% endif %}>
+          {{ labels.allArticlesEventsLink.title|e }}
+        </a>
+      {% endif %}
+      {% if post.type == 'lernen' %}
+        <a class="button button--outline button--outlineNoArrow h-fit !font-bold" href="{{ labels.allArticlesLernenLink.url }}"{% if labels.allArticlesLernenLink.target %} target="{{ labels.allArticlesLernenLink.target }}" rel="noreferrer noopener"{% endif %}>
+          {{ labels.allArticlesLernenLink.title|e }}
+        </a>
+      {% endif %}
+    </div>
+    {% if post.next %}
+      <a class="post-navigation__next flex justify-end items-center gap-xs row-start-1 sm:row-auto" href="{{ post.next.link }}">
+        <span class="font-label uppercase">{{ labels.nextButton }}</span>
+        <svg class="w-fit" width="20" height="14" viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0.105469 6.99938L18.1237 6.99938M18.1237 6.99938L11.5123 0.883789M18.1237 6.99938L11.5123 13.115" stroke="#303030" stroke-width="1.74731"/>
+        </svg>
+      </a>
+    {% endif %}
+  </nav>
+</flynt-component>

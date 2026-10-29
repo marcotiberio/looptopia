@@ -1,0 +1,13 @@
+<flynt-component load:on="visible" name="BlockPress" class="boxed mx-auto flex flex-row align-top justify-center gap-sm md:gap-lg">
+  {% if pressYear %}
+    <div class="font-bold">{{ pressYear }}</div>
+  {% endif %}
+  <div class="boxed flex flex-col gap-sm">
+    {% for column in columnTexts %}
+      <a href="{{ column.articleLink }}" target="_blank" class="text-black hover:text-white hover:bg-black border hover:border-black p-sm">
+        <div class="font-bold">{{ column.articleTitle }}</div>
+        <div>{{ column.articleDescription }}</div>
+      </a>
+    {% endfor %}
+  </div>
+</flynt-component>

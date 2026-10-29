@@ -1,0 +1,44 @@
+.pagination {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5625rem;
+  justify-content: space-between;
+  margin-block-start: calc(var(--component-spacing) / 2);
+
+  .button {
+    margin-block-start: 0;
+
+    &-next {
+      margin-inline-start: auto;
+
+      &::after {
+        border-block-start: 2px solid currentColor;
+        border-inline-end: 2px solid currentColor;
+        content: '';
+        display: inline-block;
+        height: 0.5em;
+        margin-block-end: 0.07em;
+        margin-inline-start: 0.5em;
+        transform: rotate(45deg);
+        vertical-align: baseline;
+        width: 0.5em;
+      }
+    }
+
+    &-previous {
+      &::before {
+        border-block-start: 2px solid currentColor;
+        border-inline-start: 2px solid currentColor;
+        content: '';
+        display: inline-block;
+        height: 0.5em;
+        margin-block-end: 0.07em;
+        margin-inline-end: 0.5em;
+        transform: rotate(-45deg);
+        vertical-align: baseline;
+        width: 0.5em;
+      }
+    }
+  }
+}

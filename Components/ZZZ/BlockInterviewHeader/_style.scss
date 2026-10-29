@@ -1,0 +1,10 @@
+flynt-component[name='BlockInterviewHeader'] {
+  a {
+    color: var(--black);
+  
+    &::before {
+      content: '↦';
+      margin-right: 10px;
+    }
+  }
+}

@@ -1,0 +1,26 @@
+<flynt-component load:on="visible" name="blockGalleryEvent" class="boxed">
+  {% if preContent %}
+    <div class="preContent h1">
+      {{ preContent }}
+    </div>
+  {% endif %}
+  <div class="wrapper">
+    {% for box in boxes %}
+      <div class="box" id="box-{{ loop.index }}">
+        <div class="box-inner box-inner--image box-front">
+          <img
+            class="figure-image lazyload"
+            src="{{ box.image.src }}"
+            data-srcset="{{function('wp_get_attachment_image_srcset', box.image.id)}}"
+            data-sizes="auto">
+          {% if box.artist or box.titleYear %}
+            <div class="box-inner--content">
+              <div class="font-bold">{{ box.artist }}</div>
+              <div>{{ box.titleYear }}</div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</flynt-component>

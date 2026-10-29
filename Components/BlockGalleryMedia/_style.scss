@@ -1,0 +1,24 @@
+flynt-component[name='BlockGalleryMedia'] {
+  height: auto;
+  scroll-margin-top: 96px;
+
+  .video {
+    margin: 0 auto;
+    position: relative;
+
+    &-player {
+      width: 100%;
+      height: auto;
+      position: relative;
+      z-index: 10;
+    }
+
+    iframe {
+      height: 100%;
+      inset-block-start: 0;
+      inset-inline-start: 0;
+      position: relative;
+      width: 100%;
+    }
+  }
+} 

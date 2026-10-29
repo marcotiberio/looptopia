@@ -1,0 +1,18 @@
+<flynt-component load:on="visible" name="BlockJobHeader" class="flex flex-col gap-0 lg:gap-0">
+  {% if post.thumbnail %}
+    <div class="featuredImage w-full h-full">
+      <img class="lazyload object-cover h-auto lg:h-[70vh]"
+        src="{{ post.thumbnail.src }}"
+        data-srcset="{{function('wp_get_attachment_image_srcset', post.thumbnail.id)}}"
+        data-sizes="auto">
+    </div>
+  {% endif %}
+  {% if post.printIconIsEnabled %}
+    <div class="h-auto lg:h-auto w-full p-0 grow flex flex-row justify-end mt-sm">
+      <div>{{ printButton }}</div>
+    </div>
+  {% endif %}
+  <div class="h-auto lg:h-auto w-full px-0 grow flex flex-col justify-start gap-sm mt-md lg:mt-xl">
+    <div class="font-h3">{{ post.title }}</div>
+  </div>
+</flynt-component>

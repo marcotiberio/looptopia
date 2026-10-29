@@ -1,0 +1,33 @@
+<flynt-component
+  load:on="idle" 
+  name="BlockBannerCta" 
+  class="w-full relative boxed"
+  >
+  {% if backgroundImage %}
+    <div 
+      class="absolute inset-0 w-full h-full z-0 brightness-[0.35]"
+      style="background-image: url('{{ backgroundImage.src }}'); background-size: cover; background-position: center;"
+    ></div>
+  {% endif %}
+  <div 
+    class="relative z-10 w-full max-w-screen-max mx-auto boxed   flex flex-col gap-sm rounded"
+    style="
+    color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};
+    background-color: {% if options.colorBackground %}{{ options.colorBackground }}{% else %}transparent{% endif %};"
+    >
+    {% if title %}
+      <div class="font-h2 w-full">{{ title }}</div>
+    {% endif %}
+    {% if contentHtml %}
+      <div class="wysiwyg w-full">{{ contentHtml|e('wp_kses_post') }}</div>
+    {% endif %}
+    {% if buttonLink %}
+      <a 
+        class="button button--chevron" 
+        href="{{ buttonLink.url }}" 
+        {% if buttonLink.target %} target="{{ buttonLink.target }}" rel="noreferrer noopener"{% endif %}>
+        {{ buttonLink.title }}
+      </a>
+    {% endif %}
+  </div>
+</flynt-component>

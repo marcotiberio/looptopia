@@ -1,0 +1,37 @@
+<flynt-component load:on="visible" name="SliderFeatProjects">
+  <script type="application/json">{{ jsonData|json_encode }}</script>
+  <div class="w-full max-w-screen-max mx-auto boxed">
+    <div class="flex flex-col md:flex-row justify-between items-start gap-sm lg:gap-md">
+      {% if blockTitle %}
+        <div class="w-full md:w-[20%]">
+          <div class="uppercase text-black font-bold mb-sm">{{ blockTitle }}</div>
+        </div>
+      {% endif %}
+      <div data-ref="slider" class="slider swiper-container w-full md:w-[80%] h-full">
+        <div class="swiper-wrapper w-full h-full">
+          {% for image in imageFigure %}
+            <div class="slider-item swiper-slide w-full h-full flex items-center justify-center">
+              <figure class="figure w-full h-full relative">
+                <img class="lazyload w-full h-full object-cover relative"
+                  src="{{ image.imageImage.src | resize(32) }}"
+                  data-srcset="{{function('wp_get_attachment_image_srcset', image.imageImage.id)}}"
+                  data-sizes="auto"
+                  alt="{{ image.imageImage.alt|e }}">
+                <div class="h-full w-full flex flex-col gap-md justify-center align-middle items-center">
+                  <div class="text-h2 mt-sm w-full text-left text-black">{{ image.imageTitle }}</div>
+                  {# {% if image.imageLink %}
+                    <a class="button button--acqua" href="{{ image.imageLink .url }}"{% if image.imageLink.target %} target="{{ image.imageLink.target }}" rel="noreferrer noopener"{% endif %}>
+                      {{ image.imageLink .title|e }}
+                    </a>
+                  {% endif %} #}
+                </h1>
+              </figure>
+            </div>
+          {% endfor %}
+        </div>
+        <button type="button" data-ref="prev" class="slider-button slider-button--prev"></button>
+        <button type="button" data-ref="next" class="slider-button slider-button--next"></button>
+      </div>
+    </div>
+  </div>
+</flynt-component>

@@ -1,0 +1,25 @@
+:root {
+    /* Colors (Primitives) */
+    --white: #fff;
+    --black: #000000;
+    --green: #c7f59a; /* Looptopia accent (Figma "Bright Green") */
+
+    /* Fonts */
+    --primary-font-family: 'Poppins', Arial, sans-serif;
+
+    /* Colors (Tokens) */
+    --brandColor: var(--black);
+    --accentColor: var(--green);
+
+    --textColor: var(--black);
+    --linkColor: var(--black);
+
+    --bgColor: var(--white);
+
+    --hoverColor: var(--grey-700);
+    --activeColor: var(--grey-800);
+
+    --errorColor: #dc2626;
+    --successColor: #16a34a;
+    --dangerColor: #dc2626;
+  }

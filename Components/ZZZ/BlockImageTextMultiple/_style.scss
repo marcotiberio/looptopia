@@ -1,0 +1,11 @@
+flynt-component[name='BlockImageTextMultiple'] {
+  [data-image-position='right'] {
+    @apply flex-col;
+    @apply lg:flex-row-reverse;
+  }
+
+  [data-image-position='left'] {
+    @apply flex-col-reverse;
+    @apply lg:flex-row;
+  }
+}

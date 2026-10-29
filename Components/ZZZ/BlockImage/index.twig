@@ -1,0 +1,19 @@
+<flynt-component load:on="visible" name="BlockImage">
+  <div class="w-screen h-full boxed">
+    <figure class="figure">
+      {% if image %}
+        <img class="figure-image lazyload object-cover"
+          src="{{ image.src }}"
+          data-srcset="{{function('wp_get_attachment_image_srcset', image.id)}}"
+          data-sizes="auto"
+          alt="{{ image.alt|e }}">
+      {% endif %}
+      {% if image.title or image.caption %}
+        <div class="hidden py-[5px]">
+          <figcaption class="font-bodySmall">{{ image.title|e }}</figcaption>
+          <figcaption class="font-bodySmall underline underline-offset-4">{{ image.caption|e }}</figcaption>
+        </div>
+      {% endif %}
+    </figure>
+  </div>
+</flynt-component>

@@ -1,0 +1,57 @@
+<flynt-component
+  load:on="idle" name="BlockMultipleBoxes"
+  class="pb-0 lg:pb-xl overflow-hidden"
+>
+  <script type="application/json">{{ jsonData|json_encode }}</script>
+  <div class="wrapper w-screen mx-auto boxed">
+    {% if headlineTitle %}
+      <h2 class="max-w-screen-lg mx-auto flex justify-center items-center text-center">{{ headlineTitle }}</h2>
+    {% endif %}
+
+    <div class="flex flex-col sm:flex-row justify-between gap-md">
+      {% for box in boxes %}
+        <div 
+          class="w-full h-auto flex flex-col"
+          >
+          <div>
+            {% if box.image %}
+              <div class="flex flex-row items-start justify-start">
+                <img class="logo lazyload w-auto max-w-full h-auto object-cover"
+                src="{{ box.image.src | resize(32) }}"
+                data-srcset="{{function('wp_get_attachment_image_srcset', box.image.id)}}"
+                data-sizes="auto">
+              </div>
+            {% endif %}
+          </div>
+          <div class="content">
+            <div class="accordion">
+              {% if box.title %}
+                <div x-data="{ open: false }" class="panel">
+                  <button @click="open = !open" class="panel-trigger font-body !mb-0 uppercase px-xs py-sm flex flex-row justify-between items-center w-full" type="button" aria-expanded="false" aria-controls="content-{{ loop.index }}" style="background-color: {% if box.colorBackground %}{{ box.colorBackground }}{% else %}var(--black){% endif %}; color:{% if box.colorText %}{{ box.colorText }}{% else %}var(--white){% endif %};">
+                    <div class="title">{{ box.title|e('wp_kses_post') }}</div>
+                    <div :class="{'rotate180': open}">
+                      <span class="">↓</span>
+                    </div>
+                  </button>
+                  <div x-show="open" class="panel-content" aria-hidden="true" id="content-{{ loop.index }}" style="background-color: {% if box.colorBackground %}{{ box.colorBackground }}{% else %}var(--white){% endif %}; color:{% if box.colorText %}{{ box.colorText }}{% else %}var(--black){% endif %};">
+                    <div class="panel-inner wysiwyg p-xs pt-0">
+                      {{ box.contentHtml|e('wp_kses_post') }}
+                    </div>
+                  </div>
+                </div>
+              {% else %}
+              <div x-data="{ open: true }" class="panel">
+                <div x-show="open" class="panel-content" aria-hidden="false" id="content-{{ loop.index }}" style="background-color: {% if box.colorBackground %}{{ box.colorBackground }}{% else %}var(--white){% endif %}; color:{% if box.colorText %}{{ box.colorText }}{% else %}var(--black){% endif %};">
+                  <div class="panel-inner wysiwyg p-xs">
+                    {{ box.contentHtml|e('wp_kses_post') }}
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</flynt-component>

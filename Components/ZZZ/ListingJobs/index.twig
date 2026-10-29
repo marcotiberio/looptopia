@@ -1,0 +1,22 @@
+{% if posts|length > 0 %}
+  <flynt-component load:on="visible" name="ListingJobs">
+    <div class="wrapper max-w-screen-max mx-auto boxed">
+      {% if headlineTitle %}
+        <h2 class="max-w-screen-lg mx-auto flex justify-center items-center text-center text-black uppercase">{{ headlineTitle }}</h2>
+      {% endif %}
+      <div class="flex flex-col gap-sm mt-md md:mt-lg">
+        {% for post in posts %}
+          <a class="w-full bg-white p-sm flex flex-row items-center justify-between" href="{{ post.link }}" title="{{ post.title }}">
+            <div class="font-smallTitle">{{ post.title }}</div>
+            <div class="arrow">
+              <svg width="48" height="22" viewBox="0 0 48 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M37 1L47 11L37 21" stroke="black" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M47 11H1" stroke="black" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endif %}

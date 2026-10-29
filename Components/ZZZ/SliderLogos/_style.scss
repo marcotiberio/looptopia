@@ -1,0 +1,30 @@
+flynt-component[name='SliderLogos'] {
+  .slider {
+    position: relative;
+
+    &-button {
+      align-items: center;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      z-index: 10;
+
+      &.swiper-button-disabled {
+        opacity: 0;
+        pointer-events: none;
+      }
+    }
+  }
+
+  .swiper-pagination-bullet {
+    background: transparent !important;
+    border: 1px solid var(--black) !important;
+    height: 15px;
+    opacity: 1 !important;
+    width: 15px;
+
+    &-active {
+      background: var(--black) !important;
+    }
+  }
+}

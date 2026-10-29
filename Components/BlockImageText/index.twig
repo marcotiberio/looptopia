@@ -1,0 +1,39 @@
+<flynt-component 
+  load:on="visible" 
+  name="BlockImageText" 
+  class=""
+  style="
+    color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--blue){% endif %};
+    background-color: {% if options.colorBackground %}{{ options.colorBackground }}{% else %}transparent{% endif %};">
+  <div class="boxed">
+    <div class="flex flex-col {{ imagePosition }} gap-sm items-start h-full">
+      <div class="w-full lg:w-1/2">
+        {% if image %}
+          <figure class="figure">
+            <img class="figure-image lazyload h-full w-full object-cover"
+              src="{{ image.src | resize(32) }}"
+              data-srcset="{{function('wp_get_attachment_image_srcset', image.id)}}"
+              data-sizes="auto"
+              alt="{{ image.alt|e }}">
+            {% if image.caption %}
+              <figcaption class="font-bodySmall">{{ image.caption|e }}</figcaption>
+            {% endif %}
+          </figure>
+        {% endif %}
+      </div>
+      <div class="w-full lg:w-1/2 h-full flex flex-col justify-between {% if imagePosition == 'lg:flex-row' %} !mr-0 {% else %} !ml-0 {% endif %}">
+        {% if contentHtml %}
+          <div class="wysiwyg">{{ contentHtml|e('wp_kses_post') }}</div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="flex flex-row justify-center items-center gap-xs mt-md">
+      {% if buttonLink1 %}
+        <a class="button button--green" href="{{buttonLink1.url}}" {% if buttonLink1.target %} target="{{ buttonLink1.target }}" rel="noreferrer noopener"{% endif %}>{{buttonLink1.title}}</a>
+      {% endif %}
+      {% if buttonLink2 %}
+        <a class="button button--green" href="{{buttonLink2.url}}" {% if buttonLink2.target %} target="{{ buttonLink2.target }}" rel="noreferrer noopener"{% endif %}>{{buttonLink2.title}}</a>
+      {% endif %}
+    </div>
+  </div>
+</flynt-component>

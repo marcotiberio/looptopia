@@ -1,0 +1,54 @@
+{% if posts|length > 0 %}
+  <flynt-component 
+    load:on="visible" 
+    name="ListingVideoFeat" 
+    class="boxed !min-h-fit w-full"
+    style="
+      color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};
+      background-color: {% if options.pageBackground %}{{ options.pageBackground }}{% else %}transparent{% endif %};">
+    
+    <div class="wrapper flex flex-col gap-sm fade-in overflow-hidden" x-data="{ selectedCategories: [], searchQuery: '', filtersOpen: false }">
+
+      <div class="">
+        <h2>{{ headlineTitle|e }}</h2>
+      </div>
+      
+      <!-- Posts Grid -->
+      <div class="masonry-grid">
+        {% for post in posts %}
+
+          <div 
+            class="post [&_.group]:hover:text-white hover:cursor-pointer" 
+            x-show="(selectedCategories.length === 0 || selectedCategories.some(cat => ['{{ postCategorySlugs|join("','") }}'].includes(cat))) && 
+                    (searchQuery === '' || '{{ post.title|lower }}'.includes(searchQuery.toLowerCase()))"
+            x-transition:enter="transition ease-out duration-100"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-100"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+          >
+            <a href="{{ post.link }}" title="{{ post.title }}" aria-label="Go to post">
+              <div class="group w-full flex flex-col gap-xs items-start relative">
+                {% if post.thumbnail %}
+                  <img 
+                    class="lazyload transition grid duration-200 ease-in-out w-full object-cover"
+                    src="{{ post.thumbnail.src }}"
+                    alt="{{ post.title }}"
+                    loading="lazy"
+                    style="opacity: 0; transition: opacity 0.5s ease-in-out;"
+                    onload="this.style.opacity='1'"
+                    aria-label="Go to post"
+                  />
+                {% endif %}
+                <h3 class="lg:opacity-0 transition-opacity duration-700 ease-in-out w-full !mb-0 font-body absolute top-xs left-xs lg:top-sm lg:left-sm z-[1000] [.group:hover_&]:opacity-100">{{ post.title }}</h3>
+                <div class="gradient-overlay opacity-0 transition-opacity duration-700 ease-in-out w-full h-[75%] absolute top-[-1px] left-0 z-[999] [.group:hover_&]:opacity-100"></div>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </flynt-component>
+{% endif %}

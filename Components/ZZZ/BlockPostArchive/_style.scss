@@ -1,0 +1,12 @@
+flynt-component[name='BlockPostArchive'] {
+  @screen desktop {
+    &.animated {
+      opacity: 0;
+      transition: all 1s ease-in-out;
+    }
+  
+    &.fade-in {
+      opacity: 1;
+    }
+  }
+}

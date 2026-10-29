@@ -1,0 +1,18 @@
+<flynt-component 
+  load:on="visible" 
+  name="BlockButtons"
+  class="{% if options.firstComponent %}pt-[10vw] md:pt-[160px]{% endif %}"
+  style="
+    background-color: {% if options.colorBackground %}{{ options.colorBackground }}{% else %}transparent{% endif %};"
+  >
+  <div class="boxed boxed--small w-full">
+    {# <div class="block lg:hidden">
+      <h2>{{ headlineTitle|e }}</h2>
+    </div> #}
+    <div class="flex flex-row flex-wrap justify-center items-center gap-xs">
+      {% for button in buttons %}
+        <a class="button button--green" href="{{button.buttonLink.url}}" {% if button.buttonLink.target %} target="{{ button.buttonLink.target }}" rel="noreferrer noopener"{% endif %}>{{button.buttonLink.title}}</a>
+      {% endfor %}
+    </div>
+  </div>
+</flynt-component> 

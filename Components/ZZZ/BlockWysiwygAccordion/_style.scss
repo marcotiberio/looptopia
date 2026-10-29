@@ -1,0 +1,31 @@
+flynt-component[name='BlockWysiwygAccordion'] {
+  .wysiwyg {
+    > :last-child {
+      margin-block-end: 0;
+    }
+
+    @media (max-width: theme('screens.tablet')) {
+      br {
+        content: '\00a0';
+      }
+    }
+  }
+
+  .stickyTitle {
+    .column {
+      &:first-child {
+        .title {
+          @apply sticky;
+          @apply top-[91px];
+        }
+
+        .lg\:hidden {
+          .wysiwyg {
+            @apply sticky;
+            @apply top-[91px];
+          }
+        }
+      }
+    }
+  }
+} 

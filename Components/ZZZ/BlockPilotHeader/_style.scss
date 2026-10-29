@@ -1,0 +1,10 @@
+flynt-component[name='BlockPilotHeader'] {
+  a {
+    color: var(--black);
+  
+    &::before {
+      content: '↦';
+      margin-right: 10px;
+    }
+  }
+}

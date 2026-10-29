@@ -1,0 +1,53 @@
+{# Program teaser card. Param: event (shape built in Components/BlockRelatedEvents/functions.php) #}
+<a class="group flex flex-col gap-3 no-underline text-black" href="{{ event.link }}">
+  <div class="relative aspect-[350/225] w-full overflow-hidden rounded bg-grey-200">
+    {% if event.thumbnail %}
+      <img
+        class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+        src="{{ event.thumbnail }}"
+        alt=""
+        loading="lazy">
+    {% endif %}
+    {% if event.badge %}
+      <span class="absolute right-2.5 top-2.5 flex h-[55px] w-[55px] items-center justify-center rounded-[9px] bg-white">
+        <img class="h-8 w-8" src="{{ event.badge }}" alt="" aria-hidden="true">
+      </span>
+    {% endif %}
+  </div>
+
+  {% if event.schedule %}
+    <p class="m-0 flex flex-wrap gap-x-5 text-[12px] font-semibold leading-none">
+      {% for entry in event.schedule %}
+        <span>{{ entry.short }}{% if entry.time %}<span class="ml-5">{{ entry.time }}</span>{% endif %}</span>
+      {% endfor %}
+    </p>
+  {% endif %}
+
+  <h3 class="m-0 text-[24px] font-medium leading-none group-hover:underline">{{ event.title }}</h3>
+
+  {% if event.programTypes or event.sectors %}
+    <div class="flex flex-wrap content-start items-start gap-2.5">
+      {% for tag in event.programTypes %}
+        <span class="rounded-image bg-green px-[8px] py-min text-[12px] font-medium leading-none">{{ tag }}</span>
+      {% endfor %}
+      {% for tag in event.sectors %}
+        <span class="rounded-image bg-greenFaded px-[8px] py-min text-[12px] font-medium leading-none">{{ tag }}</span>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if event.orgName or event.markers %}
+    <div class="flex flex-col gap-2.5">
+      {% if event.orgName %}
+        <p class="m-0 text-[12px] font-semibold leading-none">{{ event.orgName }}</p>
+      {% endif %}
+      {% if event.markers %}
+        <div class="flex items-center gap-3">
+          {% for marker in event.markers %}
+            <img class="h-6 w-6" src="{{ marker.src }}" alt="{{ marker.label|e('html_attr') }}" title="{{ marker.label|e('html_attr') }}">
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+</a>

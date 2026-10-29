@@ -1,0 +1,11 @@
+<flynt-component load:on="visible" name="ListSearchResults" class="componentSpacing">
+  <div class="container centerMaxWidthContainer">
+    <div class="centerContentMaxWidth">
+      {% include 'Partials/_header.twig' %}
+      {% include 'Partials/_results.twig' %}
+      {% if pagination.pages %}
+        {% include 'Partials/_pagination.twig' %}
+      {% endif %}
+    </div>
+  </div>
+</flynt-component>

@@ -1,0 +1,91 @@
+<flynt-component
+  load:on="visible" name="BlockCarousel"
+  class="w-full"
+  style="
+    color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};
+    background-color: {% if options.colorBackground %}{{ options.colorBackground }}{% else %}transparent{% endif %};">
+  <script type="application/json">{{ jsonData|json_encode }}</script>
+  <div class="wrapper boxed max-w-screen-max mx-auto">
+    <div class="block-carousel">
+      <div class="block-carousel__panel">
+        {% if title %}
+          <h2 class="font-h1 block-carousel__title">{{ title }}</h2>
+        {% endif %}
+
+        {% if preContentHtml %}
+          <div class="wysiwyg">{{ preContentHtml|e('wp_kses_post') }}</div>
+        {% endif %}
+
+        <div class="block-carousel__slider">
+          <div data-ref="slider" class="swiper">
+            <div class="swiper-wrapper">
+              {% for card in cards %}
+                <article class="swiper-slide block-carousel__card">
+                  {% if card.image %}
+                    <div class="block-carousel__card-media">
+                      <img
+                        class="block-carousel__card-icon lazyload"
+                        src="{{ card.image.post_mime_type == 'image/svg+xml' ? card.image.src : card.image.src|resize(156) }}"
+                        alt="{{ card.image.alt|e | default('') }}"
+                        loading="lazy"
+                        {% if card.image.post_mime_type != 'image/svg+xml' %}
+                          data-srcset="{{ function('wp_get_attachment_image_srcset', card.image.id) }}"
+                          data-sizes="auto"
+                        {% endif %}>
+                    </div>
+                  {% endif %}
+
+                  {% if card.title %}
+                    <h3 class="font-h3 block-carousel__card-title">{{ card.title }}</h3>
+                  {% endif %}
+
+                  {% if card.text %}
+                    <div class="wysiwyg block-carousel__card-text !mt-xs">{{ card.text|e('wp_kses_post') }}</div>
+                  {% endif %}
+
+                  {# Stretched over the whole card, so the box itself is the link. #}
+                  {% if card.link.url %}
+                    <a
+                      class="block-carousel__card-link"
+                      href="{{ card.link.url }}"
+                      {% if card.link.target %} target="{{ card.link.target }}" rel="noreferrer noopener"{% endif %}>
+                      <span class="visuallyHidden">{{ card.link.title|default(card.title) }}</span>
+                    </a>
+                  {% endif %}
+                </article>
+              {% endfor %}
+            </div>
+          </div>
+
+          {# Swiper hides both buttons through `watchOverflow` when every card fits. #}
+          <button
+            type="button"
+            data-ref="prev"
+            class="block-carousel__nav block-carousel__nav--prev"
+            aria-label="{{ jsonData.options.a11y.prevSlideMessage|default(__('Vorherige Karte', 'flynt')) }}">
+            {% include 'assets/icons/event/arrow-left.svg' ignore missing %}
+          </button>
+          <button
+            type="button"
+            data-ref="next"
+            class="block-carousel__nav block-carousel__nav--next"
+            aria-label="{{ jsonData.options.a11y.nextSlideMessage|default(__('Nächste Karte', 'flynt')) }}">
+            {% include 'assets/icons/event/arrow-left.svg' ignore missing %}
+          </button>
+        </div>
+      </div>
+
+      {% if buttonLink.url %}
+        <a
+          class="button block-carousel__button"
+          href="{{ buttonLink.url }}"
+          {% if buttonLink.target %} target="{{ buttonLink.target }}" rel="noreferrer noopener"{% endif %}>
+          {{ buttonLink.title }}
+          <span class="block-carousel__button-icon" aria-hidden="true">
+            {% include 'assets/icons/event/button-arrow.svg' ignore missing %}
+          </span>
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</flynt-component>

@@ -1,0 +1,13 @@
+<flynt-component
+  load:on="visible" name="BlockPageHeader"
+  class="w-full mx-auto flex flex-col sm:flex-row justify-between items-center"
+  style="background: {{ post.pageBackground }};">
+  <div class="boxed !my-0 !pt-[20vh] flex flex-col sm:flex-row sm:justify-between items-start lg:items-center gap-sm">
+    <h1 class="">{{ post.title }}</h1>
+    {% if post.ctaButton %}
+      <a class="button button--outline h-fit !font-bold" href="{{ post.ctaButton.url }}"{% if post.ctaButton.target %} target="{{ post.ctaButton.target }}" rel="noreferrer noopener"{% endif %}>
+        {{ post.ctaButton.title|e }}
+      </a>
+    {% endif %}
+  </div>
+</flynt-component>

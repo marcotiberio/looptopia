@@ -1,0 +1,42 @@
+<flynt-component 
+  load:on="visible" 
+  name="SliderLogos" 
+  class="pb-xxl overflow-hidden">
+  <script type="application/json">{{ jsonData|json_encode }}</script>
+  <div class="w-full max-w-screen-xl mx-auto boxed">
+    {% if blockTitle %}
+      <h3 class="mb-xxl">{{ blockTitle }}</h3>
+    {% endif %}
+
+    <div data-ref="slider" class="slider swiper-container mt-xl lg:mt-0">
+      {# <div class="w-full button-wrapper absolute left-0 bottom-0 z-50 translate-y-sm xs:translate-y-sm lg:translate-y-sm">
+        <div class="w-full flex align-middle justify-center">
+          <button type="button" data-ref="prev" class="slider-button slider-button--prev">
+            <svg width="40" height="30" viewBox="0 0 40 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path class="fill-black xs:fill-black" d="M3.93801 13.9393C3.35222 14.5251 3.35222 15.4749 3.93801 16.0607L13.4839 25.6066C14.0697 26.1924 15.0195 26.1924 15.6053 25.6066C16.1911 25.0208 16.1911 24.0711 15.6053 23.4853L7.11999 15L15.6053 6.51472C16.1911 5.92893 16.1911 4.97918 15.6053 4.3934C15.0195 3.80761 14.0697 3.80761 13.484 4.3934L3.93801 13.9393ZM34.3438 13.5L4.99867 13.5L4.99867 16.5L34.3437 16.5L34.3438 13.5Z"/>
+            </svg>
+          </button>
+          <button type="button" data-ref="next" class="slider-button slider-button--next">
+            <svg class="transform scale-x-[-1]" width="40" height="30" viewbox="0 0 40 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path class="fill-black xs:fill-black" d="M3.93801 13.9393C3.35222 14.5251 3.35222 15.4749 3.93801 16.0607L13.4839 25.6066C14.0697 26.1924 15.0195 26.1924 15.6053 25.6066C16.1911 25.0208 16.1911 24.0711 15.6053 23.4853L7.11999 15L15.6053 6.51472C16.1911 5.92893 16.1911 4.97918 15.6053 4.3934C15.0195 3.80761 14.0697 3.80761 13.484 4.3934L3.93801 13.9393ZM34.3438 13.5L4.99867 13.5L4.99867 16.5L34.3437 16.5L34.3438 13.5Z"/>
+            </svg>
+          </button>
+        </div>
+      </div> #}
+      <div class="w-full button-wrapper absolute left-0 bottom-0 z-50 translate-y-xl xs:translate-y-xl lg:translate-y-sm">
+        <div data-ref="dots" class="flex justify-center slider-pagination swiper-pagination-fraction"></div>
+      </div>
+      <div class="swiper-wrapper w-full h-full items-center">
+        {% for item in logos %}
+          <div class="slider-item swiper-slide w-full h-full flex items-center justify-center">
+            <img class="lazyload w-full max-w-[100px] h-full object-cover relative"
+              src="{{ item.logo.src | resize(32) }}"
+              data-srcset="{{function('wp_get_attachment_image_srcset', item.logo.id)}}"
+              data-sizes="auto"
+              alt="{{ item.logo.alt|e }}">
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</flynt-component>

@@ -1,0 +1,13 @@
+{% extends 'templates/_document.twig' %}
+
+{% block content %}
+  {% if fn('is_front_page') %}
+    {# Add your homepage content here #}
+    <h1>Homepage</h1>
+    {% for component in post.meta('pageComponents') %}
+      {{ renderComponent(component) }}
+    {% endfor %}
+  {% else %}
+    {{ renderComponent('GridPostsArchive', { posts: posts }) }}
+  {% endif %}
+{% endblock %}

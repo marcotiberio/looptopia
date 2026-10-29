@@ -1,0 +1,21 @@
+flynt-component[name='BlockDownloads'] {
+  scroll-margin-top: 96px;
+  
+  .wrapper {
+    padding-bottom: theme('spacing.large');
+    width: 100%;
+
+    @media (max-width: calc(theme('screens.tablet') - 1px)) {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+    }
+  }
+
+  .downloads {
+    align-items: flex-start;
+    display: flex;
+    flex-flow: row wrap;
+    gap: theme('spacing.large');
+  }
+}

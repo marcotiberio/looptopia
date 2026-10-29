@@ -1,0 +1,277 @@
+{% extends 'templates/_document.twig' %}
+
+{% block content %}
+  <article class="event relative overflow-hidden bg-white text-black">
+
+    {# Decorative brand loops behind the panel. #}
+    <div class="pointer-events-none absolute -left-[20%] -top-[300px] hidden w-[180%] rotate-[25deg] select-none tablet:block [&_svg]:h-auto [&_svg]:w-full" aria-hidden="true">
+      {% include 'assets/images/event-bg-loops.svg' ignore missing %}
+    </div>
+
+    <div class="relative mx-auto w-full max-w-screen-desktop px-4 py-8 tablet:px-6 tablet:py-[74px]">
+      <div class="flex flex-col gap-6 rounded bg-greenFaded p-5 tablet:p-[30px]">
+
+        <a class="flex items-center justify-start gap-2.5 text-[16px] font-semibold leading-none text-black no-underline hover:underline" href="{{ programLink }}">
+          <span class="flex h-4 w-4 shrink-0 items-center justify-center" aria-hidden="true">
+            {% include 'assets/icons/event/arrow-left.svg' ignore missing %}
+          </span>
+          {{ __('Zurück zum Programm', 'flynt') }}
+        </a>
+
+        {# ---- Title ----
+           Deliberately a div: `.single header` is hidden globally in _custom.scss. #}
+        <div class="flex items-start gap-4">
+          {% if badge %}
+            <span class="flex h-[57px] w-[57px] shrink-0 items-center justify-center rounded-[9px] bg-white">
+              <img class="h-8 w-8" src="{{ badge }}" alt="" aria-hidden="true">
+            </span>
+          {% endif %}
+          <div class="flex flex-col gap-1">
+            {# normal-case overrides the global uppercase h1 from the typography options. #}
+            <h1 class="m-0 text-[26px] font-medium normal-case leading-tight desktop:text-[32px]">{{ post.meta('eventTitle') ?: post.title }}</h1>
+            {% if post.meta('intro') %}
+              <p class="m-0 text-[18px] font-medium leading-tight desktop:text-[20px]">{{ post.meta('intro') }}</p>
+            {% endif %}
+          </div>
+        </div>
+
+        {# ---- Tags ---- #}
+        {% if labels.programTypes or labels.sectors %}
+          <div class="flex flex-wrap content-start items-start gap-2.5">
+            {% for tag in labels.programTypes %}
+              <span class="rounded-image bg-green px-[8px] py-min text-[12px] font-medium leading-none">{{ tag }}</span>
+            {% endfor %}
+            {% for tag in labels.sectors %}
+              <span class="rounded-image bg-white px-[8px] py-min text-[12px] font-medium leading-none">{{ tag }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {# ---- Titelbild ---- #}
+        {% if featuredImage.src %}
+          <figure class="relative m-0">
+            <img
+              class="aspect-[700/450] w-full rounded-image object-cover"
+              src="{{ featuredImage.src }}"
+              alt="{{ featuredImage.alt|default('')|e('html_attr') }}">
+            {% if post.meta('credits') %}
+              <figcaption class="absolute bottom-1.5 left-2 text-[8px] font-semibold leading-none text-white">
+                {{ __('Fotocredit:', 'flynt') }} {{ post.meta('credits') }}
+              </figcaption>
+            {% endif %}
+          </figure>
+        {% endif %}
+
+        <div class="flex flex-col gap-8">
+
+          {# ---- Termin & Ort ---- #}
+          <div class="flex flex-col gap-xs">
+            {% for entry in schedule %}
+              <div class="flex flex-col gap-sm tablet:flex-row tablet:items-start tablet:justify-between">
+                <div class="flex flex-1 items-center gap-5">
+                  <img class="h-6 w-6 shrink-0" src="{{ icons.calendar }}" alt="{{ __('Datum', 'flynt')|e('html_attr') }}">
+                  <p class="m-0 text-[16px] font-semibold leading-none">{{ entry.long }}</p>
+                </div>
+                {% if entry.time %}
+                  <div class="flex flex-1 items-center gap-5">
+                    <img class="h-6 w-6 shrink-0" src="{{ icons.clock }}" alt="{{ __('Uhrzeit', 'flynt')|e('html_attr') }}">
+                    <p class="m-0 text-[16px] font-semibold leading-none">{{ entry.time }}</p>
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+
+            {% set venueName = post.meta('venueName') %}
+            {% if venueName or address or mapsUrl %}
+              <div class="flex items-start gap-5 mt-xs">
+                <img class="h-6 w-6 shrink-0" src="{{ icons.mapPin }}" alt="{{ __('Ort', 'flynt')|e('html_attr') }}">
+                <div class="flex flex-1 flex-col gap-1">
+                  {% if venueName %}
+                    <p class="m-0 text-[16px] font-semibold leading-tight">{{ venueName }}</p>
+                  {% endif %}
+                  {% if address %}
+                    <p class="m-0 text-[16px] leading-tight">{{ address }}</p>
+                  {% endif %}
+                  {% if mapsUrl %}
+                    <div class="flex flex-wrap items-start gap-x-4 text-[16px] leading-none">
+                      {% include 'templates/Partials/_externalLink.twig' with { url: mapsUrl, label: __('Google Maps', 'flynt') } only %}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+
+            {% for extra in additionalLocations %}
+              <div class="flex items-start gap-5">
+                <img class="h-6 w-6 shrink-0" src="{{ icons.mapPin }}" alt="{{ __('Ort', 'flynt')|e('html_attr') }}">
+                <div class="flex flex-1 flex-col gap-1">
+                  {% if extra.name %}
+                    <p class="m-0 text-[16px] font-semibold leading-tight">{{ extra.name }}</p>
+                  {% endif %}
+                  {% if extra.address %}
+                    <p class="m-0 text-[16px] leading-tight">{{ extra.address }}</p>
+                  {% endif %}
+                  {% if extra.mapsUrl %}
+                    <div class="flex flex-wrap items-start gap-x-4 text-[16px] leading-none">
+                      {% include 'templates/Partials/_externalLink.twig' with { url: extra.mapsUrl, label: __('Google Maps', 'flynt') } only %}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+
+          {# ---- Über das Event ---- #}
+          {# `description` is a plain textarea; the post content is the WYSIWYG fallback. #}
+          {% if post.meta('description') %}
+            <section class="flex flex-col gap-3">
+              <h2 class="m-0 text-[22px] font-medium leading-none desktop:text-[24px]">{{ __('Über das Event', 'flynt') }}</h2>
+              <p class="m-0 text-[16px] leading-normal">{{ post.meta('description')|nl2br }}</p>
+            </section>
+          {% elseif post.content %}
+            <section class="flex flex-col gap-3">
+              <h2 class="m-0 text-[22px] font-medium leading-none desktop:text-[24px]">{{ __('Über das Event', 'flynt') }}</h2>
+              <div class="wysiwyg text-[16px] leading-normal">{{ post.content|e('wp_kses_post') }}</div>
+            </section>
+          {% endif %}
+
+          {# ---- Anreise ---- #}
+          {% if post.meta('mobilityInfo') %}
+            <section class="flex flex-col">
+              <h3 class="m-0 text-[16px] font-semibold leading-normal">{{ __('Hinweise zur Anreise', 'flynt') }}</h3>
+              <p class="m-0 text-[16px] leading-normal">{{ post.meta('mobilityInfo')|nl2br }}</p>
+            </section>
+          {% endif %}
+
+          {# ---- Details ---- #}
+          <section class="flex flex-col gap-sm">
+            <h2 class="m-0 text-[22px] font-medium leading-none desktop:text-[24px]">{{ __('Details', 'flynt') }}</h2>
+            <div class="grid grid-cols-1 gap-x-xs gap-y-sm tablet:grid-cols-2 tablet:grid-cols-sm tablet:gap-y-sm">
+
+              <div class="flex items-start gap-5">
+                <img class="h-6 w-6 shrink-0" src="{{ icons.ticket }}" alt="" aria-hidden="true">
+                <div class="flex flex-col">
+                  <p class="m-0 text-[16px] font-semibold leading-normal">{{ __('Anmeldung', 'flynt') }}</p>
+                  {% if labels.registration %}
+                    <p class="m-0 text-[16px] leading-normal">{{ labels.registration }}</p>
+                  {% endif %}
+                  {% set registrationLink = post.meta('registrationLink') %}
+                  {% if registrationLink %}
+                    {% if registrationLink starts with 'http' %}
+                      <div class="text-[16px] leading-normal">
+                        {% include 'templates/Partials/_externalLink.twig' with { url: registrationLink, label: __('Link', 'flynt') } only %}
+                      </div>
+                    {% else %}
+                      <p class="m-0 text-[16px] leading-normal">{{ registrationLink }}</p>
+                    {% endif %}
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="flex items-start gap-5">
+                <img class="h-5 w-5 shrink-0" src="{{ icons.money }}" alt="" aria-hidden="true">
+                <div class="flex flex-col">
+                  <p class="m-0 text-[16px] font-semibold leading-normal">{{ __('Kosten', 'flynt') }}</p>
+                  {% if post.meta('costs') == 'ja' %}
+                    <p class="m-0 text-[16px] leading-normal">{{ post.meta('price') ?: __('Kostenpflichtig', 'flynt') }}</p>
+                    {% if post.meta('paymentLink') %}
+                      <div class="text-[16px] leading-normal">
+                        {% include 'templates/Partials/_externalLink.twig' with { url: post.meta('paymentLink'), label: __('Buchung', 'flynt') } only %}
+                      </div>
+                    {% endif %}
+                  {% else %}
+                    <p class="m-0 text-[16px] leading-normal">{{ __('Kostenlos', 'flynt') }}</p>
+                  {% endif %}
+                </div>
+              </div>
+
+              {% if labels.audiences %}
+                <div class="flex items-start gap-5">
+                  <img class="h-6 w-6 shrink-0" src="{{ icons.audience }}" alt="" aria-hidden="true">
+                  <div class="flex flex-col">
+                    <p class="m-0 text-[16px] font-semibold leading-normal">{{ __('Zielgruppe', 'flynt') }}</p>
+                    <p class="m-0 text-[16px] leading-normal">{{ labels.audiences|join(', ') }}</p>
+                  </div>
+                </div>
+              {% endif %}
+
+              {% if labels.accessibility %}
+                <div class="flex items-start gap-5">
+                  <img class="h-6 w-6 shrink-0" src="{{ icons.accessibility }}" alt="" aria-hidden="true">
+                  <div class="flex flex-col">
+                    <p class="m-0 text-[16px] font-semibold leading-normal">{{ __('Barrierefrei', 'flynt') }}</p>
+                    <p class="m-0 text-[16px] leading-normal">{{ labels.accessibility|join(', ') }}</p>
+                  </div>
+                </div>
+              {% endif %}
+
+              {% if labels.language %}
+                <div class="flex items-start gap-5">
+                  {# No PNG in the icon set for this one — inline SVG, same 24px box. #}
+                  <span class="flex h-6 w-6 shrink-0 items-center justify-center [&_svg]:h-full [&_svg]:w-full" aria-hidden="true">
+                    {% include 'assets/icons/event/language.svg' ignore missing %}
+                  </span>
+                  <div class="flex flex-col">
+                    <p class="m-0 text-[16px] font-semibold leading-normal">{{ __('Sprache', 'flynt') }}</p>
+                    <p class="m-0 text-[16px] leading-normal">{{ labels.language|join(', ') }}</p>
+                  </div>
+                </div>
+              {% endif %}
+
+            </div>
+          </section>
+
+          {# ---- Veranstalter ---- #}
+          {# First entry is the submitted organisation, the rest come from the
+             backend-only `additionalOrganisations` repeater. #}
+          {% if organisations %}
+            <section class="flex flex-col gap-3">
+              <h2 class="m-0 text-[22px] font-medium leading-none desktop:text-[24px]">
+                {{ organisations|length > 1 ? __('Veranstalter:innen', 'flynt') : __('Veranstalter', 'flynt') }}
+              </h2>
+              {% for org in organisations %}
+                <div class="flex items-start gap-5">
+                  {% if org.logoUrl %}
+                    <span class="flex h-[47px] w-[109px] shrink-0 items-center justify-center rounded-[15px] bg-white p-1.5">
+                      <img class="max-h-full max-w-full object-contain" src="{{ org.logoUrl }}" alt="{{ org.name|e('html_attr') }}">
+                    </span>
+                  {% endif %}
+                  <div class="flex flex-1 flex-col">
+                    {% if org.name %}
+                      <p class="m-0 text-[16px] font-semibold leading-normal">{{ org.name }}</p>
+                    {% endif %}
+                    <div class="flex flex-wrap items-start gap-x-4 text-[16px] leading-normal">
+                      {% if org.website %}
+                        {% include 'templates/Partials/_externalLink.twig' with { url: org.website, label: __('Website', 'flynt') } only %}
+                      {% endif %}
+                      {% if org.instagram %}
+                        {% include 'templates/Partials/_externalLink.twig' with { url: org.instagram, label: __('Instagram', 'flynt') } only %}
+                      {% endif %}
+                      {% if org.linkedin %}
+                        {% include 'templates/Partials/_externalLink.twig' with { url: org.linkedin, label: __('LinkedIn', 'flynt') } only %}
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </section>
+          {% endif %}
+
+          {# ---- Weitere Fotos ---- #}
+          {% if galleryUrls %}
+            <section class="grid grid-cols-2 gap-3 tablet:grid-cols-3">
+              {% for url in galleryUrls %}
+                <img class="aspect-[4/3] w-full rounded-image object-cover" src="{{ url }}" alt="" loading="lazy">
+              {% endfor %}
+            </section>
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+
+    {# ---- Weitere Programmpunkte ---- #}
+    {{ renderComponent('BlockRelatedEvents', { post: post, programLink: programLink }) }}
+
+  </article>
+{% endblock %}

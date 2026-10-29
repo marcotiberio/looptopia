@@ -1,0 +1,38 @@
+flynt-component[name='BannerContactForm'] {
+  .contact-form {
+    color: var(--white);
+
+    .field-wrap {
+      justify-content: center;
+    }
+
+    .ninja-forms-req-symbol {
+      color: var(--white);
+    }
+
+    [type='email'] {
+      border: 1px solid var(--white) !important;
+    }
+
+    [type='submit'] {
+      border: 1px solid var(--white) !important;
+      color: var(--black);
+      font-size: 1.25rem;
+      width: 100%;
+
+      &:hover,
+      &:focus {
+        background: transparent !important;
+      }
+    }
+
+    .label-right .nf-field-label {
+      justify-content: center;
+    }
+
+    .nf-field-element {
+      display: flex;
+      justify-content: center;
+    }
+  }
+}

@@ -1,0 +1,48 @@
+<flynt-component 
+  load:on="visible" 
+  name="ListingVideosRelated" 
+  class=""
+  style="
+    color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};
+    background-color: {% if options.pageBackground %}{{ options.pageBackground }}{% else %}transparent{% endif %};">
+
+  <script type="application/json">{{ jsonData|json_encode }}</script>
+  <div class="wrapper overflow-hidden max-w-screen-max mx-auto boxed !min-h-fit flex flex-col gap-sm fade-in" x-data="{ selectedCategories: [], searchQuery: '', filtersOpen: false }">
+
+    <!-- Videos Grid -->
+      <div data-ref="slider" class="slider swiper-container pt-xs md:pt-xs md:pb-sm border-t">
+      {% if labels.preContentHtml %}
+        <div class="font-body !mb-md">{{ labels.preContentHtml|e('wp_kses_post') }}</div>
+      {% endif %}
+      <div data-ref="dots" class="flex justify-end h-fit absolute !top-xs right-0 z-[40] slider-pagination swiper-pagination-fraction"></div>
+      <div class="swiper-wrapper flex flex-row">
+        {% for item in videos %}
+          {% set project = item.project %}
+          <div class="slider-item swiper-slide post flex col-span-3 w-full">
+            <a class="flex flex-col gap-xs w-full" href="{{ video.link }}" title="{{ video.title }}" aria-label="Go to video">
+              <img 
+                class="figure-image lazyload object-cover aspect-8/5"
+                src="{{ project.thumbnail.src }}"
+                alt="{{ project.thumbnail.alt|e | default('') }}"
+                loading="lazy"
+                style="opacity: 0; transition: opacity 0.5s ease-in-out;"
+                onload="this.style.opacity='1'"
+                aria-label="Go to project"
+              />
+              <div class="flex flex-col">
+                <h2 class="font-body">{{ project.title }}</h2>
+                {# <div class="flex flex-row gap-[5px]">
+                  {% set postCategories = project.terms('category') %}
+                  {% for term in postCategories %}
+                    <span class="font-bodySmall !mb-0">{{ term }}{% if not loop.last %},{% endif %}</span>
+                  {% endfor %}
+                </div> #}
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+</flynt-component>

@@ -1,0 +1,45 @@
+<flynt-component
+  load:on="visible" name="BlockFeaturedArticle"
+  class="w-full lgplus:w-screen {{ height|default('h-screen') }} mx-auto relative overflow-hidden">
+  {% if post %}
+    <a href="{{ post.link }}" class="block w-full h-full">
+      {% if halftoneSvg %}
+        <div class="halftone-image absolute inset-0 w-full h-full overflow-hidden [&_svg]:absolute [&_svg]:inset-0 [&_svg]:w-full [&_svg]:h-full">
+          {{ halftoneSvg|raw }}
+        </div>
+      {% elseif postImage %}
+        <img
+          class="figure-image w-full h-full max-h-screen object-cover"
+          src="{{ postImage.src }}"
+          alt="{{ postImage.alt|e | default('') }}"
+          loading="eager"
+        />
+      {% endif %}
+      {# Info Box #}
+      <div class="w-full absolute bottom-0">
+        <div class="max-w-screen-tablet mx-auto bg-white p-md flex flex-col gap-sm justify-center items-center text-center">
+          <h1 class="font-h1">„{{ post.title }}”</h1>
+          {% if post.postIntro %}
+            <p class="font-body italic">{{ post.postIntro }}</p>
+          {% endif %}
+          <div class="w-full flex flex-row gap-xs items-center justify-center">
+            <div class="">
+              {% set postCategories = post.terms('category') %}
+              {% for term in postCategories %}
+                <span class="font-bodySmall !mb-0 px-xs py-min bg-grei">{{ term }}{% if not loop.last %},{% endif %}</span>
+              {% endfor %}
+            </div>
+            {% if post.date %}
+              <div class="font-bodySmall !mb-0 px-xs py-min bg-grei">{{ post.date('d.m.Y') }}</div>
+            {% endif %}
+            {% if post.meta('postAuthor') %}
+              {% for author in Post(post.meta('postAuthor')) %}
+                <span class="font-bodySmall !mb-0 px-xs py-min bg-grei">{{ author.title }}</span>
+              {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </a>
+  {% endif %}
+</flynt-component>

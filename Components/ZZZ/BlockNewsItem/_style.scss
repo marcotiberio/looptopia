@@ -1,0 +1,9 @@
+flynt-component[name='BlockNewsItem'] {
+  [data-image-position='top'] {
+    @apply flex-col;
+  }
+
+  [data-image-position='bottom'] {
+    @apply flex-col-reverse;
+  }
+}

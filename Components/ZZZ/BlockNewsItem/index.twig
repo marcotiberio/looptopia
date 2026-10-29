@@ -1,0 +1,26 @@
+<flynt-component 
+  load:on="visible" 
+  name="BlockNewsItem" 
+  class="
+    newsComponent 
+    pr-sm">
+  <div class="flex flex-col align-start justify-start lg:justify-between gap-md h-[calc(100vh_-_120px)]">
+    <div class="w-full">
+      {% if image %}
+      <img class="figure-image lazyload object-cover h-auto max-h-[335px] w-auto mb-md"
+        src="{{ image.src }}"
+        data-srcset="{{function('wp_get_attachment_image_srcset', image.id)}}"
+        data-sizes="auto"
+        alt="{{ image.alt|e }}">
+      {% endif %}
+      <div class="w-full wysiwyg">{{ contentHtml|e('wp_kses_post') }}</div>
+    </div>
+    {% if buttonLink %}
+    <div class="w-full">
+      <a class="button--publicMind inline-block no-underline hover:underline underline-offset-3 text-currentColor transition-all duration-200" href="{{ buttonLink.url }}"{% if buttonLink.target %} target="{{ buttonLink.target }}" rel="noreferrer noopener"{% endif %}>
+        {{ buttonLink.title|e }}
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</flynt-component>

@@ -1,0 +1,45 @@
+.event-form {
+  // After a submit attempt, outline every empty/invalid text-like control.
+  &.attempted {
+    input:not([type='radio']):not([type='checkbox']):invalid,
+    textarea:invalid,
+    select:invalid {
+      border-color: var(--errorColor);
+      box-shadow: 0 0 0 1px var(--errorColor);
+    }
+  }
+
+  // Multi-select list box — roomier rows than the browser default, so the
+  // options are as tappable as the checkbox rows above them.
+  &__multiselect option {
+    padding: 0.25rem 0.125rem;
+  }
+
+  // Choice groups + required consent rows flagged invalid via Alpine.
+  .field-error {
+    border-radius: 2px;
+    outline: 2px solid var(--errorColor);
+    outline-offset: 6px;
+  }
+
+  .form-message--error {
+    border: 1px solid var(--errorColor);
+    color: var(--errorColor);
+  }
+}
+
+.event-form__modal {
+  box-shadow: 0 20px 60px rgb(0 0 0 / 25%);
+}
+
+.event-form__close {
+  cursor: pointer;
+  font-size: 1.75rem;
+  height: 2rem;
+  transition: opacity 0.2s ease;
+  width: 2rem;
+
+  &:hover {
+    opacity: 0.6;
+  }
+}

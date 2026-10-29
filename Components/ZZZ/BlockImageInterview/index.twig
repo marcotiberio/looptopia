@@ -1,0 +1,16 @@
+<flynt-component load:on="visible" name="BlockImageInterview" class="interviewComponent">
+  <div class="p-sm lg:px-lg">
+    <figure class="figure {{ imageHeight }}">
+      {% if image %}
+        <img class="figure-image lazyload h-full w-auto object-cover"
+          src="{{ image.src|resize(32) }}"
+          data-srcset="{{function('wp_get_attachment_image_srcset', image.id)}}"
+          data-sizes="auto"
+          alt="{{ image.alt|e }}">
+      {% endif %}
+      {% if image.caption %}
+        <figcaption class="caption">{{ image.caption|e }}</figcaption>
+      {% endif %}
+    </figure>
+  </div>
+</flynt-component>

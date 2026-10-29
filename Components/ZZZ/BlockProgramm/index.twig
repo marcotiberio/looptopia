@@ -1,0 +1,20 @@
+<div class="flyntComponent" is="flynt-block-programm">
+  <div class="max-w-screen-max w-full p-sm lg:px-lg mx-auto">
+    {% if preContentHtml %}
+      <div class="preContent">
+        {{ preContentHtml|e('wp_kses_custom') }}
+      </div>
+    {% endif %}
+    <div class="filterSection pt-sm relative">
+      <div class="flex sm:hidden !w-full !justify-between button button--outline" id="showFilters">Filters</div>
+      <div class="hidden sm:block filterSection--inner w-full mt-md sm:mt-0">
+        {# {{ function('do_shortcode', '[ajax_load_more_filters target="program" filters="true" filters_url="true" id="topic"]') }} #}
+        {{ function('do_shortcode', '[ajax_load_more_filters target="program" id="programfilter" filters="true" filters_url="true"]') }}
+        <div class="filterSection--empty"></div>
+      </div>
+    </div>
+    {{ function('do_shortcode', '[ajax_load_more target="programfilter" filters="true" id="program" orderby="meta_value" sort_key="dateTimePost" order="ASC" container_type="div" css_classes="programm-calendar" posts_per_page="10" post_type="event"]') }}
+    {# {{ function('do_shortcode', '[ajax_load_more target="topic" filters="true" id="home" scroll_distance="1000" container_type="div" css_classes="grid" post_type="post" posts_per_page="12" images_loaded="true" transition_container_classes="css-grid" order="ASC" orderby="menu_order" button_loading_label="Loading..." no_results_text="No results...]') }} #}
+  </div>
+  <div>
+</div>

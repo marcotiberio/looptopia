@@ -1,0 +1,66 @@
+<flynt-component load:on="visible" name="BlockProductSpecs">
+  <script type="application/json">{{ jsonData|json_encode }}</script>
+  <div class="w-full max-w-screen-max mx-auto boxed flex flex-col gap-sm">
+    <div class="h-auto lg:h-auto w-full grow mx-auto grid grid-cols-1 sm:grid-cols-2 gap-sm sm:gap-md">
+      <div>
+        {# Carousel #}
+        <div data-ref="slider" class="slider swiper-container w-full h-fit">
+          <div class="swiper-wrapper w-full h-fit">
+            {% for image in carousel %}
+              <div class="slider-item swiper-slide w-full h-fit flex items-start justify-start">
+                <figure class="figure w-full relative">
+                  <img class="lazyload w-full object-cover relative"
+                    src="{{ image.productImage.src | resize(32) }}"
+                    data-srcset="{{function('wp_get_attachment_image_srcset', image.productImage.id)}}"
+                    data-sizes="auto"
+                    alt="{{ image.productImage.alt|e }}">
+                </figure>
+              </div>
+            {% endfor %}
+          </div>
+          <button type="button" data-ref="prev" class="slider-button slider-button--prev"></button>
+          <button type="button" data-ref="next" class="slider-button slider-button--next"></button>
+        </div>
+        {# Technical Drawing #}
+        <div class="py-md">
+        {% if techDrawing %}
+          <img class="lazyload object-cover"
+            src="{{ techDrawing.src | resize(32) }}"
+            data-srcset="{{function('wp_get_attachment_image_srcset', techDrawing.id)}}"
+            data-sizes="auto"
+            alt="{{ techDrawing.alt|e }}">
+        {% endif %}
+        </div>
+      </div>
+      <div class="">
+        {# Table #}
+        <div class="w-full md:w-1/2 lg:w-full flex flex-col md:flex-row lg:flex-col gap-lg items-center">
+          <div class="w-full border border-black p-sm flex flex-col">
+            <div class="py-sm first:pt-0 flex flex-row gap-lg justify-between items-center border-b border-black">
+              <span class="caption w-1/2">{{ labels.tableMaterial }}</span>
+              <span class="body w-1/2 text-right">{{ tableMaterial }} kWp</span>
+            </div>
+            <div class="py-sm last:pb-0 flex flex-row gap-lg justify-between items-center border-b border-black last:border-b-0">
+              <span class="caption w-1/2">{{ labels.tableSofteningTemperature }}</span>
+              <span class="body w-1/2 text-right">{{ tableSofteningTemperature }}</span>
+            </div>
+            <div class="py-sm last:pb-0 flex flex-row gap-lg justify-between items-center border-b border-black last:border-b-0">
+              <span class="caption w-1/2">{{ labels.tableImpactStrength }}</span>
+              <span class="body w-1/2 text-right">{{ tableImpactStrength }}</span>
+            </div>
+            <div class="py-sm last:pb-0 flex flex-row gap-lg justify-between items-center border-b border-black last:border-b-0">
+              <span class="caption w-1/2">{{ labels.tableTensileStrength }}</span>
+              <span class="body w-1/2 text-right">{{ tableTensileStrength }}</span>
+            </div>
+            <div class="py-sm last:pb-0 flex flex-row gap-lg justify-between items-center border-b border-black last:border-b-0">
+              <span class="caption w-1/2">{{ labels.tableColors }}</span>
+              <span class="body w-1/2 text-right">{{ tableColors }}</span>
+            </div>
+          </div>
+        </div>
+        {# Description #}
+        <div class="py-md">{{ description }}</dib>
+      </div>
+    </div>
+  </div>
+</flynt-component>

@@ -1,0 +1,54 @@
+flynt-component[name='BlockAccordionDefault'] {
+  scroll-margin-top: 96px;
+  
+  .content {
+    padding: theme('spacing.large') 0;
+  }
+
+  .accordion {
+    @include reset-list;
+    display: flex;
+    flex-flow: column wrap;
+    gap: theme('spacing.small');
+  }
+
+  .panel {
+    border: 1px solid var(--black);
+
+    &-trigger {
+      align-items: center;
+      cursor: pointer;
+      display: flex;
+      font-weight: 800;
+      justify-content: space-between;
+      margin: 0;
+      padding: theme('spacing.small');
+      position: relative;
+      width: 100%;
+      z-index: 2;
+
+      &[aria-expanded='true'] {
+        &::after {
+          transform: rotateX(180deg);
+        }
+      }
+    }
+
+    // do not add margins or padding to this, it will break the layout
+    &-content {
+      margin: 0 auto;
+      padding: theme('spacing.small');
+      transition: all 0.3s ease-in-out;
+      z-index: 1;
+    }
+
+    // add custom paddings here
+    &-inner {
+      padding: 0;
+    }
+  }
+
+  .rotate180 {
+    transform: rotate(180deg);
+  }
+}

@@ -1,0 +1,195 @@
+// Card carousel inside a coloured panel. Measurements come from the Figma
+// "Themenfelder" frame (1200px artboard); they have no equivalent in the
+// Tailwind token scale, so they stay component-scoped here while colours and
+// fonts reference theme tokens.
+$gap: 20px;
+$radius: 12px;
+$card-width: 325px;
+$card-gap: 10px;
+$icon-area-height: 144px;
+$icon-size: 78px;
+$nav-size: 44px;
+$nav-icon-size: 20px;
+$button-icon-size: 33px;
+$button-arrow-size: 18px;
+
+.block-carousel {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--primary-font-family);
+  gap: 32px;
+
+  // ---- Panel ----
+
+  &__panel {
+    background-color: theme('colors.greenFaded');
+    border-radius: $radius;
+    display: flex;
+    flex-direction: column;
+    gap: $gap;
+    padding: $gap;
+  }
+
+  &__title {
+    margin-bottom: 0;
+  }
+
+  // ---- Carousel ----
+
+  // Wraps the Swiper container so the arrows can be positioned against it.
+  &__slider {
+    position: relative;
+  }
+
+  // Slide widths come from the design, not from `slidesPerView`. The fallback
+  // is relative to the track (not the viewport), so on mobile the active card
+  // fits inside the panel padding and the next one peeks in.
+  .swiper-slide {
+    height: auto;
+    min-width: 0;
+    width: min(#{$card-width}, 85%);
+  }
+
+  &__card {
+    background-color: theme('colors.white');
+    border-radius: $radius;
+    display: flex;
+    flex-direction: column;
+    gap: $card-gap;
+    padding: $gap;
+    position: relative;
+  }
+
+  &__card-media {
+    align-items: center;
+    display: flex;
+    height: $icon-area-height;
+    justify-content: center;
+  }
+
+  &__card-icon {
+    height: $icon-size;
+    object-fit: contain;
+    width: $icon-size;
+  }
+
+  // Long German compounds ("Reparaturangebote") would otherwise push past the
+  // card edge on narrow screens.
+  &__card-title {
+    margin-bottom: 0;
+    overflow-wrap: break-word;
+  }
+
+  &__card-text {
+    // Pinned to the bottom so the teaser lines up across cards of unequal
+    // title length.
+    margin-top: auto;
+
+    p {
+      margin-bottom: 0;
+    }
+  }
+
+  // Stretched link: the whole card is clickable while the text stays selectable
+  // outside of it.
+  &__card-link {
+    inset: 0;
+    position: absolute;
+    z-index: 1;
+  }
+
+  &__card:has(&__card-link):hover,
+  &__card:has(&__card-link):focus-within {
+    .block-carousel__card-title {
+      text-decoration: underline;
+    }
+  }
+
+  // ---- Navigation ----
+
+  // Sits on the outer edge of the first and last visible card. Touch devices
+  // swipe instead, so the arrows only appear from tablet up.
+  &__nav {
+    align-items: center;
+    background-color: theme('colors.green');
+    border-radius: 9999px;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 15%);
+    cursor: pointer;
+    display: none;
+    height: $nav-size;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: background-color 200ms ease-in-out;
+    width: $nav-size;
+    z-index: 2;
+
+    @media (min-width: theme('screens.tablet')) {
+      display: flex;
+    }
+
+    &:hover,
+    &:focus {
+      background-color: theme('colors.greenFaded');
+    }
+
+    // `watchOverflow` and the end of the track both disable the buttons.
+    &.swiper-button-disabled,
+    &.swiper-button-lock {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    svg {
+      height: $nav-icon-size;
+      width: $nav-icon-size;
+    }
+
+    &--prev {
+      left: 0;
+    }
+
+    &--next {
+      right: 0;
+
+      svg {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  // ---- Button ----
+
+  // Pill button with a circular arrow badge, as on the single event template.
+  &__button {
+    align-self: center;
+    background-color: theme('colors.green');
+    color: theme('colors.black');
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1;
+    padding: 8px 18px;
+
+    &:hover,
+    &:focus {
+      background-color: theme('colors.greenFaded');
+    }
+  }
+
+  &__button-icon {
+    align-items: center;
+    background-color: theme('colors.white');
+    border-radius: 9999px;
+    display: flex;
+    flex-shrink: 0;
+    height: $button-icon-size;
+    justify-content: center;
+    width: $button-icon-size;
+
+    svg {
+      height: $button-arrow-size;
+      width: $button-arrow-size;
+    }
+  }
+}

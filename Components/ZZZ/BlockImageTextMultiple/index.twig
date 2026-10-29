@@ -1,0 +1,20 @@
+<flynt-component load:on="visible" name="BlockImageTextMultiple">
+  <div class="wrapper max-w-screen-max mx-auto boxed">
+    <div class="h-auto flex gap-md align-start md:items-start justify-start md:justify-center" {{ imagePosition ? 'data-image-position="' ~ imagePosition ~ '"' }}>
+      <div class="md:w-[650px] h-full flex flex-col items-end gap-sm">
+        {% for panel in repeaterImages %}
+          <img class="lazyload h-full w-full object-cover rounded-image md:even:w-2/3 md:even:translate-x-xl lg:even:translate-x-[135px] md:even:-translate-y-lg"
+            src="{{ panel.itemImage.src | resize(32) }}"
+            data-srcset="{{function('wp_get_attachment_image_srcset', panel.itemImage.id)}}"
+            data-sizes="auto"
+            alt="{{ panel.itemImage.alt|e }}">
+        {% endfor %}
+      </div>
+      <div class="w-full lg:w-1/2 h-full flex flex-col justify-between">
+        {% if contentHtml %}
+          <div class="wysiwyg">{{ contentHtml|e('wp_kses_post') }}</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</flynt-component>

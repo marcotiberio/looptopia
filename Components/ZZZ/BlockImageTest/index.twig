@@ -1,0 +1,17 @@
+<flynt-component load:on="visible" name="BlockImageTest">
+  <div class="w-screen h-full boxed">
+    <figure class="figure">
+      {% if image %}
+        <img class="figure-image lazyload object-cover"
+          src="{{ image.src }}"
+          alt="{{ image.alt|e }}">
+      {% endif %}
+      {% if image.title or image.caption %}
+        <div class="hidden py-[5px]">
+          <figcaption class="font-bodySmall">{{ image.title|e }}</figcaption>
+          <figcaption class="font-bodySmall underline underline-offset-4">{{ image.caption|e }}</figcaption>
+        </div>
+      {% endif %}
+    </figure>
+  </div>
+</flynt-component>

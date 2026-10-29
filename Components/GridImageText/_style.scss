@@ -1,0 +1,79 @@
+flynt-component[name='GridImageText'] {
+  [data-grid-columns='1'] {
+    @apply grid-cols-1;
+    @apply sm:grid-cols-1;
+    @apply lg:grid-cols-1;
+
+    figure {
+      img {
+        @apply aspect-3/4;
+      }
+    }
+  }
+
+  [data-grid-columns='2'] {
+    @apply grid-cols-2;
+    @apply sm:grid-cols-2;
+    @apply lg:grid-cols-2;
+
+    figure {
+      img {
+        @apply aspect-3/4;
+      }
+    }
+  }
+
+  [data-grid-columns='3'] {
+    @apply grid-cols-2;
+    @apply sm:grid-cols-2;
+    @apply lg:grid-cols-3;
+
+    figure {
+      img {
+        @apply aspect-3/4;
+      }
+    }
+  }
+
+  [data-grid-columns='4'] {
+    @apply grid-cols-2;
+    @apply sm:grid-cols-2;
+    @apply lg:grid-cols-4;
+
+    figure {
+      img {
+        @apply aspect-3/4;
+      }
+    }
+  }
+
+  [data-grid-columns='5'] {
+    @apply grid-cols-2;
+    @apply sm:grid-cols-3;
+    @apply lg:grid-cols-5;
+
+    figure {
+      img {
+        @apply aspect-3/4;
+      }
+    }
+  }
+
+  // .figureImage {
+  //   position: relative;
+
+  //   &::before {
+  //     border-bottom: 40px solid transparent;
+  //     border-left: 40px solid transparent;
+  //     border-right: 40px solid var(--grey);
+  //     border-top: 40px solid transparent;
+  //     bottom: -40px;
+  //     content: '';
+  //     height: 0;
+  //     left: calc(100% - 79px);
+  //     position: absolute;
+  //     width: 0;
+  //     z-index: 1000;
+  //   }
+  // }
+}

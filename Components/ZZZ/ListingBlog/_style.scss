@@ -1,0 +1,12 @@
+flynt-component[name='ListingBlog'] {
+  .post {
+    &:hover {
+      .button {
+        &--outline {
+          @apply text-white;
+          @apply bg-black;
+        }
+      }
+    }
+  }
+}

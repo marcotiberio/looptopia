@@ -1,0 +1,116 @@
+{% if posts|length > 0 %}
+  <flynt-component 
+    load:on="visible" 
+    name="ListingVideo" 
+    class="boxed !min-h-fit w-full"
+    style="
+      color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};
+      background-color: {% if options.pageBackground %}{{ options.pageBackground }}{% else %}transparent{% endif %};">
+    
+    <div class="wrapper max-w-screen-max mx-auto flex flex-col fade-in overflow-hidden" x-data="{ 
+      selectedCategory: '', 
+      searchQuery: '', 
+      filtersOpen: false,
+      init() {
+        // Read category from URL on page load
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoryParam = urlParams.get('category');
+        if (categoryParam) {
+          this.selectedCategory = categoryParam;
+        }
+        
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', () => {
+          const urlParams = new URLSearchParams(window.location.search);
+          const categoryParam = urlParams.get('category');
+          this.selectedCategory = categoryParam || '';
+        });
+      },
+      updateUrl(category) {
+        const url = new URL(window.location.href);
+        if (category) {
+          url.searchParams.set('category', category);
+        } else {
+          url.searchParams.delete('category');
+        }
+        window.history.pushState({}, '', url);
+      }
+    }">
+
+      <div class="">
+        <h2>{{ headlineTitle|e }}</h2>
+      </div>
+
+      <div class="flex flex-col gap-xs mb-sm">
+        <div class="flex flex-row flex-wrap items-center justify-between sm:justify-start gap-xs">
+          
+          <!-- All Category Filter -->
+          <div 
+            class="font-body !mb-0 cursor-pointer px-xs md:px-sm py-xs transition-colors filter-button relative"
+            :class="selectedCategory === '' ? 'text-black' : 'text-white border-transparent'"
+            @click="
+              if (selectedCategory !== '') {
+                selectedCategory = '';
+                updateUrl('');
+              }
+            ">
+            <span>All</span>
+          </div>
+          
+          {% if categories %}
+            {% for category in categories %}
+              <div 
+                class="font-body !mb-0 cursor-pointer px-xs md:px-sm py-xs transition-colors filter-button relative"
+                :class="selectedCategory === '{{ category.slug }}' ? 'text-black' : 'text-white border-transparent'"
+                @click="
+                  if (selectedCategory !== '{{ category.slug }}') {
+                    selectedCategory = '{{ category.slug }}';
+                    updateUrl('{{ category.slug }}');
+                  }
+                ">
+                <span>{{ category.name }}</span>
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>            
+      </div>
+      
+      <!-- Posts Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-xs md:gap-sm">
+        {% for post in posts %}
+          {% set postCategoryTerms = post.terms('category') %}
+          {% set postCategorySlugs = postCategoryTerms|map(term => term.slug) %}
+
+          <div 
+            class="post [&_img]:hover:scale-105 hover:cursor-pointer overflow-hidden" 
+            x-show="(selectedCategory === '' || ['{{ postCategorySlugs|join("','") }}'].includes(selectedCategory)) && 
+                    (searchQuery === '' || '{{ post.title|lower }}'.includes(searchQuery.toLowerCase()))"
+          >
+            <div class="w-full">
+              <div class="group w-full flex flex-col gap-xs items-start relative">
+                {% if post.thumbnail %}
+                <figure class="overflow-hidden">
+                  <img 
+                    class="aspect-16/10 object-cover overflow-hidden"
+                    src="{{ post.thumbnail.src }}"
+                    alt="{{ post.title }}"
+                    loading="lazy"
+                    style="opacity: 0; transition: opacity 0.5s ease-in-out, transform 0.2s ease-in-out;"
+                    onload="this.style.opacity='1'"
+                    aria-label="Go to post"
+                  />
+                </figure>
+                {% endif %}
+                <h3 class="w-full !mb-0 font-bodySmall text-white">{{ post.title }}</h3>
+                <a class="button button--chevron w-full !font-bodySmall !mb-0 text-white relative" href="{{ post.link }}" title="{{ post.title }}" aria-label="Go to post">
+                  <span class="pb-[5px]">Watch Here</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </flynt-component>
+{% endif %}

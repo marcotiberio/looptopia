@@ -1,0 +1,40 @@
+{% if posts|length > 0 %}
+  <flynt-component load:on="visible" name="ListingUpcomingEvents" class="" id="relatedExhibitions">
+    <div class="boxed">
+      {% if preContentHtml %}
+        <div class="preContent h1">
+          {{ preContentHtml }}
+        </div>
+      {% endif %}
+      <div class="grid">
+        {% for post in posts %}
+          <div class="post h-full flex flex-col justify-start items-center" data-theme="reset">
+            {% if post.thumbnail %}
+              <figure class="figure">
+                <img class="lazyload"
+                  src="{{ post.thumbnail.src }}"
+                  data-srcset="{{function('wp_get_attachment_image_srcset', post.thumbnail.id)}}"
+                  data-sizes="auto"
+                  alt="{{ post.title }}">
+              </figure>
+            {% endif %}
+            <div class="content h-full flex flex-col justify-between items-stretch">
+              <div class="">
+                <h2 class="h5">{{ post.title }}</h2>
+                <div class="flex justify-between align-middle">
+                  <div>
+                    {% if post.eventDate %}<span>{{ post.eventDate|date("d.m.Y")|escape('wp_kses_post') }}</span>{% endif %}
+                    {% if post.eventDateEnd %}<span> - {{ post.eventDateEnd|date("d.m.Y")|escape('wp_kses_post') }}</span>{% endif %}
+                  </div>
+                  {% if post.eventTime %}<span>{{ post.eventTime }}</span>{% endif %}
+                </div>
+                <p>{{ post.eventIntro }}</p>
+              </div>
+              <a class="button button--full" href="{{ post.link }}" aria-label="{{ post.title }}">Read more</a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </flynt-component>
+{% endif %}

@@ -1,0 +1,32 @@
+<flynt-component 
+  load:on="visible" name="BlockLernenHeader" 
+  class="w-full mx-auto flex flex-col justify-between items-center">
+
+  <div class="wrapper max-w-screen-max mx-auto">
+    <div class="flex flex-col items-stretch min-h-[550px] h-full">
+      <div class="w-auto lg:w-1/2 lg:absolute right-0 min-h-[550px] h-full" style="background-image: url('{{ post.thumbnail.src }}'); background-size: cover; background-position: center;">
+      </div>
+      <div class="w-full lg:w-1/2 h-full flex flex-col justify-between gap-md boxed !ml-0">
+        <div class="flex flex-col justify-start gap-md">
+          <div class="flex flex-col justify-start gap-xs">
+            {% set postCategories = post.terms('modus') %}
+            {% for term in postCategories %}
+              <span class="font-label">{{ term|upper }}</span>
+            {% endfor %}
+            <div class="font-h2">{{ post.title }}</div>
+          </div>
+          <div class="flex flex-col gap-md">
+            <div class="wysiwyg" style="color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};">
+              {{ post.postIntro }}
+            </div>
+            <div class="flex flex-row gap-xs">
+              {% if post.buttonReserve %}
+                <a class="button button--outline" href="{{ post.buttonReserve.url }}" {% if post.buttonReserve.target %} target="{{ post.buttonReserve.target }}" rel="noreferrer noopener"{% endif %}>{{ post.buttonReserve.title }}</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</flynt-component>

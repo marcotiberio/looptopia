@@ -1,0 +1,17 @@
+flynt-component[name='ListingPilots'] {
+  .grid-item {
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      box-shadow: 0 0 0 5px rgba(255, 115, 0, 1);
+
+      .content-inner {
+        @apply pl-[10px];
+      }
+    }
+
+    .content-inner {
+      transition: all 0.2s ease-in-out;
+    }
+  }
+}

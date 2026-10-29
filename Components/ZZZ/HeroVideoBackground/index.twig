@@ -1,0 +1,47 @@
+<flynt-component
+  load:on="visible"
+  name="BlockHeroMultimedia">
+  <div class="">
+    {# {% if image %}
+    <figure class="figure aspect-9/16 lg:aspect-video me-0">
+      <img class="figure-image lazyload h-full w-full object-cover {% if bgOverlay %}brightness-50{% endif %}"
+        src="{{ image.src | resize(32) }}"
+        data-srcset="{{ function('wp_get_attachment_image_srcset', image.id) }}"
+        data-sizes="auto"
+        alt="{{ image.alt|e }}">
+    </figure>
+    {% endif %} #}
+    {% if videoFile %}
+    <div class="video-container h-[calc(100svh_-_66px)] sm:h-[calc(100vh_-_85px)] w-full flex justify-center items-center overflow-hidden brightness-75">
+      <video 
+        class="hidden sm:block w-full h-full pointer-events-none absolute top-0 left-0 object-cover" 
+        autoplay 
+        muted 
+        loop 
+        playsinline 
+        preload="auto" />
+        <source type="video/mp4" src="{{ videoFile }}">
+      </video>
+      <video 
+        class="block sm:hidden w-full h-full pointer-events-none absolute top-0 left-0 object-cover" 
+        autoplay 
+        muted 
+        loop 
+        playsinline 
+        preload="auto" />
+        <source type="video/mp4" src="{{ videoFileMobile }}">
+      </video>
+    </div>
+    {% endif %}
+    {% if blockTitle %}
+      <div class="w-full h-full sm:absolute absolute top-0 left-0 flex items-end p-sm md:py-lg md:px-sm lg:py-xxl lg:px-sm">
+        <div class="w-full mx-auto wysiwyg">
+          <div class="w-full max-w-screen-max mx-auto">
+            <div class="uppercase text-white font-body !mb-0">{{ blockSubtitle|e('wp_kses_post') }}</div>
+            {{ blockTitle|e('wp_kses_post') }}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</flynt-component>

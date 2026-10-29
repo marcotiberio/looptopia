@@ -1,0 +1,276 @@
+<flynt-component load:on="visible" name="BlockEventMap" class="w-full">
+  {% if preContentHtml %}
+    <div class="wrapper boxed max-w-screen-max mx-auto">
+      <div class="wysiwyg mb-sm">{{ preContentHtml|e('wp_kses_post') }}</div>
+    </div>
+  {% endif %}
+
+  <div
+    class="event-map relative w-full"
+    x-data="{
+      entries: [],
+      day: '',
+      audiences: [],
+      formats: [],
+      languages: [],
+      accessibleOnly: false,
+      search: '',
+      openMenu: '',
+      selected: null,
+      init() {
+        const json = this.$el.querySelector('script[data-ref=\'entries\']');
+        this.entries = JSON.parse(json ? json.textContent : '[]');
+      },
+      get visible() {
+        return this.entries.filter((entry) => this.matches(entry));
+      },
+      matches(entry) {
+        if (this.day && !entry.dates.includes(this.day)) return false;
+        if (this.audiences.length && !this.audiences.some((key) => entry.audiences.includes(key))) return false;
+        if (this.formats.length && !this.formats.some((key) => entry.programTypes.includes(key))) return false;
+        if (this.languages.length && !this.languages.some((key) => entry.languages.includes(key))) return false;
+        if (this.accessibleOnly && !entry.accessible) return false;
+        if (this.searchTerm && !entry.search.includes(this.searchTerm)) return false;
+        return true;
+      },
+      /* Server side lowercases entry.search, so both sides compare the same. */
+      get searchTerm() {
+        return this.search.trim().toLowerCase();
+      },
+      setDay(key) {
+        this.day = key;
+      },
+      toggleValue(list, key) {
+        const index = this[list].indexOf(key);
+        if (index === -1) { this[list].push(key); } else { this[list].splice(index, 1); }
+      },
+      toggleMenu(name) {
+        this.openMenu = this.openMenu === name ? '' : name;
+      },
+      closeMenu(name) {
+        if (this.openMenu === name) this.openMenu = '';
+      },
+      select(id) {
+        this.selected = this.entries.find((entry) => entry.id === id) || null;
+      },
+      /* The card shows the times of the filtered day, or the first day. */
+      dayLine() {
+        const rows = this.selected ? this.selected.schedule : [];
+        return rows.find((row) => row.key === this.day) || rows[0] || { date: '', time: '' };
+      },
+      /* Hand the current result set + selection to the Leaflet layer (script.js). */
+      sync() {
+        if (this.selected && !this.matches(this.selected)) this.selected = null;
+        this.$el.dispatchEvent(new CustomEvent('eventmap:filter', { bubbles: true, detail: { ids: this.visible.map((entry) => entry.id) } }));
+        this.$el.dispatchEvent(new CustomEvent('eventmap:selected', { bubbles: true, detail: { id: this.selected ? this.selected.id : null } }));
+      }
+    }"
+    x-effect="sync()"
+    x-on:eventmap:ready="sync()"
+    x-on:eventmap:select="select($event.detail.id)"
+    x-on:keydown.escape.window="openMenu = ''; selected = null"
+  >
+    <div
+      data-ref="map"
+      class="event-map__canvas"
+      data-center="{{ center|e('html_attr') }}"
+      data-zoom="{{ zoom|e('html_attr') }}"
+      data-tile-url="{{ tiles.url|e('html_attr') }}"
+      data-tile-attribution="{{ tiles.attribution|e('html_attr') }}"
+      data-tile-max-native="{{ tiles.maxNativeZoom|e('html_attr') }}"
+    ></div>
+
+    {# ============ Filter bar ============ #}
+    <div class="event-map__filters">
+      <div class="event-map__filters-inner">
+        <button
+          type="button"
+          class="event-map__pill"
+          :class="day === '' && 'is-active'"
+          :aria-pressed="day === ''"
+          x-on:click="setDay('')"
+        >{{ __('Alle Tage', 'flynt') }}</button>
+
+        {% for entry in days %}
+          <button
+            type="button"
+            class="event-map__pill event-map__pill--day"
+            :class="day === '{{ entry.key }}' && 'is-active'"
+            :aria-pressed="day === '{{ entry.key }}'"
+            aria-label="{{ entry.label }}"
+            x-on:click="setDay(day === '{{ entry.key }}' ? '' : '{{ entry.key }}')"
+          >
+            <span class="event-map__pill-weekday">{{ entry.weekday }}</span>
+            <span>{{ entry.day }}</span>
+          </button>
+        {% endfor %}
+
+        {# Zielgruppe — grouped checkboxes #}
+        <div class="event-map__dropdown" x-on:click.outside="closeMenu('audiences')">
+          <button
+            type="button"
+            class="event-map__pill event-map__pill--menu"
+            :class="audiences.length > 0 && 'is-filtering'"
+            :aria-expanded="openMenu === 'audiences'"
+            x-on:click="toggleMenu('audiences')"
+          >
+            <span>{{ __('Zielgruppe', 'flynt') }}</span>
+            {% include 'assets/icons/map-chevron-down.svg' ignore missing %}
+          </button>
+          <div class="event-map__menu" x-show="openMenu === 'audiences'" x-cloak x-transition.opacity>
+            {% for group in audienceGroups %}
+              <fieldset class="event-map__menu-group">
+                <legend class="event-map__menu-legend">{{ group.label }}</legend>
+                {% for value, label in group.choices %}
+                  <label class="event-map__option">
+                    <input type="checkbox" value="{{ value }}" x-model="audiences">
+                    <span>{{ label }}</span>
+                  </label>
+                {% endfor %}
+              </fieldset>
+            {% endfor %}
+          </div>
+        </div>
+
+        {# Format #}
+        <div class="event-map__dropdown" x-on:click.outside="closeMenu('formats')">
+          <button
+            type="button"
+            class="event-map__pill event-map__pill--menu"
+            :class="formats.length > 0 && 'is-filtering'"
+            :aria-expanded="openMenu === 'formats'"
+            x-on:click="toggleMenu('formats')"
+          >
+            <span>{{ __('Format', 'flynt') }}</span>
+            {% include 'assets/icons/map-chevron-down.svg' ignore missing %}
+          </button>
+          <div class="event-map__menu" x-show="openMenu === 'formats'" x-cloak x-transition.opacity>
+            {% for value, label in formats %}
+              <label class="event-map__option">
+                <input type="checkbox" value="{{ value }}" x-model="formats">
+                <span>{{ label }}</span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        {# Barrierefreiheit — single toggle #}
+        <button
+          type="button"
+          class="event-map__pill event-map__pill--icon"
+          :class="accessibleOnly && 'is-filtering'"
+          :aria-pressed="accessibleOnly"
+          x-on:click="accessibleOnly = !accessibleOnly"
+        >
+          <img src="{{ cardIcons.wheelchair }}" alt="{{ __('Nur barrierefreie Angebote', 'flynt') }}" width="24" height="24">
+        </button>
+
+        {# Suche — free text over title, organiser, tags, venue and address #}
+        <div class="event-map__search" :class="searchTerm !== '' && 'is-filtering'">
+          <input
+            type="search"
+            class="event-map__search-input"
+            placeholder="{{ __('Suche', 'flynt') }}"
+            aria-label="{{ __('Programm durchsuchen', 'flynt') }}"
+            x-model.debounce.200ms="search"
+          >
+          <button
+            type="button"
+            class="event-map__search-clear"
+            x-show="search !== ''"
+            x-cloak
+            aria-label="{{ __('Suche zurücksetzen', 'flynt') }}"
+            x-on:click="search = ''"
+          >{% include 'assets/icons/map-close.svg' ignore missing %}</button>
+        </div>
+      </div>
+
+      <p class="event-map__empty" x-show="entries.length > 0 && visible.length === 0" x-cloak>
+        {{ __('Keine Programmpunkte für diese Auswahl.', 'flynt') }}
+      </p>
+    </div>
+
+    {# ============ Selected entry ============ #}
+    <div class="event-map__card" x-show="selected" x-cloak x-transition.opacity>
+      <template x-if="selected">
+        <div class="event-map__card-inner">
+          <button
+            type="button"
+            class="event-map__card-close"
+            x-on:click="selected = null"
+            aria-label="{{ __('Schließen', 'flynt') }}"
+          >{% include 'assets/icons/map-close.svg' ignore missing %}</button>
+
+          <div class="event-map__card-media" x-show="selected.image">
+            <img :src="selected.image" :alt="selected.title" loading="lazy">
+          </div>
+
+          <p class="event-map__card-meta">
+            <span x-text="dayLine().date"></span>
+            <span x-text="dayLine().time"></span>
+          </p>
+
+          <p class="event-map__card-title font-h3">
+            <a :href="selected.link" x-text="selected.title" class="no-underline"></a>
+          </p>
+
+          <div class="event-map__tags">
+            <template x-if="selected.programTypeLabel">
+              <span class="event-map__tag event-map__tag--primary" x-text="selected.programTypeLabel"></span>
+            </template>
+            <template x-for="label in selected.sectorLabels" :key="label">
+              <span class="event-map__tag" x-text="label"></span>
+            </template>
+          </div>
+
+          <p class="event-map__card-org" data-no-translation x-text="selected.org" x-show="selected.org"></p>
+
+          <div class="event-map__card-footer">
+            <div class="event-map__card-icons">
+              <img
+                x-show="selected.family"
+                src="{{ cardIcons.family }}"
+                alt="{{ __('Für Familien & Kinder', 'flynt') }}"
+                width="24"
+                height="24"
+              >
+              <img
+                x-show="selected.accessible"
+                src="{{ cardIcons.wheelchair }}"
+                alt="{{ __('Barrierefrei', 'flynt') }}"
+                width="24"
+                height="24"
+              >
+            </div>
+            <p class="event-map__card-language" x-show="selected.languageLabel">
+              <span>{{ __('Sprache', 'flynt') }}</span>
+              <span x-text="selected.languageLabel"></span>
+            </p>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    {# ============ Zoom ============ #}
+    <div class="event-map__zoom">
+      <button
+        type="button"
+        class="event-map__zoom-button"
+        aria-label="{{ __('Hineinzoomen', 'flynt') }}"
+        x-on:click="$dispatch('eventmap:zoom', { delta: 1 })"
+      >{% include 'assets/icons/map-plus.svg' ignore missing %}</button>
+      <button
+        type="button"
+        class="event-map__zoom-button"
+        aria-label="{{ __('Herauszoomen', 'flynt') }}"
+        x-on:click="$dispatch('eventmap:zoom', { delta: -1 })"
+      >{% include 'assets/icons/map-minus.svg' ignore missing %}</button>
+    </div>
+
+    {# Pin shape cloned per marker by script.js; colour comes from CSS. #}
+    <template data-ref="pinTemplate">{% include 'assets/icons/map-pin.svg' ignore missing %}</template>
+
+    {# Marker + card data — read by both Alpine (init) and Leaflet (script.js). #}
+    <script type="application/json" data-ref="entries">{{ entries|json_encode|raw }}</script>
+  </div>
+</flynt-component>

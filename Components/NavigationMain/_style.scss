@@ -1,0 +1,27 @@
+flynt-component[name='NavigationMain'] {
+  .menu > .item {
+    .link {
+      color: var(--black);
+      font-family: theme('fontFamily.poppins');
+      font-size: 1rem;
+      font-weight: 600;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+  }
+
+  .submenu {
+    align-items: flex-start;
+    background: var(--white);
+    column-gap: theme('spacing.small');
+    display: flex;
+    flex-flow: row wrap;
+    height: auto;
+    justify-content: space-between;
+    padding: theme('spacing.xSmall') 0;
+    position: absolute;
+    text-align: center;
+    top: 66px;
+    width: fit-content;
+  }
+}

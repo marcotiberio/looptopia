@@ -1,0 +1,54 @@
+flynt-component[name='ListingUpcomingEvents'] {
+  .grid {
+    align-items: center;
+    display: grid;
+    gap: theme('spacing.large');
+
+    @screen mobile {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @screen tablet {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .post {
+    .link {
+      @include reset-link;
+      color: currentColor;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    figure {
+      img {
+        aspect-ratio: 4/3;
+        object-fit: cover;
+      }
+    }
+
+    .content {
+      color: var(--color-text);
+      flex-grow: 1;
+
+      #{$heading-selectors} {
+        color: var(--color-headline);
+      }
+    }
+
+    .footer {
+      align-items: center;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 var(--box-padding) var(--box-padding);
+      position: relative;
+      width: 100%;
+
+      .readingTime {
+        color: var(--color-text-muted);
+      }
+    }
+  }
+}

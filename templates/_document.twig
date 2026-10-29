@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html class="html {{ body_class }} page-{{ post.slug }}" id="theTop" lang="{{ site.language|locale_format }}" {{ site.language_attributes }}>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="alternate" type="application/rss+xml" title="{{ site.title }} {{ __('Feed', 'flynt') }}" href="{{ site.rss2 | e('esc_url') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap">
+    {{ function('wp_head') }}
+  </head>
+  <body>
+    {% block layout %}
+      <div 
+        class="pageWrapper">
+        <header class="w-full">
+          {% block header %}
+            <div
+              
+              class="wrapper wrapper--menu flex justify-center items-center w-full h-auto fixed top-0 left-0 z-[3000] transition ease-in-out delay-300 bg-white">
+              {# <div class="hidden lg:block w-full boxed !max-w-screen-box mx-aut bg-white">
+                <div class="boxed !p-0 flex flex-row justify-between gap-sm">
+                  {{ renderComponent('NavigationMainLeft') }}
+                  {{ renderComponent('NavigationMainLogo') }}
+                  {{ renderComponent('NavigationMainRight') }}
+                </div>
+              </div> #}
+              <div class="block lg:hidden w-screen fixed top-0 left-0">
+                {{ renderComponent('NavigationBurger') }}
+              </div>
+              <div class="hidden boxed lg:flex flex-row justify-between gap-sm">
+                {{ renderComponent('NavigationMain') }}
+              </div>
+            </div>
+          {% endblock %}
+        </header>
+        <main id="mainContent" class="mainContent min-h-[calc(100vh-44px)] lg:min-h-[calc(100vh-72px)] mt-[44px] lg:mt-[72px]" aria-label="{{ __('Content', 'flynt') }}">
+          <a href="#mainContent" class="skipLink">
+            {{ __("Skip to main content", "flynt") }}
+          </a>
+          {% if function('post_password_required') %}
+            {{ function('get_the_password_form') }}
+          {% else %}
+            {% block content %}
+              No <code>{{ '{% block content %}' }}</code> defined for this template.
+            {% endblock %}
+          {% endif %}
+        </main>
+        <footer class="mainFooter" id="theFooter">
+          {% block footer %}
+            {{ renderComponent('NavigationFooter') }}
+          {% endblock %}
+        </footer>
+      </div>
+    {% endblock %}
+    <div class="wpFooter">
+      {{ function('wp_footer') }}
+    </div>
+  </body>
+</html>

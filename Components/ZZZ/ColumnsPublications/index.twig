@@ -1,0 +1,13 @@
+<flynt-component load:on="visible" name="ColumnsPublications">
+  <div class="wrapper boxed">
+    <div class="content">
+      <div class="columns">
+        {% for column in columnTexts %}
+          <div class="column wysiwyg">
+            {{ column.columnText|e('wp_kses_post') }}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>

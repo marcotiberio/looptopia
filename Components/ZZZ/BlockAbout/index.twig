@@ -1,0 +1,24 @@
+<flynt-component load:on="visible" name="BlockAbout">
+  <div class="wrapper max-w-screen-max mx-auto boxed">
+    <div class="flex flex-col sm:flex-row align-start md:items-start justify-start md:justify-between gap-md lg:gap-xxl" {{ imagePosition ? 'data-image-position="' ~ imagePosition ~ '"' }}>
+      <div class="sm:w-1/2">
+        <div class="wysiwyg">{{ contentHtml|e('wp_kses_post') }}</div>
+        {% if contactForm %}
+          <div class="py-sm">{{ contactForm }}</div>
+        {% endif %}
+      </div>
+      <div class="sm:w-1/2">
+        {% if image %}
+          <img class="lazyload h-full w-full object-cover"
+            src="{{ image.src | resize(32) }}"
+            data-srcset="{{function('wp_get_attachment_image_srcset', image.id)}}"
+            data-sizes="auto"
+            alt="{{ image.alt|e }}">
+        {% endif %}
+        {% if image.caption %}
+          <figcaption>{{ image.caption|e }}</figcaption>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</flynt-component>

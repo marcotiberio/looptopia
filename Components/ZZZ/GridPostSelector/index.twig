@@ -1,0 +1,65 @@
+<flynt-component load:on="visible" name="GridPostSelector" class="">
+  <div class="wrapper max-w-screen-max mx-auto boxed">
+    {% if headlineTitle %}
+      <h2 
+        class="max-w-screen-lg mx-auto flex justify-center items-center text-center"
+        style="color:{% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};"
+        >
+          {{ headlineTitle }}
+        </h2>
+    {% endif %}
+    <div 
+      class="w-full max-w-screen-max mx-auto mt-md md:mt-xl grid gap-sm"
+      {{ options.gridColumns ? 'data-grid-columns="' ~ options.gridColumns ~ '"' }}>
+      {% for post in selectedPosts %}
+        <div class="grid-item flex flex-col">
+          <a class="" href="{{ post.link }}" title="{{ post.title }}">
+            {% if post.thumbnail %}
+              <figure class="figure w-full">
+                <img class="lazyload w-full object-cover aspect-video max-h-[300px]"
+                  src="{{ post.thumbnail.src | resize(32) }}"
+                  data-srcset="{{function('wp_get_attachment_image_srcset', post.thumbnail.id)}}"
+                data-sizes="auto"
+                  alt="{{ post.thumbnail.alt|e }}">
+              </figure>
+            {% endif %}
+            <div class="content w-full">
+              <div class="py-xs">
+                {# {% if post.category %}
+                  <div class="font-bodyLarge">{{ post.category }}</div>
+                {% endif %} #}
+                {% if post.title %}
+                  <a class="" href="{{ post.link }}" title="{{ post.title }}">
+                    <div class="font-smallTitle">{{ post.title }}</div>
+                  </a>
+                {% endif %}
+              </div>
+              {# <div class="w-full p-sm">
+                <a class="button button--outline" href="{{ post.link }}" title="{{ post.title }}">
+                  {{ labels.readMore }}
+                </a>
+              </div> #}
+            </div>
+          </a>
+        </div>
+
+        {# <div class="grid-item {{ item.post_type }}">
+          <div class="content">
+            <a href="{{ item.link }}" class="content-link" title="{{ item.title }}">
+              <img class="content-image lazyload mb-sm"
+                src="{{ item.thumbnail.src }}"
+                data-srcset="{{function('wp_get_attachment_image_srcset', item.thumbnail.id)}}"
+                data-sizes="auto">
+              <div class="content-inner mt-[10px]">
+                <div class="text-body font-bold">{{ item.title }}</div>
+                <div class="text-body font-bold text-black">{{ item.partner }}</div>
+                <div class="text-body">{{ item.intro|truncate(10) }}</div>
+                <div class="font-h3">→</div>
+              </div>
+            </a>
+          </div>
+        </div> #}
+      {% endfor %}
+    </div>
+  </div>
+</div>

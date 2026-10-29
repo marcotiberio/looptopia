@@ -1,0 +1,10 @@
+<flynt-component 
+  load:on="visible" 
+  name="BlockWysiwygInterview" 
+  class="
+    interviewComponent">
+  <div class="max-w-screen-lg mx-auto flex flex-col gap-sm p-sm lg:px-lg">
+    <div class="wysiwyg">{{ contentHtml|e('wp_kses_post') }}</div>
+    <div class="wysiwyg">{{ contentHtmlBottom|e('wp_kses_post') }}</div>
+  </div>
+</flynt-component>

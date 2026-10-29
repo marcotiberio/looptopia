@@ -1,0 +1,55 @@
+<flynt-component
+  load:on="idle" name="SliderImages"
+  class="overflow-hidden"
+  style="background-color: {% if options.colorBackground %}{{ options.colorBackground }}{% else %}transparent{% endif %};"
+>
+  <script type="application/json">{{ jsonData|json_encode }}</script>
+  <div class="wrapper w-screen mx-auto">
+    {% if headlineTitle %}
+      <h2 class="max-w-screen-lg mx-auto flex justify-center items-center text-center">{{ headlineTitle }}</h2>
+    {% endif %}
+
+    <div data-ref="slider" class="slider swiper-container mb-md">
+      <div class="button-wrapper flex justify-between boxed z-50 absolute bottom-[calc(50%_-_50px)] md:bottom-[calc(50%_-_70px)]">
+        <button type="button" data-ref="prev" class="slider-button slider-button--prev">
+          <span class="text-white text-[40px] md:text-[60px]">←</span>
+        </button>
+        <button type="button" data-ref="next" class="slider-button slider-button--next">
+          <span class="text-white text-[40px] md:text-[60px]">→</span>
+        </button>
+      </div>
+      {# <div data-ref="dots" class="block slider-pagination swiper-pagination-fraction"></div> #}
+      <div class="swiper-wrapper">
+        {% for box in boxes %}
+          <div 
+            class="slider-item swiper-slide relative w-full h-auto flex flex-col justify-start bg-white overflow-hidden" 
+            style="background-color: {% if box.colorBackground %}{{ box.colorBackground }}{% else %}var(--secondary){% endif %}; color:{% if box.colorText %}{{ box.colorText }}{% else %}var(--white){% endif %};"
+            >
+            <div>
+              {% if box.logo %}
+                <figure class="flex flex-col items-start justify-start">
+                  <img class="logo lazyload w-full max-w-full h-auto object-cover aspect-video"
+                  src="{{ box.logo.src | resize(32) }}"
+                  data-srcset="{{function('wp_get_attachment_image_srcset', box.logo.id)}}"
+                  data-sizes="auto">
+                  {# {% if box.logo.title or box.logo.caption %}
+                  <div class="py-[5px]">
+                    <figcaption class="font-bodySmall">{{ box.logo.title|e }}</figcaption>
+                    <figcaption class="font-bodySmall underline underline-offset-4">{{ box.logo.caption|e }}</figcaption>
+                  </div>
+                  {% endif %} #}
+                </figure>
+              {% endif %}
+            </div>
+            {# {% if box.title %}
+              <div class="text-[1.2rem] leading-6 p-sm pt-0 !mb-0">{{ box.title }}</div>
+            {% endif %} #}
+            {# {% if box.contentHtml %}
+              <div class="wysiwyg">{{ box.contentHtml|e('wp_kses_post') }}</div>
+            {% endif %} #}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</flynt-component>

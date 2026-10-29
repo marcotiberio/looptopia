@@ -1,0 +1,58 @@
+<flynt-component 
+  load:on="visible" 
+  name="BlockWysiwygColumns"
+  class="{% if options.firstComponent %}pt-[10vw] md:pt-[160px]{% endif %}"
+  style="
+    background-color: {% if options.colorBackground %}{{ options.colorBackground }}{% else %}transparent{% endif %};"
+  >
+  <div class="boxed !pt-min !pb-[22.5px] lg:!py-[22.5px] w-full fade-in">
+    {# <div class="block lg:hidden">
+      <h2>{{ headlineTitle|e }}</h2>
+    </div> #}
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-sm lg:gap-xs align-start justify-start lg:justify-between {% if options.stickyTitle %}stickyTitle{% endif %}">
+      {% for column in columns %}
+        <div class="column flex {{ column.colStart }} {{ column.colEnd }} lg:row-start-1 lg:row-end-2">
+          <div class="flex flex-col w-full">
+            {% if column.image %}
+              <img 
+                class="figure-image lazyload w-full aspect-8/5 object-cover mb-xs"
+                src="{{ column.image.src }}"
+                alt="{{ column.image.alt|e | default('') }}"
+                loading="lazy"
+                style="opacity: 0; transition: opacity 0.5s ease-in-out;"
+                onload="this.style.opacity='1'"
+              />
+            {% endif %}
+            <div class="wysiwyg">{{ column.contentHtml|e('wp_kses_post') }}</div>
+            {% if column.enableNewsletter %}
+              <div class="mt-xs" id="mc_embed_shell">
+                <div id="mc_embed_signup">
+                    <form action="https://studio.us2.list-manage.com/subscribe/post?u=53b361306408427d9ffbc9980&amp;id=cf376efd5e&amp;f_id=00bce7e3f0" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_self" novalidate="">
+                        <div id="mc_embed_signup_scroll">
+                            <div class="mc-field-group">
+                              <input type="email" name="EMAIL" class="required email" id="mce-EMAIL" required="" value="" placeholder="Your email">
+                            </div>
+                        <div id="mce-responses" class="clear foot">
+                            <div class="response" id="mce-error-response" style="display: none;"></div>
+                            <div class="response" id="mce-success-response" style="display: none;"></div>
+                        </div>
+                    <div aria-hidden="true" style="position: absolute; left: -5000px;">
+                        /* real people should not fill this in and expect good things - do not remove this or risk form bot signups */
+                        <input type="text" name="b_53b361306408427d9ffbc9980_cf376efd5e" tabindex="-1" value="">
+                    </div>
+                        <div class="optionalParent">
+                            <div class="clear foot">
+                                <input type="submit" name="subscribe" id="mc-embedded-subscribe" class="btn btn--outline" value="Send">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</flynt-component> 

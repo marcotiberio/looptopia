@@ -1,0 +1,33 @@
+[data-icon] {
+  @apply block;
+  height: 22px;
+  width: 22px;
+
+  &::after {
+    @apply block;
+    background-repeat: no-repeat;
+    background-size: contain;
+    content: '';
+    height: 22px;
+    width: 22px;
+  }
+}
+
+[data-icon='linkedin'] {
+  &::after {
+    background-image: url('/wp-content/themes/sustainableeconomysummit2024/assets/icons/linkedin.png');
+  }
+}
+    
+[data-icon='instagram'] {
+  &::after {
+    background-image: url('/wp-content/themes/sustainableeconomysummit2024/assets/icons/instagram.png');
+  }
+}
+
+[data-icon='facebook'] {
+  &::after {
+    background-image: url('/wp-content/themes/sustainableeconomysummit2024/assets/icons/facebook.png');
+  }
+}
+

@@ -1,0 +1,36 @@
+<flynt-component load:on="visible" name="BlockImageTextPost" style="background-color:{% if options.colorBackground %}{{ options.colorBackground }}{% else %}var(--white){% endif %};">
+  <div class="wrapper max-w-screen-max mx-auto boxed">
+    {% if preContentTitle %}
+      <div class="w-full flex justify-between items-center mb-md md:mb-lg">
+        <h2>{{ preContentTitle }}</h2>
+        <a href="{{ labels.allPostsLink.url }}" class="button--chevron underline hover:no-underline caption font-bold text-body">{{ labels.allPosts }}</a>
+      </div>
+    {% endif %}
+    <div class="flex flex-col sm:flex-row align-start items-start md:items-start justify-start md:justify-between gap-md" {{ imagePosition ? 'data-image-position="' ~ imagePosition ~ '"' }}>
+      <div class="sm:w-1/3">
+        {% if image %}
+          <img class="lazyload w-full object-cover"
+            src="{{ image.src | resize(32) }}"
+            data-srcset="{{function('wp_get_attachment_image_srcset', image.id)}}"
+            data-sizes="auto"
+            alt="{{ image.alt|e }}">
+        {% endif %}
+        {% if image.caption %}
+          <figcaption>{{ image.caption|e }}</figcaption>
+        {% endif %}
+      </div>
+      <div class="sm:w-2/3">
+        <div class="wysiwyg">{{ contentHtml|e('wp_kses_post') }}</div>
+        {% if buttonLink %}
+          <div class="w-full mt-sm flex justify-center">
+            <a 
+              class="button button--plusBlack" 
+              href="{{ buttonLink.url }}" 
+              {% if buttonLink.target %} target="{{ buttonLink.target }}" rel="noreferrer noopener"{% endif %}>
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</flynt-component>

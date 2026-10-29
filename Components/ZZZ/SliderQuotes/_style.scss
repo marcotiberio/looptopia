@@ -1,0 +1,31 @@
+flynt-component[name='SliderQuotes'] {
+  .slider {
+    max-width: 100%;
+    position: relative;
+
+    .swiper-wrapper {
+      box-sizing: inherit;
+    }
+
+    .swiper-slide {
+      display: flex;
+
+      @media (max-width: theme('screens.mobile')) {
+        width: 80%;
+      }
+    }
+    
+    &-button {
+      align-items: center;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      z-index: 10;
+
+      &.swiper-button-disabled {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+    }
+  }
+}

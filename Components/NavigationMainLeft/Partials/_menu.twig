@@ -1,0 +1,36 @@
+<ul class="menu list-none w-full flex items-center justify-between gap-md">
+  {% for item in items %}
+    {# regular menu item #}
+    {% if not item.children %}
+      <li class="item flex align-middle items-center font-bodyMenu {{- item.current ? ' current-menu-item underline underline-offset-[5px]' }} {{ item.classes | join(' ') }}">
+        <a class="link font-bodyMenu flex align-middle items-center no-underline hover:underline-offset-[5px] text-currentColor transition-transform duration-200 ease-in-out" href="{{ item.link }}" {{ item.target == '_blank' ? 'target="_blank" rel="noopener noreferrer"' }}>
+          {{ item.title }}
+        </a>
+      </li>
+    {% endif %}
+    {# menu with submenu item #}
+    {% if item.children %}
+      <li x-data="{ showDropdown: false }" class="item flex align-middle items-center open-submenu font-bodyMenu {{- item.current ? ' current-menu-item underline underline-offset-[5px]' }} {{ item.classes | join(' ') }}">
+        <a 
+          @mouseover="showDropdown = true"
+          @mouseleave="showDropdown = false"
+          @click="showDropdown = !showDropdown" 
+          class="link font-bodyMenu flex align-middle items-center no-underline hover:underline-offset-[5px] text-currentColor transition-transform duration-200 ease-in-out cursor-pointer" 
+          href="{{ item.link }}" {{ item.target == '_blank' ? 'target="_blank" rel="noopener noreferrer"' }}>
+            {{ item.title }}
+        </a>
+        <ul 
+          class="menu submenu" x-cloak
+          x-show="showDropdown"
+          @mouseover="showDropdown = true"
+          @mouseleave="showDropdown = false">
+            {% for subitem in item.children %}
+              <li class="item mb-[10px] {{- subitem.current ? ' current-menu-item underline underline-offset-[5px]' }} {{ item.classes | join(' ') }}">
+                <a class="link flex align-middle items-center no-underline hover:underline-offset-[2px] text-currentColor transition-transform duration-200 ease-in-out" href="{{ subitem.link }}">{{ subitem.title }}</a>
+              </li>
+            {% endfor %}
+        </ul>
+      </li>
+    {% endif %}
+  {% endfor %}
+</ul>

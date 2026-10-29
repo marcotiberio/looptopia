@@ -1,0 +1,100 @@
+name: Deploy Theme
+
+# Replaces WP Pusher: builds dist/ in CI and rsyncs the theme over SSH.
+#
+# Required secrets (Settings → Environments → production):
+#   SSH_PRIVATE_KEY  private key whose public half is in the server's authorized_keys
+#   SSH_HOST         server hostname
+#   SSH_USER         SSH user
+#   THEME_PATH       absolute path to wp-content/themes/<theme> on the server
+#   WP_PATH          absolute path to the WordPress root (for wp-cli)
+# Optional:
+#   SSH_PORT         defaults to 22
+#   SSH_KNOWN_HOSTS  output of `ssh-keyscan -p <port> <host>`; falls back to a live keyscan
+
+on:
+  push:
+    branches:
+      - website/looptopia
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build and deploy to production
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+      SSH_TARGET: ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Build assets
+        run: npm run build
+
+      - name: Verify build
+        run: |
+          test -f dist/manifest.json || { echo "dist/manifest.json missing"; exit 1; }
+          test ! -e dist/hot || { echo "dist/hot must not be deployed"; exit 1; }
+
+      - name: Setup SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          if [ -n "$SSH_KNOWN_HOSTS" ]; then
+            printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          else
+            ssh-keyscan -p "$SSH_PORT" "$SSH_HOST" > ~/.ssh/known_hosts
+          fi
+          echo "SSH_CMD=ssh -i $HOME/.ssh/deploy_key -p $SSH_PORT -o BatchMode=yes" >> "$GITHUB_ENV"
+
+      - name: Sync theme
+        # Old hashed assets in dist/assets are protected from --delete, so pages
+        # still cached with the previous build keep working.
+        # Dev-only files are excluded and removed from the server if present.
+        run: |
+          rsync -az --delete --delete-excluded \
+            --filter='P dist/assets/**' \
+            --exclude='.git*' \
+            --exclude='.github' \
+            --exclude='.claude' \
+            --exclude='.build-agent' \
+            --exclude='.editorconfig' \
+            --exclude='.env' \
+            --exclude='.DS_Store' \
+            --exclude='node_modules' \
+            --exclude='dist/hot' \
+            --exclude='_assets-incoming' \
+            --exclude='/docs' \
+            --exclude='/*.md' \
+            --exclude='/phpcs.xml.dist' \
+            -e "$SSH_CMD" \
+            ./ "$SSH_TARGET:${{ secrets.THEME_PATH }}/"
+
+      - name: Purge LiteSpeed Cache
+        # Non-fatal: inc/purgeCacheOnDeploy.php also purges once it sees the new manifest.
+        continue-on-error: true
+        run: $SSH_CMD "$SSH_TARGET" "cd '${{ secrets.WP_PATH }}' && wp litespeed-purge all"

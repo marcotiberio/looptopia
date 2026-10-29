@@ -1,0 +1,16 @@
+flynt-component[name='ScrolltriggerComparison'] {
+  .comparisonSection {
+    padding-bottom: 56.25%;
+    position: relative;
+  }
+  
+  .afterImage {
+    transform: translate(100%, 0);
+  }
+
+  .afterImage {
+    img {
+      transform: translate(-100%, 0);
+    } 
+  }
+}

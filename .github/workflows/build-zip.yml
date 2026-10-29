@@ -1,0 +1,166 @@
+name: Build Theme ZIP
+
+on:
+  push:
+    branches:
+      - website/kreisler
+  workflow_dispatch: # Allows manual triggering from GitHub UI
+
+jobs:
+  build:
+    name: Build Theme and Create ZIP
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build theme
+        run: npm run build
+
+      - name: Sanitize branch name
+        id: branch-name
+        run: |
+          # Remove "website/" prefix if present, otherwise use branch name as-is
+          BRANCH_NAME=$(echo "${{ github.ref_name }}" | sed 's|^website/||')
+          echo "branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+      - name: Create ZIP file
+        id: create-zip
+        run: |
+          # Get theme name from style.css or use default
+          THEME_NAME=$(grep -i "Theme Name:" style.css 2>/dev/null | cut -d: -f2 | xargs || echo "${{ steps.branch-name.outputs.branch }}")
+          THEME_NAME_CLEAN=$(echo "$THEME_NAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | sed 's/[^a-z0-9-]//g')
+          
+          # Create folder with theme name (WordPress requires theme files in a folder)
+          mkdir -p "$THEME_NAME_CLEAN"
+          
+          # Copy all tracked files (dist is now tracked, so it will be included automatically)
+          git ls-files -z | xargs -0 -I {} sh -c "
+            mkdir -p \"$THEME_NAME_CLEAN/\$(dirname \"{}\")\"
+            cp -r \"{}\" \"$THEME_NAME_CLEAN/{}\" 2>/dev/null || true
+          "
+          
+          # Verify style.css was copied (WordPress requirement)
+          if [ ! -f "$THEME_NAME_CLEAN/style.css" ]; then
+            echo "ERROR: style.css is missing! Attempting to copy it directly..."
+            if [ -f "style.css" ]; then
+              cp style.css "$THEME_NAME_CLEAN/style.css"
+              echo "style.css copied successfully"
+            else
+              echo "ERROR: style.css not found in source directory!"
+              exit 1
+            fi
+          else
+            echo "✓ style.css found in package"
+          fi
+          
+          # Remove any git-related files from the package
+          find "$THEME_NAME_CLEAN" -name ".git*" -delete 2>/dev/null || true
+          rm -rf "$THEME_NAME_CLEAN/.github" 2>/dev/null || true
+          
+          # Remove extended attributes (macOS ._ files) that can cause WordPress issues
+          find "$THEME_NAME_CLEAN" -name "._*" -delete 2>/dev/null || true
+          # Also remove extended attributes using xattr if available (Linux)
+          if command -v xattr >/dev/null 2>&1; then
+            find "$THEME_NAME_CLEAN" -exec xattr -c {} \; 2>/dev/null || true
+          fi
+          
+          # Verify style.css exists and is not empty before creating ZIP
+          echo "Final verification before ZIP creation:"
+          if [ -f "$THEME_NAME_CLEAN/style.css" ]; then
+            FILE_SIZE=$(stat -f%z "$THEME_NAME_CLEAN/style.css" 2>/dev/null || stat -c%s "$THEME_NAME_CLEAN/style.css" 2>/dev/null || echo "0")
+            echo "style.css found: $THEME_NAME_CLEAN/style.css (size: $FILE_SIZE bytes)"
+            if [ "$FILE_SIZE" -eq 0 ]; then
+              echo "ERROR: style.css is empty!"
+              exit 1
+            fi
+            # Show first few lines to verify it's a valid WordPress theme file
+            echo "First 5 lines of style.css:"
+            head -5 "$THEME_NAME_CLEAN/style.css"
+          else
+            echo "ERROR: style.css not found at $THEME_NAME_CLEAN/style.css!"
+            exit 1
+          fi
+          echo ""
+          
+          # Create ZIP file containing the theme folder (WordPress requirement)
+          # WordPress requires: theme-name.zip contains theme-name/ folder with style.css at root
+          # Use flags that ensure WordPress compatibility:
+          # -r: recursive
+          # -X: don't save extra file attributes (WordPress compatibility)
+          # -q: quiet mode
+          # Note: Creating ZIP from outside the folder to preserve folder structure
+          ZIP_FILENAME="${THEME_NAME_CLEAN}.zip"
+          zip -r "$ZIP_FILENAME" "$THEME_NAME_CLEAN" -X -q
+          
+          # Verify the ZIP was created correctly
+          if [ ! -f "$ZIP_FILENAME" ]; then
+            echo "ERROR: ZIP file was not created!"
+            exit 1
+          fi
+          
+          # Verify ZIP structure - WordPress requires: theme-name/style.css
+          echo "Verifying ZIP structure..."
+          echo "Checking for style.css at exact path: $THEME_NAME_CLEAN/style.css"
+          # Check for style.css at the correct path: theme-name/style.css (not in subdirectories)
+          STYLE_CSS_FOUND=$(unzip -l "$ZIP_FILENAME" | grep -E "^[ ]+[0-9]+.*$THEME_NAME_CLEAN/style\.css$" || echo "")
+          if [ -n "$STYLE_CSS_FOUND" ]; then
+            echo "✓ style.css found at correct path: $THEME_NAME_CLEAN/style.css"
+            echo "$STYLE_CSS_FOUND"
+            
+            # Test extract to verify structure (WordPress will do this)
+            echo ""
+            echo "Testing ZIP extraction to verify structure..."
+            TEST_DIR="test-extract-$$"
+            mkdir -p "$TEST_DIR"
+            cd "$TEST_DIR"
+            unzip -q "../$ZIP_FILENAME"
+            cd ..
+            
+            if [ -f "$TEST_DIR/$THEME_NAME_CLEAN/style.css" ]; then
+              echo "✓ ZIP extraction test passed: style.css found at $THEME_NAME_CLEAN/style.css"
+              FILE_SIZE=$(stat -f%z "$TEST_DIR/$THEME_NAME_CLEAN/style.css" 2>/dev/null || stat -c%s "$TEST_DIR/$THEME_NAME_CLEAN/style.css" 2>/dev/null || echo "0")
+              echo "  File size: $FILE_SIZE bytes"
+            else
+              echo "ERROR: ZIP extraction test failed - style.css not found at expected path!"
+              echo "Files in extracted folder:"
+              ls -la "$TEST_DIR/$THEME_NAME_CLEAN/" | head -20
+              rm -rf "$TEST_DIR"
+              exit 1
+            fi
+            rm -rf "$TEST_DIR"
+          else
+            echo "ERROR: style.css not found at $THEME_NAME_CLEAN/style.css in ZIP!"
+            echo ""
+            echo "Looking for any style.css files in ZIP:"
+            unzip -l "$ZIP_FILENAME" | grep -i "style\.css" || echo "No style.css found"
+            echo ""
+            echo "First 50 files in ZIP to check structure:"
+            unzip -l "$ZIP_FILENAME" | head -50
+            echo ""
+            echo "Files at root of theme folder:"
+            unzip -l "$ZIP_FILENAME" | grep "^[ ]+[0-9]*.*$THEME_NAME_CLEAN/[^/]*$" | head -20
+            exit 1
+          fi
+          
+          echo "zip_file=$ZIP_FILENAME" >> $GITHUB_OUTPUT
+          echo "Created ZIP: $ZIP_FILENAME"
+          echo "Theme folder inside ZIP: $THEME_NAME_CLEAN/"
+          ls -lh "$ZIP_FILENAME"
+
+      - name: Upload ZIP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.branch-name.outputs.branch }}
+          path: ${{ steps.create-zip.outputs.zip_file }}
+          retention-days: 30

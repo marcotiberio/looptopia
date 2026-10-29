@@ -1,0 +1,45 @@
+<flynt-component
+  load:on="idle" name="SliderQuotes"
+  class="overflow-hidden"
+  style="
+    background-color: {% if options.colorBackground %}{{ options.colorBackground }}{% else %}transparent{% endif %};
+    color:{% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};"
+  >
+  <script type="application/json">{{ jsonData|json_encode }}</script>
+  <div class="wrapper w-screen mx-auto boxed !px-0">
+    {% if headlineTitle %}
+      <h2 class="max-w-screen-lg mx-auto flex justify-center items-center text-center">{{ headlineTitle }}</h2>
+    {% endif %}
+
+    <div data-ref="slider" class="slider swiper-container mb-md boxed">
+      <div class="hidden md:flex button-wrapper absolute bottom-0 left-0 w-full px-sm align-middle justify-between z-50 translate-y-[45px] xs:translate-y-[50px] lg:translate-y-[60px]">
+        <button type="button" data-ref="prev" class="slider-button slider-button--prev">
+          <svg width="40" height="30" viewBox="0 0 40 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill="{% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %}" d="M3.93801 13.9393C3.35222 14.5251 3.35222 15.4749 3.93801 16.0607L13.4839 25.6066C14.0697 26.1924 15.0195 26.1924 15.6053 25.6066C16.1911 25.0208 16.1911 24.0711 15.6053 23.4853L7.11999 15L15.6053 6.51472C16.1911 5.92893 16.1911 4.97918 15.6053 4.3934C15.0195 3.80761 14.0697 3.80761 13.484 4.3934L3.93801 13.9393ZM34.3438 13.5L4.99867 13.5L4.99867 16.5L34.3437 16.5L34.3438 13.5Z"/>
+          </svg>
+        </button>
+        <button type="button" data-ref="next" class="slider-button slider-button--next">
+          <svg class="transform scale-x-[-1]" width="40" height="30" viewbox="0 0 40 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill="{% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %}" d="M3.93801 13.9393C3.35222 14.5251 3.35222 15.4749 3.93801 16.0607L13.4839 25.6066C14.0697 26.1924 15.0195 26.1924 15.6053 25.6066C16.1911 25.0208 16.1911 24.0711 15.6053 23.4853L7.11999 15L15.6053 6.51472C16.1911 5.92893 16.1911 4.97918 15.6053 4.3934C15.0195 3.80761 14.0697 3.80761 13.484 4.3934L3.93801 13.9393ZM34.3438 13.5L4.99867 13.5L4.99867 16.5L34.3437 16.5L34.3438 13.5Z"/>
+          </svg>
+        </button>
+      </div>
+      {# <div data-ref="dots" class="block slider-pagination swiper-pagination-fraction"></div> #}
+      <div class="swiper-wrapper">
+        {% for box in boxes %}
+          <div 
+            class="slider-item swiper-slide relative w-full h-auto lg:mr-md flex flex-col justify-start gap-xs p-sm overflow-hidden" 
+            style="background-color: {% if box.colorBackground %}{{ box.colorBackground }}{% else %}var(--white){% endif %}; color:{% if box.colorText %}{{ box.colorText }}{% else %}var(--white){% endif %};"
+            >
+            {% if box.title %}
+              <div class="text-[1.2rem] leading-6">{{ box.title }}</div>
+            {% endif %}
+            {% if box.contentHtml %}
+              <div class="wysiwyg">{{ box.contentHtml|e('wp_kses_post') }}</div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</flynt-component>

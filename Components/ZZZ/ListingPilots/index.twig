@@ -1,0 +1,32 @@
+{% if items|length > 0 %}
+  <flynt-component load:on="visible" name="ListingPilots" class="bg-white">
+    <div class="w-full max-w-screen-max mx-auto boxed">
+      {% if preContentTitle %}
+      <div class="w-full flex justify-between items-center">
+        <h2>{{ preContentTitle }}</h2>
+        {# <a href="{{ labels.allPostsLink.url }}" class="button--chevron underline hover:no-underline caption font-bold text-body">{{ labels.allPosts }}</a> #}
+      </div>
+      {% endif %}
+      <ul class="w-full mx-auto mt-lg md:mt-xl grid grid-cols-1 sm:grid-cols-3 gap-sm sm:gap-md">
+        {% for item in items %}
+          <li class="grid-item {{ item.post_type }}">
+            <div class="content">
+              <a href="{{ item.link }}" class="content-link" title="{{ item.title }}">
+                <img class="content-image lazyload"
+                  src="{{ item.thumbnail.src }}"
+                  data-srcset="{{function('wp_get_attachment_image_srcset', item.thumbnail.id)}}"
+                  data-sizes="auto">
+                <div class="content-inner mt-[10px]">
+                  <div class="text-body font-bold">{{ item.title }}</div>
+                  <div class="text-body font-bold text-black">{{ item.partner }}</div>
+                  <div class="text-body">{{ item.intro|truncate(10) }}</div>
+                  <div class="font-h3">→</div>
+                </div>
+              </a>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+{% endif %}

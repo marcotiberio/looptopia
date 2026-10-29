@@ -1,0 +1,70 @@
+<flynt-component load:on="visible" name="AccordionSystems">
+  <script type="application/json">{{ jsonData|json_encode }}</script>
+  <div class="wrapper max-w-screen-max mx-auto boxed grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-sm lg:gap-xl">
+    {% if preContentHtml or header %}
+      <div>
+        <h1 class="text-black">{{ header|e}}</h1>
+        <div class="wysiwyg">{{ preContentHtml|e('wp_kses_post')}}</div>
+      </div>
+    {% endif %}
+    <div class="content">
+      <div class="accordion">
+        {% for panel in accordionPanels %}
+          <div class="panel" x-data="{ open: false }">
+            <button @click="open = !open" class="panel-trigger text-body w-full py-[10px] border-b border-black" type="button" aria-expanded="false" aria-controls="content-{{ loop.index }}">
+              {{ panel.panelTitle|e }}
+            </button>
+            <div class="panel-content" x-show="open" aria-hidden="true" id="content-{{ loop.index }}">
+              <div class="panel-inner">
+                {# Carousel #}
+                <div data-ref="slider" class="slider swiper-container w-full h-[350px]">
+                  <div class="swiper-wrapper w-full h-[350px]">
+                    {% for image in carousel %}
+                      <div class="slider-item swiper-slide w-full h-[350px] flex items-start justify-start">
+                        <figure class="figure w-full relative">
+                          <img class="lazyload w-full object-cover relative"
+                            src="{{ image.systemImage.src | resize(32) }}"
+                            data-srcset="{{function('wp_get_attachment_image_srcset', image.systemImage.id)}}"
+                            data-sizes="auto"
+                            alt="{{ image.systemImage.alt|e }}">
+                        </figure>
+                      </div>
+                    {% endfor %}
+                  </div>
+                  <button type="button" data-ref="prev" class="slider-button slider-button--prev"></button>
+                  <button type="button" data-ref="next" class="slider-button slider-button--next"></button>
+                </div>
+                {# Single Image #}
+                {% if panel.image %}
+                <div class="box-inner box-inner--image pt-sm">
+                  <figure class="figure">
+                    <img class="lazyload w-full object-contain"
+                      src="{{ panel.image.src | resize(32) }}"
+                      data-srcset="{{function('wp_get_attachment_image_srcset', panel.image.id)}}"
+                      data-sizes="auto"
+                      alt="{{ panel.image.alt|e }}">
+                    {% if panel.image.caption %}
+                      <figcaption class="figure-caption">{{ panel.image.caption|e }}</figcaption>
+                    {% endif %}
+                  </figure>
+                </div>
+                {% endif %}
+                {# Video #}
+                {% if panel.vimeoCode %}
+                <div class="box-inner box-inner--video pt-sm">
+                    <div style="padding:56.25% 0 0 0;position:relative;">
+                      <iframe src="https://player.vimeo.com/video/{{ panel.vimeoCode|e }}?color=beccca&title=0&byline=0&portrait=0" style="position:absolute;top:0;left:0;width:100%;height:100%;" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <script src="https://player.vimeo.com/api/player.js"></script>
+                </div>
+                {% endif %}
+                {# Text #}
+                <div class="py-sm">{{ panel.panelContent|e('wp_kses_post') }}</div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>

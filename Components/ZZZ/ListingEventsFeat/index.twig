@@ -1,0 +1,87 @@
+{% if posts|length > 0 %}
+  <flynt-component 
+    load:on="visible" 
+    name="ListingEventsFeat" 
+    class=""
+    style="
+      color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};
+      background-color: {% if options.pageBackground %}{{ options.pageBackground }}{% else %}transparent{% endif %};">
+    
+    <div class="wrapper max-w-screen-max mx-auto boxed flex flex-col gap-sm" x-data="{ selectedCategories: [], searchQuery: '', filtersOpen: false }">
+        
+      <div class="w-full max-w-screen-max mx-auto flex flex-col md:flex-row {% if buttonLink %} justify-between {% else %} justify-start {% endif %} items-start gap-sm md:gap-xxl">
+        {% if title %}
+          <div class="h2 w-full max-w-[450px]">{{ title }}</div>
+        {% endif %}
+        {% if contentHtml %}
+          <div class="wysiwyg [&_*]:mb-0 w-full max-w-[450px]">{{ contentHtml|e('wp_kses_post') }}</div>
+        {% endif %}
+        {% if buttonLink %}
+          <a 
+            class="button button--outline" 
+            href="{{ buttonLink.url }}" 
+            {% if buttonLink.target %} target="{{ buttonLink.target }}" rel="noreferrer noopener"{% endif %}>
+            {{ buttonLink.title }}
+          </a>
+        {% endif %}
+      </div>
+
+      <!-- Posts Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-x-sm gap-y-sm md:gap-y-lg">
+        {% for post in posts %}
+          {% set formatTerms = post.terms('format') %}
+          {% set modusTerms = post.terms('modus') %}
+          {% set allTerms = formatTerms|merge(modusTerms) %}
+          {% set postCategorySlugs = allTerms|map(term => term.name|lower|replace({' ' : '-'}) ) %}
+
+          <a 
+            class="w-full [&_.font-h3]:hover:underline"
+            href="{{ post.link }}" 
+            x-show="(selectedCategories.length === 0 || selectedCategories.some(cat => ['{{ postCategorySlugs|join("','") }}'].includes(cat))) && 
+                     (searchQuery === '' || '{{ post.title|lower }}'.includes(searchQuery.toLowerCase()))"
+            x-transition:enter="transition ease-out duration-100"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-100"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+          >
+            
+            <div class="post w-full h-full flex flex-col justify-between items-center">
+              {% if post.thumbnail %}
+                <img 
+                  class="lazyload transition duration-200 ease-in-out aspect-4/3 object-cover" 
+                  src="{{ post.thumbnail.src }}"
+                  data-srcset="{{ function('wp_get_attachment_image_srcset', post.thumbnail.id) }}"
+                  data-sizes="auto"
+                  alt="{{ post.title }}">
+              {% endif %}
+              
+              <div class="content w-full h-full flex flex-col justify-start gap-xs py-xs">
+                <div class="w-full flex flex-row gap-[5px]">
+                  <div class="w-fit">
+                    {% if post.start_date %}
+                      <span class="font-label">{{ post.start_date|date("d.m.")|escape('wp_kses_post') }} - </span>
+                    {% endif %}
+                    {% if post.end_date %}
+                      <span class="font-label">{{ post.end_date|date("d.m.")|escape('wp_kses_post') }}</span>
+                    {% endif %}
+                  </div>
+                  {% if post.start_date %}<span class="font-black">|</span>{% endif %}
+                  <div class="w-fit font-label">{{ post.eventTime }}</div>
+                </div>
+                <div class="w-full flex flex-row gap-xs">
+                  {% for term in allTerms %}
+                    <span class="font-label">{{ term.name|upper }}</span>
+                  {% endfor %}
+                </div>
+                <div class="w-full font-h3 !tracking-normal font-bold !mb-0">{{ post.title }}</div>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+
+  </flynt-component>
+{% endif %}

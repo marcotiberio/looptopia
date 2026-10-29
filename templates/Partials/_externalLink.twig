@@ -1,0 +1,11 @@
+{# Underlined link with the design's up-right arrow. Params: url, label #}
+<a
+  class="inline-flex items-center underline underline-offset-2 hover:no-underline"
+  href="{{ url }}"
+  target="_blank"
+  rel="noopener noreferrer">
+  {{ label }}
+  <span class="ml-1 mt-1 inline-flex shrink-0 self-start" aria-hidden="true">
+    {% include 'assets/icons/event/arrow-upright.svg' ignore missing %}
+  </span>
+</a>

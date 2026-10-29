@@ -1,0 +1,45 @@
+<flynt-component
+  load:on="idle" name="SliderBoxText"
+  class="pb-0 overflow-hidden"
+  style="
+    color: {% if options.colorText %}{{ options.colorText }}{% else %}var(--black){% endif %};
+    background-color: {% if options.colorBackground %}{{ options.colorBackground }}{% else %}transparent{% endif %};"
+  >
+  <script type="application/json">{{ jsonData|json_encode }}</script>
+  <div class="wrapper w-screen mx-auto boxed">
+    <div class="w-full max-w-screen-max mx-auto flex flex-col md:flex-row {% if buttonLink %} justify-between {% else %} justify-start {% endif %} items-center gap-sm md:gap-xxl">
+      {% if title %}
+        <div class="h2 w-full max-w-[450px]">{{ title }}</div>
+      {% endif %}
+      {% if contentHtml %}
+        <div class="wysiwyg [&_*]:mb-0 w-full max-w-[450px]">{{ contentHtml|e('wp_kses_post') }}</div>
+      {% endif %}
+      {% if buttonLink %}
+        <a 
+          class="button button--outline" 
+          href="{{ buttonLink.url }}" 
+          {% if buttonLink.target %} target="{{ buttonLink.target }}" rel="noreferrer noopener"{% endif %}>
+          {{ buttonLink.title }}
+        </a>
+      {% endif %}
+    </div>
+
+    <div data-ref="slider" class="slider swiper-container mt-lg">
+      <div data-ref="dots" class="flex justify-center absolute !bottom-[-10px] lg:!bottom-[-20px] z-[40] slider-pagination swiper-pagination-fraction"></div>
+      <div class="swiper-wrapper flex flex-row">
+        {% for box in boxes %}
+          <div class="slider-item swiper-slide flex flex-col gap-sm">
+            <div class="font-h3 font-bold">
+              <div>{{ loop.index }}</div>
+              <div>{% if box.title %}{{ box.title }} {% endif %}</div>
+            </div>
+            {% if box.text %}
+              <div class="font-body !mb-0">{{ box.text }}</div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</flynt-component>
+

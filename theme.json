@@ -1,0 +1,30 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 2,
+  "settings": {
+    "color": {
+      "palette": [
+        {
+          "slug": "white",
+          "color": "#ffffff",
+          "name": "White"
+        },
+        {
+          "slug": "black",
+          "color": "#000000",
+          "name": "Black"
+        },
+        {
+          "slug": "green",
+          "color": "#c7f59a",
+          "name": "Green"
+        },
+        {
+          "slug": "greenFaded",
+          "color": "#ecf2e5",
+          "name": "Green Faded"
+        }
+      ]
+    }
+  }
+}
