@@ -1,0 +1,64 @@
+name: Claude review
+
+# Reviews each pull request once, when it is opened or marked ready.
+# Posts one comment: a plain-language summary of the change, then issues by severity.
+# Read-only: it never edits code or pushes commits.
+
+on:
+  pull_request:
+    types: [opened, ready_for_review, reopened]
+
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Let PRs opened by Claude's own coding agents be reviewed too.
+          allowed_bots: "claude[bot]"
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            Review ONLY the changes in this pull request (`gh pr diff`). Read other
+            files only when you need context to judge the change. Do not modify
+            files, commit, or push.
+
+            Post exactly ONE top-level comment with `gh pr comment`, written for
+            someone reading on a phone, in this format:
+
+            ## What changed
+            3–6 short bullets in plain language: what this PR does and why it
+            matters. No code unless essential.
+
+            ## Review
+            Issues grouped by severity, each with `file:line` and one sentence:
+            - 🔴 Must fix: bugs, security problems, data loss, broken builds
+            - 🟡 Should fix: likely problems, missing edge cases, risky patterns
+            - ⚪ Nit: optional polish
+            If there are no real issues, write "No issues found." Do not pad the
+            list; skip praise and generic advice.
+
+            ## Verdict
+            One line: "Safe to merge", "Merge after fixes", or "Needs rework".
+
+            For each 🔴 or 🟡 issue, also leave an inline comment on the exact line.
+          claude_args: |
+            --max-turns 30
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"
