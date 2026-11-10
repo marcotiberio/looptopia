@@ -15,6 +15,19 @@ $pin-icon-offset: 12px;
 $pin-shadow-blur: 6px;
 $icon-size: 24px;
 $zoom-size: 40px;
+// Print layout: the canvas fills an A4 landscape page (277 × 190 mm inside the
+// 10 mm margins set by script.js, at 96 dpi) and leaves room for the heading.
+$print-map-width: 1040px;
+$print-map-height: 630px;
+$print-dot-size: 18px;
+$print-font-size: 9px;
+// Poster: A2 landscape (574 × 400 mm inside the margins), minus heading and key.
+$poster-map-width: 2160px;
+$poster-map-height: 1370px;
+$poster-font-size: 18px;
+// Keep in sync with POSTER_PIN_SCALE in script.js.
+$poster-pin-scale: 0.65;
+$poster-icon-size: 32px;
 
 .event-map {
   font-family: var(--primary-font-family);
@@ -248,6 +261,17 @@ $zoom-size: 40px;
     z-index: 3;
   }
 
+  // Opens to the left of the print button, which sits at the right edge.
+  &__menu--print {
+    bottom: 0;
+    left: auto;
+    margin-top: 0;
+    min-width: 0;
+    right: calc(100% + 10px);
+    top: auto;
+    white-space: nowrap;
+  }
+
   &__menu-group {
     display: flex;
     flex-direction: column;
@@ -423,6 +447,186 @@ $zoom-size: 40px;
     svg {
       height: 20px;
       width: 20px;
+    }
+  }
+}
+
+// ---- Print ----
+// script.js sets .is-printing-event-map on <html> for the duration of a print
+// started from the map's print button. The canvas size applies on screen too,
+// so Leaflet lays the map out at the paper size before the print dialog opens.
+
+.event-map__print-heading,
+.event-map__legend,
+.event-map__key {
+  display: none;
+}
+
+.event-map__dot {
+  align-items: center;
+  background-color: var(--white) !important;
+  border: 1px solid var(--black);
+  border-radius: 50%;
+  color: var(--black);
+  display: flex !important;
+  font-size: $print-font-size;
+  font-weight: 700;
+  justify-content: center;
+  line-height: 1;
+  // Keeps the white fill when "background graphics" is off in the print dialog.
+  print-color-adjust: exact;
+}
+
+.is-printing-event-map {
+  .event-map__canvas {
+    height: $print-map-height;
+    width: $print-map-width;
+  }
+
+  .event-map__filters,
+  .event-map__card,
+  .event-map__zoom {
+    display: none !important;
+  }
+}
+
+.is-printing-event-map--poster {
+  .event-map__canvas {
+    height: $poster-map-height;
+    width: $poster-map-width;
+  }
+
+  .event-map__pin svg {
+    height: $pin-height * $poster-pin-scale;
+    width: $pin-width * $poster-pin-scale;
+  }
+
+  .event-map__pin-icon {
+    height: $pin-icon-size * $poster-pin-scale;
+    left: $pin-icon-offset * $poster-pin-scale;
+    top: $pin-icon-offset * $poster-pin-scale;
+    width: $pin-icon-size * $poster-pin-scale;
+  }
+}
+
+@media print {
+  .is-printing-event-map {
+    // Only the map and its legend go on paper.
+    .mainContent > :not(:has(.event-map)),
+    flynt-component:not([name='BlockEventMap']),
+    flynt-component[name='BlockEventMap'] > :not(.event-map) {
+      display: none !important;
+    }
+
+    // The fixed header is not printed, so its offset goes too.
+    .mainContent {
+      margin-top: 0;
+      min-height: 0;
+    }
+
+    .event-map__print-heading {
+      display: flex;
+      font-size: 14px;
+      gap: 12px;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .event-map__canvas {
+      break-after: page;
+      break-inside: avoid;
+    }
+
+    // The global print styles append the URL to every link.
+    .leaflet-control-attribution a::after {
+      content: '';
+    }
+
+    .event-map__legend {
+      column-gap: 16px;
+      columns: 3;
+      display: block;
+      font-size: $print-font-size;
+      line-height: 1.3;
+    }
+
+    .event-map__legend-group {
+      break-inside: avoid;
+      display: flex;
+      gap: 6px;
+      padding-bottom: 6px;
+    }
+
+    // The global print styles turn every colour black, pins included.
+    .event-map__pin,
+    .event-map__pin * {
+      color: var(--white) !important;
+      print-color-adjust: exact;
+    }
+
+    &.is-printing-event-map--poster {
+      .event-map__print-heading {
+        font-size: $poster-font-size * 1.5;
+        margin-bottom: 16px;
+      }
+
+      .event-map__canvas {
+        break-after: auto;
+      }
+
+      .event-map__legend {
+        display: none;
+      }
+
+      .event-map__key {
+        display: flex;
+        flex-wrap: wrap;
+        font-size: $poster-font-size;
+        gap: 8px 28px;
+        margin-top: 16px;
+      }
+
+      .event-map__key-item {
+        align-items: center;
+        display: flex;
+        gap: 10px;
+
+        img {
+          height: $poster-icon-size;
+          width: $poster-icon-size;
+        }
+      }
+    }
+
+    .event-map__legend-number {
+      align-items: center;
+      border: 1px solid var(--black);
+      border-radius: 50%;
+      display: flex;
+      flex-shrink: 0;
+      font-weight: 700;
+      height: $print-dot-size;
+      justify-content: center;
+      line-height: 1;
+      width: $print-dot-size;
+    }
+
+    .event-map__legend-items {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .event-map__legend-item {
+      font-size: $print-font-size;
+      line-height: 1.3;
+      margin: 0;
+
+      strong,
+      span {
+        display: block;
+      }
     }
   }
 }

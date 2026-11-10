@@ -126,6 +126,8 @@ function buildEntry($post, array $config)
         'points'           => $points,
         'image'            => $imageId ? wp_get_attachment_image_url($imageId, 'medium_large') : '',
         'org'              => $org,
+        // Street + postcode of the main location, for the print legend.
+        'address'          => implode(', ', Event\getAddressLines($post->ID)),
         'schedule'         => Event\getScheduleRows($post->ID),
         'dates'            => array_values($dates),
         'programTypeLabel' => $programTypeLabel,
@@ -178,6 +180,17 @@ add_filter('Flynt/addComponentData?name=BlockEventMap', function ($data) {
     $tiles = getTileSources();
 
     $data['entries'] = $entries;
+    $data['siteName'] = get_bloginfo('name');
+    // Icon key for the printed poster: one row per format.
+    $data['formatKey'] = [];
+    foreach (Event\getFormatIcons() as $key => $file) {
+        if (!empty($config['programTypes'][$key])) {
+            $data['formatKey'][] = [
+                'icon'  => Asset::requireUrl('assets/icons/event/' . $file),
+                'label' => $config['programTypes'][$key],
+            ];
+        }
+    }
     $data['days'] = Event\getDays();
     $data['audienceGroups'] = $config['audienceGroups'];
     $data['formats'] = $config['programTypes'];

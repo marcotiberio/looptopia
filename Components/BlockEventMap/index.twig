@@ -17,6 +17,8 @@
       search: '',
       openMenu: '',
       selected: null,
+      printGroups: [],
+      printPlaces: 0,
       init() {
         const json = this.$el.querySelector('script[data-ref=\'entries\']');
         this.entries = JSON.parse(json ? json.textContent : '[]');
@@ -68,8 +70,15 @@
     x-effect="sync()"
     x-on:eventmap:ready="sync()"
     x-on:eventmap:select="select($event.detail.id)"
+    x-on:eventmap:printlist="printGroups = $event.detail.groups; printPlaces = $event.detail.places"
     x-on:keydown.escape.window="openMenu = ''; selected = null"
   >
+    {# Print only: heading above the map. #}
+    <p class="event-map__print-heading">
+      <strong>{{ siteName }} – {{ __('Karte', 'flynt') }}</strong>
+      <span x-text="printPlaces + ' {{ __('Orte', 'flynt') }}'"></span>
+    </p>
+
     <div
       data-ref="map"
       class="event-map__canvas"
@@ -251,8 +260,31 @@
       </template>
     </div>
 
-    {# ============ Zoom ============ #}
+    {# ============ Print + zoom ============ #}
     <div class="event-map__zoom">
+      {# Print: A4 handout (numbered dots + list) or A2 poster (every pin). #}
+      <div class="event-map__dropdown" x-on:click.outside="closeMenu('print')">
+        <button
+          type="button"
+          class="event-map__zoom-button"
+          aria-label="{{ __('Karte drucken', 'flynt') }}"
+          title="{{ __('Karte drucken', 'flynt') }}"
+          :aria-expanded="openMenu === 'print'"
+          x-on:click="toggleMenu('print')"
+        >{% include 'assets/icons/map-print.svg' ignore missing %}</button>
+        <div class="event-map__menu event-map__menu--print" x-show="openMenu === 'print'" x-cloak x-transition.opacity>
+          <button
+            type="button"
+            class="event-map__option"
+            x-on:click="openMenu = ''; $dispatch('eventmap:print', { format: 'list' })"
+          >{{ __('A4 mit Liste', 'flynt') }}</button>
+          <button
+            type="button"
+            class="event-map__option"
+            x-on:click="openMenu = ''; $dispatch('eventmap:print', { format: 'poster' })"
+          >{{ __('A2-Poster mit allen Pins', 'flynt') }}</button>
+        </div>
+      </div>
       <button
         type="button"
         class="event-map__zoom-button"
@@ -266,6 +298,37 @@
         x-on:click="$dispatch('eventmap:zoom', { delta: -1 })"
       >{% include 'assets/icons/map-minus.svg' ignore missing %}</button>
     </div>
+
+    {# ============ Print legend ============ #}
+    {# Print only: one numbered row per dot on the printed map. script.js
+       numbers the pins in view and sends the rows via eventmap:printlist. #}
+    <ol class="event-map__legend">
+      <template x-for="group in printGroups" :key="group.n">
+        <li class="event-map__legend-group">
+          <span class="event-map__legend-number" x-text="group.n"></span>
+          <div class="event-map__legend-items">
+            <template x-for="(item, index) in group.items" :key="index">
+              <p class="event-map__legend-item">
+                <strong x-text="item.title"></strong>
+                <span data-no-translation x-text="item.org" x-show="item.org"></span>
+                <span x-text="item.place" x-show="item.place"></span>
+                <span x-text="item.times" x-show="item.times"></span>
+              </p>
+            </template>
+          </div>
+        </li>
+      </template>
+    </ol>
+
+    {# Poster only: what the pin icons stand for. #}
+    <ul class="event-map__key">
+      {% for entry in formatKey %}
+        <li class="event-map__key-item">
+          <img src="{{ entry.icon }}" alt="" width="24" height="24">
+          <span>{{ entry.label }}</span>
+        </li>
+      {% endfor %}
+    </ul>
 
     {# Pin shape cloned per marker by script.js; colour comes from CSS. #}
     <template data-ref="pinTemplate">{% include 'assets/icons/map-pin.svg' ignore missing %}</template>

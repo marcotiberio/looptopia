@@ -21,8 +21,8 @@ const CLUSTER_STEPS = [
  *
  * All UI state (filters, selected entry) lives in the Alpine component in
  * index.twig; the two talk through custom events on the component element:
- *   in  — eventmap:filter { ids }, eventmap:selected { id }, eventmap:zoom { delta }
- *   out — eventmap:ready, eventmap:select { id }
+ *   in  — eventmap:filter { ids }, eventmap:selected { id }, eventmap:zoom { delta }, eventmap:print { format }
+ *   out — eventmap:ready, eventmap:select { id }, eventmap:printlist { groups }
  */
 export default function (el) {
   const refs = buildRefs(el)
@@ -41,7 +41,7 @@ export default function (el) {
     zoomControl: false // replaced by the design's own zoom buttons
   }).setView([centerLat, centerLng], zoom)
 
-  L.tileLayer(refs.map.dataset.tileUrl, {
+  const tiles = L.tileLayer(refs.map.dataset.tileUrl, {
     attribution: refs.map.dataset.tileAttribution,
     maxZoom: 19,
     // Upscale rather than request tiles the provider doesn't serve.
@@ -97,7 +97,8 @@ export default function (el) {
 
   frame(allMarkers())
 
-  let visibleKey = [...markers.keys()].join(',')
+  let visibleIds = [...markers.keys()]
+  let visibleKey = visibleIds.join(',')
   let selectedId = null
 
   // A clustered pin has no element, and gets a fresh one when its cluster
@@ -109,6 +110,7 @@ export default function (el) {
     const key = ids.join(',')
     if (key === visibleKey) return
     visibleKey = key
+    visibleIds = ids
 
     const add = []
     const remove = []
@@ -147,7 +149,97 @@ export default function (el) {
 
   enableWheelZoom(map)
 
+  el.addEventListener('eventmap:print', (event) => printMap(event.detail && event.detail.format))
+
   dispatch('eventmap:ready', {})
+
+  /**
+   * Print the current view. The map switches to the paper size and the
+   * clusters (which can't be opened on paper) are replaced:
+   *   list   — A4: numbered dots, with a legend below the map listing what
+   *            each number stands for
+   *   poster — A2: every pin on its own, as designed
+   */
+  function printMap (format) {
+    const root = document.documentElement
+    if (root.classList.contains(PRINT_CLASS)) return
+
+    const isPoster = format === 'poster'
+    const classes = isPoster ? [PRINT_CLASS, PRINT_POSTER_CLASS] : [PRINT_CLASS]
+    const view = map.getBounds()
+    const pageStyle = document.createElement('style')
+    // A2 has no CSS page-size keyword, so the poster is given in millimetres.
+    pageStyle.textContent = `@page { size: ${isPoster ? '594mm 420mm' : 'A4 landscape'}; margin: 10mm; }`
+    document.head.appendChild(pageStyle)
+    root.classList.add(...classes)
+    // The canvas has its print size now; show the same area as before.
+    map.invalidateSize({ animate: false })
+    map.fitBounds(view, { animate: false })
+
+    let printLayer
+    // The poster is four times the area of the screen map, so it gets tiles
+    // one level deeper at half size — otherwise the basemap prints blurred.
+    let printTiles = tiles
+    if (isPoster) {
+      // Use the whole sheet for the pins that were in view.
+      const inView = allMarkers()
+        .filter((marker) => layer.hasLayer(marker) && view.contains(marker.getLatLng()))
+      if (inView.length > 1) {
+        map.fitBounds(L.featureGroup(inView).getBounds(), {
+          animate: false,
+          paddingTopLeft: [POSTER_PADDING, POSTER_PADDING * 2],
+          paddingBottomRight: [POSTER_PADDING, POSTER_PADDING]
+        })
+      }
+      const pins = buildPosterPins(entries, visibleIds, map, pinSvg)
+      printLayer = L.layerGroup(pins)
+      printTiles = L.tileLayer(refs.map.dataset.tileUrl, {
+        ...tiles.options,
+        tileSize: 128,
+        zoomOffset: 1
+      }).addTo(map)
+      map.removeLayer(tiles)
+      dispatch('eventmap:printlist', { groups: [], places: pins.length })
+    } else {
+      const groups = buildPrintGroups(entries, visibleIds, map)
+      printLayer = L.layerGroup(groups.map(buildDot))
+      dispatch('eventmap:printlist', {
+        groups: groups.map(({ n, items }) => ({ n, items })),
+        places: groups.length
+      })
+    }
+    printLayer.addTo(map)
+    map.removeLayer(layer)
+
+    const restore = () => {
+      map.removeLayer(printLayer)
+      map.addLayer(layer)
+      if (printTiles !== tiles) {
+        map.removeLayer(printTiles)
+        map.addLayer(tiles)
+      }
+      root.classList.remove(...classes)
+      pageStyle.remove()
+      map.invalidateSize({ animate: false })
+      map.fitBounds(view, { animate: false })
+      applyActive()
+    }
+    window.addEventListener('afterprint', restore, { once: true })
+
+    // Print once the tiles of the resized map are in (or after a grace period
+    // on a slow connection) and Alpine has rendered the legend.
+    let printed = false
+    const print = () => {
+      if (printed) return
+      printed = true
+      requestAnimationFrame(() => window.print())
+    }
+    setTimeout(() => {
+      if (!printTiles.isLoading()) return print()
+      printTiles.once('load', print)
+      setTimeout(print, PRINT_TILE_TIMEOUT)
+    }, 100)
+  }
 
   function dispatch (name, detail) {
     refs.map.dispatchEvent(new CustomEvent(name, { detail, bubbles: true }))
@@ -170,6 +262,124 @@ export default function (el) {
       map.setView(list[0].getLatLng(), Math.max(map.getZoom(), 14))
     }
   }
+}
+
+// Set on <html> while the print layout is active — see _style.scss.
+const PRINT_CLASS = 'is-printing-event-map'
+const PRINT_POSTER_CLASS = 'is-printing-event-map--poster'
+// Longest wait for map tiles before printing anyway.
+const PRINT_TILE_TIMEOUT = 8000
+// Poster: pins closer than this count as the same spot and are set side by
+// side at this spacing, since a stack can't be fanned out on paper.
+const POSTER_SAME_SPOT = 6
+const POSTER_SPOT_SPACING = 30
+// Poster pins are drawn smaller than on screen so neighbours stay apart —
+// keep in sync with $poster-pin-scale in _style.scss.
+const POSTER_PIN_SCALE = 0.65
+// Space kept free between the outermost pins and the edge of the sheet.
+const POSTER_PADDING = 60
+// Dot diameter on the printed map, and the distance below which neighbouring
+// pins share one dot (and one legend row) instead of overprinting each other.
+const PRINT_DOT_SIZE = 18
+const PRINT_MERGE_DISTANCE = 16
+// Dots are numbered in reading order: in bands of this height, left to right.
+const PRINT_BAND_HEIGHT = 60
+
+/**
+ * Numbered groups for the printed map: every pin of the filtered entries that
+ * lies in the current view, merged with its neighbours where they would
+ * overlap on paper.
+ */
+function buildPrintGroups (entries, visibleIds, map) {
+  const bounds = map.getBounds()
+  const groups = []
+
+  entries
+    .filter((entry) => visibleIds.includes(entry.id))
+    .forEach((entry) => {
+      (entry.points || []).forEach((point, index) => {
+        if (!point.lat || !point.lng || !bounds.contains([point.lat, point.lng])) return
+
+        const position = map.latLngToContainerPoint([point.lat, point.lng])
+        // The address belongs to the main location (the first point) only, and
+        // is left out where the venue name already spells it out.
+        const street = (entry.address || '').split(',')[0]
+        const address = index === 0 && !(street && point.name.includes(street)) ? entry.address : ''
+        const item = {
+          title: entry.title,
+          org: entry.org,
+          place: [point.name, address].filter(Boolean).join(', '),
+          times: (entry.schedule || []).map((row) => `${row.date} ${row.time}`.trim()).filter(Boolean).join(' · ')
+        }
+
+        let group = groups.find((candidate) => candidate.position.distanceTo(position) < PRINT_MERGE_DISTANCE)
+        if (!group) {
+          group = { position, latLngs: [], items: [] }
+          groups.push(group)
+        }
+        group.latLngs.push(L.latLng(point.lat, point.lng))
+        const isListed = group.items.some((other) => other.title === item.title && other.place === item.place)
+        if (!isListed) group.items.push(item)
+      })
+    })
+
+  const band = (group) => Math.floor(group.position.y / PRINT_BAND_HEIGHT)
+  return groups
+    .sort((a, b) => band(a) - band(b) || a.position.x - b.position.x)
+    .map((group, index) => ({
+      n: index + 1,
+      latLng: L.latLngBounds(group.latLngs).getCenter(),
+      items: group.items
+    }))
+}
+
+/**
+ * Poster pins: one designed pin per location of the filtered entries in the
+ * current view. Pins sharing a spot are spread sideways around it.
+ */
+function buildPosterPins (entries, visibleIds, map, pinSvg) {
+  const bounds = map.getBounds()
+  const spots = []
+
+  entries
+    .filter((entry) => visibleIds.includes(entry.id))
+    .forEach((entry) => {
+      (entry.points || []).forEach((point) => {
+        if (!point.lat || !point.lng || !bounds.contains([point.lat, point.lng])) return
+
+        const position = map.latLngToContainerPoint([point.lat, point.lng])
+        let spot = spots.find((candidate) => candidate.position.distanceTo(position) < POSTER_SAME_SPOT)
+        if (!spot) {
+          spot = { position, entries: [] }
+          spots.push(spot)
+        }
+        // An entry listing the same place twice still gets one pin there.
+        if (!spot.entries.includes(entry)) spot.entries.push(entry)
+      })
+    })
+
+  return spots.flatMap((spot) => spot.entries.map((entry, index) => {
+    const shift = (index - (spot.entries.length - 1) / 2) * POSTER_SPOT_SPACING
+    const latLng = map.containerPointToLatLng(spot.position.add([shift, 0]))
+    return L.marker(latLng, {
+      interactive: false,
+      keyboard: false,
+      icon: buildIcon(entry, pinSvg, POSTER_PIN_SCALE)
+    })
+  }))
+}
+
+function buildDot (group) {
+  return L.marker(group.latLng, {
+    interactive: false,
+    keyboard: false,
+    icon: L.divIcon({
+      className: 'event-map__dot',
+      html: `<span>${group.n}</span>`,
+      iconSize: [PRINT_DOT_SIZE, PRINT_DOT_SIZE],
+      iconAnchor: [PRINT_DOT_SIZE / 2, PRINT_DOT_SIZE / 2]
+    })
+  })
 }
 
 // Wheel distance (in pixels) per zoom level. Pinch deltas are much smaller
@@ -229,7 +439,7 @@ function enableWheelZoom (map) {
  * Pin marker: the designed pin shape (colour switches via CSS on .is-active)
  * with the program type glyph on top.
  */
-function buildIcon (entry, pinSvg) {
+function buildIcon (entry, pinSvg, scale = 1) {
   const icon = entry.icon
     ? `<img class="event-map__pin-icon" src="${encodeURI(entry.icon)}" alt="">`
     : ''
@@ -237,8 +447,8 @@ function buildIcon (entry, pinSvg) {
   return L.divIcon({
     className: 'event-map__pin',
     html: `${pinSvg}${icon}`,
-    iconSize: [55.5, 71],
-    iconAnchor: [28, 71]
+    iconSize: [55.5 * scale, 71 * scale],
+    iconAnchor: [28 * scale, 71 * scale]
   })
 }
 
