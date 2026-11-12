@@ -117,12 +117,39 @@ $poster-icon-size: 32px;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    left: 50%;
+    // Anchored to both edges so a wrapping bar can use the full map width
+    // (left: 50% would cap its shrink-to-fit width at half the map).
+    left: 0;
+    margin-inline: auto;
     max-width: calc(100% - #{$overlay-gap * 2});
     position: absolute;
+    right: 0;
     top: $overlay-gap;
-    transform: translateX(-50%);
+    width: fit-content;
     z-index: 2;
+  }
+
+  // Mobile only: collapses the bar until opened.
+  &__toggle {
+    align-self: center;
+
+    svg {
+      transition: transform 0.2s ease;
+    }
+
+    @media (min-width: theme('screens.mobile')) {
+      display: none;
+    }
+  }
+
+  &__filters.is-open &__toggle svg {
+    transform: rotate(180deg);
+  }
+
+  &__filters:not(.is-open) &__filters-inner {
+    @media (max-width: calc(#{theme('screens.mobile')} - 1px)) {
+      display: none;
+    }
   }
 
   &__filters-inner {
@@ -130,7 +157,7 @@ $poster-icon-size: 32px;
     border-radius: $overlay-radius;
     display: flex;
     // Lets the search field drop to its own line once the pills fill the bar.
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     gap: $card-padding;
     max-width: 100%;
     overflow: visible;
