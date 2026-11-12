@@ -136,7 +136,10 @@ $poster-icon-size: 32px;
     svg {
       transition: transform 0.2s ease;
     }
+  }
 
+  // Scoped to the bar so it outranks the later `&__pill { display: flex }`.
+  &__filters &__toggle {
     @media (min-width: theme('screens.mobile')) {
       display: none;
     }
