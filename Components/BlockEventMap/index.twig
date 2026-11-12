@@ -16,7 +16,6 @@
       accessibleOnly: false,
       search: '',
       openMenu: '',
-      filtersOpen: false,
       selected: null,
       printGroups: [],
       printPlaces: 0,
@@ -35,10 +34,6 @@
         if (this.accessibleOnly && !entry.accessible) return false;
         if (this.searchTerm && !entry.search.includes(this.searchTerm)) return false;
         return true;
-      },
-      /* Number of active filters, shown on the mobile toggle. */
-      get activeFilters() {
-        return (this.day ? 1 : 0) + this.audiences.length + this.formats.length + (this.accessibleOnly ? 1 : 0) + (this.searchTerm ? 1 : 0);
       },
       /* Server side lowercases entry.search, so both sides compare the same. */
       get searchTerm() {
@@ -95,20 +90,7 @@
     ></div>
 
     {# ============ Filter bar ============ #}
-    <div class="event-map__filters" :class="filtersOpen && 'is-open'">
-      {# Mobile only: the bar starts collapsed behind this toggle. #}
-      <button
-        type="button"
-        class="event-map__pill event-map__toggle"
-        :class="activeFilters > 0 && 'is-filtering'"
-        :aria-expanded="filtersOpen"
-        x-on:click="filtersOpen = !filtersOpen; openMenu = ''"
-      >
-        <span>{{ __('Filter', 'flynt') }}</span>
-        <span x-show="activeFilters > 0" x-cloak x-text="'(' + activeFilters + ')'"></span>
-        {% include 'assets/icons/map-chevron-down.svg' ignore missing %}
-      </button>
-
+    <div class="event-map__filters">
       <div class="event-map__filters-inner">
         <button
           type="button"

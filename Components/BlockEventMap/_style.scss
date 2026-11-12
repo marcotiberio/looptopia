@@ -15,6 +15,11 @@ $pin-icon-offset: 12px;
 $pin-shadow-blur: 6px;
 $icon-size: 24px;
 $zoom-size: 40px;
+// Fixed header height; keep in sync with mt-[44px] lg:mt-[72px] on <main>
+// in templates/_document.twig.
+$nav-height: 44px;
+$nav-height-lg: 72px;
+$canvas-min-height: 320px;
 // Print layout: the canvas fills an A4 landscape page (277 × 190 mm inside the
 // 10 mm margins set by script.js, at 96 dpi) and leaves room for the heading.
 $print-map-width: 1040px;
@@ -36,10 +41,19 @@ $poster-icon-size: 32px;
   &__canvas {
     // Contains Leaflet's own stacking (its panes use z-index 400+), so the
     // overlays below sit on top with a plain z-index.
-    height: clamp(480px, 80vh, 700px);
+    // Fills the screen below the fixed header. svh keeps the height stable
+    // while mobile browser bars show and hide; vh is the fallback.
+    height: calc(100vh - #{$nav-height});
+    height: calc(100svh - #{$nav-height});
+    min-height: $canvas-min-height;
     position: relative;
     width: 100%;
     z-index: 0;
+
+    @media (min-width: theme('screens.lg')) {
+      height: calc(100vh - #{$nav-height-lg});
+      height: calc(100svh - #{$nav-height-lg});
+    }
   }
 
   // ---- Pins ----
@@ -127,32 +141,6 @@ $poster-icon-size: 32px;
     top: $overlay-gap;
     width: fit-content;
     z-index: 2;
-  }
-
-  // Mobile only: collapses the bar until opened.
-  &__toggle {
-    align-self: center;
-
-    svg {
-      transition: transform 0.2s ease;
-    }
-  }
-
-  // Scoped to the bar so it outranks the later `&__pill { display: flex }`.
-  &__filters &__toggle {
-    @media (min-width: theme('screens.mobile')) {
-      display: none;
-    }
-  }
-
-  &__filters.is-open &__toggle svg {
-    transform: rotate(180deg);
-  }
-
-  &__filters:not(.is-open) &__filters-inner {
-    @media (max-width: calc(#{theme('screens.mobile')} - 1px)) {
-      display: none;
-    }
   }
 
   &__filters-inner {
